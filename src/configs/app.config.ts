@@ -12,7 +12,7 @@ const appConfig: AppConfig = {
     baseURL: 'https://localhost:44360',
     apiPrefix: '/api',
     authenticatedEntryPath: '/home',
-    unAuthenticatedEntryPath: '/home',
+    unAuthenticatedEntryPath: '/sign-in',
     tourPath: '/',
     locale: 'en',
     enableMock: false,

@@ -35,20 +35,26 @@ function useAuth() {
         try {
             const resp = await apiSignIn(values)
             if (resp.data) {
-                const { token } = resp.data
-                dispatch(signInSuccess(token))
-                if (resp.data.user) {
-                    dispatch(
-                        setUser(
-                            resp.data.user || {
-                                avatar: '',
-                                userName: 'Anonymous',
-                                authority: ['USER'],
-                                email: '',
-                            }
-                        )
+                console.log(resp.data)
+
+                const { jwtToken } = resp.data
+
+                console.log(jwtToken)
+
+                dispatch(signInSuccess(jwtToken))
+                // if (resp.data.user) {
+
+                dispatch(
+                    setUser(
+                        resp.data.user || {
+                            avatar: '',
+                            userName: resp.data._userDetails.epf,
+                            authority: ['Admin'],
+                            email: 'carolyn.p@elstar.com',
+                        }
                     )
-                }
+                )
+                //    }
                 const redirectUrl = query.get(REDIRECT_URL_KEY)
                 navigate(
                     redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath
@@ -71,8 +77,8 @@ function useAuth() {
         try {
             const resp = await apiSignUp(values)
             if (resp.data) {
-                const { token } = resp.data
-                dispatch(signInSuccess(token))
+                const { jwtToken } = resp.data
+                dispatch(signInSuccess(jwtToken))
                 if (resp.data.user) {
                     dispatch(
                         setUser(
@@ -117,7 +123,7 @@ function useAuth() {
     }
 
     const signOut = async () => {
-        await apiSignOut()
+        // await apiSignOut()
         handleSignOut()
     }
 

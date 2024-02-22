@@ -1,16 +1,17 @@
 export type SignInCredential = {
-    userName: string
+    userId: string
     password: string
 }
 
 export type SignInResponse = {
-    token: string
+    jwtToken: string
     user: {
         userName: string
         authority: string[]
         avatar: string
         email: string
     }
+    _userDetails: any
 }
 
 export type SignUpResponse = SignInResponse

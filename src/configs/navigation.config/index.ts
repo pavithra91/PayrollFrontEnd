@@ -1,7 +1,7 @@
 import {
     NAV_ITEM_TYPE_TITLE,
     NAV_ITEM_TYPE_ITEM,
-    NAV_ITEM_TYPE_COLLAPSE
+    NAV_ITEM_TYPE_COLLAPSE,
 } from '@/constants/navigation.constant'
 import type { NavigationTree } from '@/@types/navigation'
 
@@ -34,6 +34,16 @@ const navigationConfig: NavigationTree[] = [
         icon: 'cash',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
+        subMenu: [],
+    },
+    {
+        key: 'calculations',
+        path: '/calculations',
+        title: 'Calculations',
+        translateKey: 'nav.calculations',
+        icon: 'cash',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: ['Admin'],
         subMenu: [],
     },
     /** Example purpose only, please remove */
