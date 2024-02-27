@@ -5,7 +5,6 @@ import Dialog from '@/components/ui/Dialog'
 import type { MouseEvent } from 'react'
 import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table'
-import { EmployeeSpecialTax } from '@/@types/empspecialrates'
 import { Field, Form, Formik } from 'formik'
 import * as Yup from 'yup'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
@@ -13,60 +12,49 @@ import Alert from '@/components/ui/Alert'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import type { CommonProps } from '@/@types/common'
 import useCalculations from '@/utils/hooks/useCalculation'
+import Select from '@/components/ui/Select'
 
 interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
 
-type EmpSPLTaxSchema = {
+const contributorOptions = [
+    { value: 'E', label: 'Employee' },
+    { value: 'C', label: 'Company' },
+]
+
+const companyOptions = [
+    { value: 2000, label: '2000' },
+    { value: 3000, label: '3000' },
+]
+
+type CalculationSchema = {
     companyCode: number
+    sequence: number
     payCode: string
     calCode: string
     calFormula: string
+    calDescription: string
+    payCategory: string
+    contributor: string
     status?: boolean
     createdBy?: string
 }
 
 const validationSchema = Yup.object().shape({
-    companyCode: Yup.string().required('Please enter Company Code'),
+    companyCode: Yup.object()
+        .shape({ value: Yup.string(), label: Yup.string() })
+        .required('Please enter Company Code'),
+    sequence: Yup.string().required('Please enter Calculation Sequence'),
     payCode: Yup.string().required('Please enter correct EPF'),
     calCode: Yup.string().required('Please enter Cost Center'),
     calFormula: Yup.string().required('Please enter Calculation Formula'),
+    payCategory: Yup.string().required('Please enter Calculation Type'),
+    contributor: Yup.string().required('Please enter Contributor'),
 })
-
-const defaultData: EmployeeSpecialTax[] = [
-    {
-        id: 1,
-        companyCode: 3000,
-        epf: '117532',
-        costcenter: 'C10110',
-    },
-    {
-        id: 2,
-        companyCode: 2000,
-        epf: '117533',
-        costcenter: 'C10110',
-    },
-    {
-        id: 3,
-        companyCode: 3000,
-        epf: '117531',
-        costcenter: 'C10110',
-    },
-]
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-/*
-const listItems = defaultData.map((EmployeeSpecialTax) => (
-    <Tr key={EmployeeSpecialTax.id}>
-        <Td>{EmployeeSpecialTax.companyCode}</Td>
-        <Td>{EmployeeSpecialTax.epf}</Td>
-        <Td>{EmployeeSpecialTax.costcenter}</Td>
-        <Td key={EmployeeSpecialTax.id}>Edit</Td>
-    </Tr>
-))
-*/
 const EmpSplTaxView = (props: FormProps) => {
     const [message, setMessage] = useTimeOutMessage()
 
@@ -83,7 +71,7 @@ const EmpSplTaxView = (props: FormProps) => {
                 (item: any) => (
                     <Tr key={item.id}>
                         <Td>{item.companyCode}</Td>
-                        <Td>{item.Sequence}</Td>
+                        <Td>{item.sequence}</Td>
                         <Td>{item.payCode}</Td>
                         <Td>{item.calCode}</Td>
                         <Td>{item.calFormula}</Td>
@@ -100,11 +88,21 @@ const EmpSplTaxView = (props: FormProps) => {
     }, [])
 
     const onSignIn = async (
-        values: EmpSPLTaxSchema,
+        values: CalculationSchema,
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
-        const { companyCode, payCode, calCode, calFormula, status, createdBy } =
-            values
+        const {
+            companyCode,
+            sequence,
+            payCode,
+            calCode,
+            calFormula,
+            calDescription,
+            payCategory,
+            contributor,
+            status,
+            createdBy,
+        } = values
         setSubmitting(true)
 
         //    const result = await getCalculations()
@@ -181,9 +179,13 @@ const EmpSplTaxView = (props: FormProps) => {
                     <Formik
                         initialValues={{
                             companyCode: 3000,
+                            sequence: 0,
                             payCode: '',
                             calCode: '',
                             calFormula: '',
+                            calDescription: '',
+                            payCategory: '',
+                            contributor: '',
                             status: true,
                             createdBy: '3021ITFI',
                         }}
@@ -200,54 +202,78 @@ const EmpSplTaxView = (props: FormProps) => {
                         {({ touched, errors, isSubmitting }) => (
                             <Form>
                                 <FormContainer>
-                                    <FormItem
-                                        label="Company Code"
-                                        invalid={
-                                            (errors.companyCode &&
-                                                touched.companyCode) as boolean
-                                        }
-                                        errorMessage={errors.companyCode}
-                                    >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="companyCode"
-                                            placeholder="Company Code"
-                                            component={Input}
-                                        />
-                                    </FormItem>
-                                    <FormItem
-                                        label="EPF"
-                                        invalid={
-                                            (errors.payCode &&
-                                                touched.payCode) as boolean
-                                        }
-                                        errorMessage={errors.payCode}
-                                    >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="epf"
-                                            placeholder="EPF"
-                                            component={Input}
-                                        />
-                                    </FormItem>
-                                    <FormItem
-                                        label="Cost Center"
-                                        invalid={
-                                            (errors.calCode &&
-                                                touched.calCode) as boolean
-                                        }
-                                        errorMessage={errors.calCode}
-                                    >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="costcenter"
-                                            placeholder="Cost Center"
-                                            component={Input}
-                                        />
-                                    </FormItem>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <FormItem
+                                            label="Company Code"
+                                            invalid={
+                                                (errors.companyCode &&
+                                                    touched.companyCode) as boolean
+                                            }
+                                            errorMessage={errors.companyCode}
+                                        >
+                                            <Select
+                                                name="companyCode"
+                                                placeholder="Please Select"
+                                                options={companyOptions}
+                                            ></Select>
+                                        </FormItem>
+
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <FormItem
+                                                label="Sequence"
+                                                invalid={
+                                                    (errors.sequence &&
+                                                        touched.sequence) as boolean
+                                                }
+                                                errorMessage={errors.sequence}
+                                            >
+                                                <Field
+                                                    type="text"
+                                                    autoComplete="off"
+                                                    name="sequence"
+                                                    placeholder="Sequence"
+                                                    component={Input}
+                                                />
+                                            </FormItem>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <FormItem
+                                            label="Pay Code"
+                                            invalid={
+                                                (errors.payCode &&
+                                                    touched.payCode) as boolean
+                                            }
+                                            errorMessage={errors.payCode}
+                                        >
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="payCode"
+                                                placeholder="Pay Code"
+                                                component={Input}
+                                            />
+                                        </FormItem>
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <FormItem
+                                                label="Calculation Code"
+                                                invalid={
+                                                    (errors.calCode &&
+                                                        touched.calCode) as boolean
+                                                }
+                                                errorMessage={errors.calCode}
+                                            >
+                                                <Field
+                                                    type="text"
+                                                    autoComplete="off"
+                                                    name="calCode"
+                                                    placeholder="Calculation Code"
+                                                    component={Input}
+                                                />
+                                            </FormItem>
+                                        </div>
+                                    </div>
                                     <FormItem
                                         label="Calculation Formula"
                                         invalid={
@@ -264,17 +290,75 @@ const EmpSplTaxView = (props: FormProps) => {
                                             component={Input}
                                         />
                                     </FormItem>
-                                    <div className="text-right mt-6"></div>
-                                    <Button
-                                        block
-                                        loading={isSubmitting}
-                                        variant="solid"
-                                        type="submit"
+
+                                    <FormItem
+                                        label="Calculation Description"
+                                        invalid={
+                                            (errors.calDescription &&
+                                                touched.calDescription) as boolean
+                                        }
+                                        errorMessage={errors.calDescription}
                                     >
-                                        {isSubmitting
-                                            ? 'Saving...'
-                                            : 'Add Special Tax'}
-                                    </Button>
+                                        <Field
+                                            type="text"
+                                            autoComplete="off"
+                                            name="calDescription"
+                                            placeholder="Calculation Description"
+                                            component={Input}
+                                        />
+                                    </FormItem>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <FormItem
+                                            label="Category"
+                                            invalid={
+                                                (errors.payCategory &&
+                                                    touched.payCategory) as boolean
+                                            }
+                                            errorMessage={errors.payCategory}
+                                        >
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="payCategory"
+                                                placeholder="Category"
+                                                component={Input}
+                                            />
+                                        </FormItem>
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <FormItem
+                                                label="Contributor"
+                                                invalid={
+                                                    (errors.contributor &&
+                                                        touched.contributor) as boolean
+                                                }
+                                                errorMessage={
+                                                    errors.contributor
+                                                }
+                                            >
+                                                <Select
+                                                    name="contributor"
+                                                    placeholder="Please Select Contributor"
+                                                    options={contributorOptions}
+                                                ></Select>
+                                            </FormItem>
+                                        </div>
+                                    </div>
+
+                                    <div className="text-right mt-6"></div>
+
+                                    <div className="grid grid-cols-1 gap-4">
+                                        <Button
+                                            block
+                                            loading={isSubmitting}
+                                            variant="solid"
+                                            type="submit"
+                                        >
+                                            {isSubmitting
+                                                ? 'Saving...'
+                                                : 'Add Calculation'}
+                                        </Button>
+                                    </div>
                                 </FormContainer>
                             </Form>
                         )}
