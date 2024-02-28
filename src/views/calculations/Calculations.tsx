@@ -5,7 +5,7 @@ import Dialog from '@/components/ui/Dialog'
 import type { MouseEvent } from 'react'
 import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table'
-import { Field, Form, Formik } from 'formik'
+import { Field, Form, Formik, FormikProps, useField } from 'formik'
 import * as Yup from 'yup'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import Alert from '@/components/ui/Alert'
@@ -18,18 +18,8 @@ interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
 
-const contributorOptions = [
-    { value: 'E', label: 'Employee' },
-    { value: 'C', label: 'Company' },
-]
-
-const companyOptions = [
-    { value: 2000, label: '2000' },
-    { value: 3000, label: '3000' },
-]
-
-type CalculationSchema = {
-    companyCode: number
+interface CalculationSchema {
+    companyCode: CompanyIdSelectOption
     sequence: number
     payCode: string
     calCode: string
@@ -41,21 +31,47 @@ type CalculationSchema = {
     createdBy?: string
 }
 
+interface CompanyIdSelectOption {
+    label: string
+    value: number
+}
+
+const contributorOptions = [
+    { value: 'E', label: 'Employee' },
+    { value: 'C', label: 'Company' },
+]
+
+const companyOptions: CompanyIdSelectOption[] = [
+    { value: 2000, label: '2000' },
+    { value: 3000, label: '3000' },
+]
+
+const initValues: CalculationSchema = {
+    companyCode: companyOptions[0], // This will be the default one
+    sequence: 0,
+    payCode: '',
+    calCode: '',
+    calFormula: '',
+    calDescription: '',
+    payCategory: '',
+    contributor: '',
+    status: true,
+    createdBy: '3021ITFI',
+}
+
 const validationSchema = Yup.object().shape({
-    companyCode: Yup.object()
-        .shape({ value: Yup.string(), label: Yup.string() })
-        .required('Please enter Company Code'),
+    //companyCode: Yup.string().required('Please select Company Code'),
     sequence: Yup.string().required('Please enter Calculation Sequence'),
     payCode: Yup.string().required('Please enter correct EPF'),
     calCode: Yup.string().required('Please enter Cost Center'),
     calFormula: Yup.string().required('Please enter Calculation Formula'),
     payCategory: Yup.string().required('Please enter Calculation Type'),
-    contributor: Yup.string().required('Please enter Contributor'),
+    //   contributor: Yup.string().required('Please enter Contributor'),
 })
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-const EmpSplTaxView = (props: FormProps) => {
+const CalculationsPage = (props: FormProps) => {
     const [message, setMessage] = useTimeOutMessage()
 
     const { disableSubmit = false, className } = props
@@ -87,7 +103,7 @@ const EmpSplTaxView = (props: FormProps) => {
         })
     }, [])
 
-    const onSignIn = async (
+    const onSubmit = async (
         values: CalculationSchema,
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
@@ -143,7 +159,7 @@ const EmpSplTaxView = (props: FormProps) => {
     )
 
     return (
-        <div>
+        <>
             <Card header="Calculations" headerExtra={headerExtraContent}>
                 <Table>
                     <THead>
@@ -176,43 +192,43 @@ const EmpSplTaxView = (props: FormProps) => {
                             <>{message}</>
                         </Alert>
                     )}
-                    <Formik
-                        initialValues={{
-                            companyCode: 3000,
-                            sequence: 0,
-                            payCode: '',
-                            calCode: '',
-                            calFormula: '',
-                            calDescription: '',
-                            payCategory: '',
-                            contributor: '',
-                            status: true,
-                            createdBy: '3021ITFI',
-                        }}
+                    <Formik<CalculationSchema>
+                        initialValues={initValues}
                         validationSchema={validationSchema}
                         onSubmit={(values, { setSubmitting }) => {
                             if (!disableSubmit) {
                                 console.log(values)
-                                onSignIn(values, setSubmitting)
+                                onSubmit(values, setSubmitting)
                             } else {
                                 setSubmitting(false)
                             }
                         }}
                     >
-                        {({ touched, errors, isSubmitting }) => (
+                        {({
+                            touched,
+                            errors,
+                            isSubmitting,
+                            handleChange,
+                            values,
+                        }: FormikProps<CalculationSchema>) => (
                             <Form>
                                 <FormContainer>
                                     <div className="grid grid-cols-2 gap-4">
                                         <FormItem
                                             label="Company Code"
                                             invalid={
-                                                (errors.companyCode &&
-                                                    touched.companyCode) as boolean
+                                                !!errors.companyCode &&
+                                                !!touched.companyCode
                                             }
-                                            errorMessage={errors.companyCode}
+                                            errorMessage={
+                                                errors.companyCode?.value
+                                            }
                                         >
                                             <Select
                                                 name="companyCode"
+                                                id="companyCode"
+                                                value={values.companyCode}
+                                                onChange={handleChange}
                                                 placeholder="Please Select"
                                                 options={companyOptions}
                                             ></Select>
@@ -377,8 +393,8 @@ const EmpSplTaxView = (props: FormProps) => {
                             </Button> */}
                 </div>
             </Dialog>
-        </div>
+        </>
     )
 }
 
-export default EmpSplTaxView
+export default CalculationsPage
