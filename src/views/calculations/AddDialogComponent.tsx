@@ -150,6 +150,10 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
 
         if (result?.status === 'failed') {
             setMessage(result.message)
+        } else {
+            setMessage('Successfully Saved')
+            openNotification('success', 'Calculation Saved Successfully')
+            onClose()
         }
 
         setSubmitting(false)
@@ -158,7 +162,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
         //     setMessage(result.message)
         //     openNotification('danger', result.message)
         // }
-        
+
         // setMessage('Successfully Saved')
         // openNotification('success', 'Calculation Saved Successfully')
         // setSubmitting(false)
