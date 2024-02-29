@@ -101,8 +101,8 @@ const initValues: CalculationSchema = {
 const validationSchema = Yup.object().shape({
     companyCode: Yup.object().required('Please select Company Code'),
     sequence: Yup.string().required('Please enter Calculation Sequence'),
-    payCode: Yup.string().required('Please enter correct EPF'),
-    calCode: Yup.string().required('Please enter Cost Center'),
+    payCode: Yup.string().required('Please enter Pay Code'),
+    calCode: Yup.string().required('Please enter Calculation Code'),
     calFormula: Yup.string().required('Please enter Calculation Formula'),
     payCategory: Yup.string().required('Please enter Calculation Type'),
     contributor: Yup.object().required('Please enter Contributor'),

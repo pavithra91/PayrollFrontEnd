@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button'
 import AddCalculationsPage from './AddCalculation'
 import AddDialogComponent from './AddDialogComponent'
 import type { CommonProps } from '@/@types/common'
+import EditDialog from './EditDialog'
 
 interface FormProps extends CommonProps {
     disableSubmit?: boolean
@@ -23,6 +24,9 @@ const ViewCalculation = (props: FormProps) => {
     const openDialog = () => {
         setIsOpen(true)
     }
+    const openEditDialog = () => {
+        setEditIsOpen(true)
+    }
 
     const onDialogClose = (e: MouseEvent) => {
         console.log('onDialogClose', e)
@@ -35,9 +39,11 @@ const ViewCalculation = (props: FormProps) => {
     }
 
     const [isOpen, setIsOpen] = useState(false)
+    const [isEditOpen, setEditIsOpen] = useState(false)
 
     //const openDialog = () => setIsOpen(true);
     const closeDialog = () => setIsOpen(false)
+    const closeEditDialog = () => setEditIsOpen(false)
 
     const headerExtraContent = (
         <span className="flex items-center">
@@ -75,7 +81,19 @@ const ViewCalculation = (props: FormProps) => {
                         <Td>{item.calDescription}</Td>
                         <Td>{item.payCategory}</Td>
                         <Td>{item.contributor}</Td>
-                        <Td key={item.id}>Edit</Td>
+                        <Td key={item.id}>
+                            {' '}
+                            <Button variant="solid" onClick={openEditDialog}>
+                                Edit
+                            </Button>
+                            {isEditOpen && (
+                                <EditDialog
+                                    onClose={closeEditDialog}
+                                    isOpen={isEditOpen}
+                                    props={props}
+                                />
+                            )}
+                        </Td>
                     </Tr>
                 )
             )
