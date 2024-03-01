@@ -3,29 +3,30 @@ import useCalculations from '@/utils/hooks/useCalculation'
 import { useState, useEffect } from 'react'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import AddCalculationsPage from './AddCalculation'
 import AddDialogComponent from './AddDialogComponent'
 import type { CommonProps } from '@/@types/common'
-import EditDialog from './EditDialog'
+import EditDialog from './EditDialogComponent'
 
 interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
 
 const ViewCalculation = (props: FormProps) => {
-    const { getCalculations, addCalculations } = useCalculations()
+    // const username = getUsernameFromLocalStorage()
+    // console.log(username)
+
+    const { getCalculations } = useCalculations()
 
     const { Tr, Th, Td, THead, TBody } = Table
 
     const [data, setData] = useState([])
-
-    // const [dialogIsOpen, setIsOpen] = useState(false)
 
     const openDialog = () => {
         setIsOpen(true)
     }
     const openEditDialog = () => {
         setEditIsOpen(true)
+        console.log('test')
     }
 
     const onDialogClose = (e: MouseEvent) => {
@@ -48,10 +49,6 @@ const ViewCalculation = (props: FormProps) => {
     const headerExtraContent = (
         <span className="flex items-center">
             <span className="mr-1 font-semibold">
-                {/* <Button variant="solid" onClick={() => openDialog()}>
-                    Add
-                </Button> */}
-
                 <Button variant="solid" onClick={openDialog}>
                     Add
                 </Button>
@@ -64,6 +61,21 @@ const ViewCalculation = (props: FormProps) => {
                 )}
             </span>
             <span className="text-emerald-500 text-xl"></span>
+            <span className="flex items-center">
+                <span className="mr-1 font-semibold">
+                    <Button variant="solid" onClick={openEditDialog}>
+                        Edit
+                    </Button>
+                    {isEditOpen && (
+                        <EditDialog
+                            onClose={closeEditDialog}
+                            isEditOpen={isEditOpen}
+                            props={props}
+                        />
+                    )}
+                </span>
+                <span className="text-emerald-500 text-xl"></span>
+            </span>
         </span>
     )
 
@@ -82,14 +94,13 @@ const ViewCalculation = (props: FormProps) => {
                         <Td>{item.payCategory}</Td>
                         <Td>{item.contributor}</Td>
                         <Td key={item.id}>
-                            {' '}
                             <Button variant="solid" onClick={openEditDialog}>
                                 Edit
                             </Button>
                             {isEditOpen && (
                                 <EditDialog
                                     onClose={closeEditDialog}
-                                    isOpen={isEditOpen}
+                                    isEditOpen={isEditOpen}
                                     props={props}
                                 />
                             )}

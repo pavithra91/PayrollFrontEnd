@@ -20,6 +20,11 @@ import Notification from '@/components/ui/Notification'
 import useCalculations from '@/utils/hooks/useCalculation'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import { useState, useEffect } from 'react'
+import type {
+    CalculationSchema,
+    CompanyIdSelectOption,
+    ContributorSelectOption,
+} from '@/@types/calculation'
 
 interface DialogProps {
     isOpen: boolean // Type for the 'isOpen' prop
@@ -42,33 +47,6 @@ interface FieldWrapperProps<V = any> {
     render: (formikProps: RenderProps<V>) => React.ReactElement
 }
 
-interface FormProps extends CommonProps {
-    disableSubmit?: boolean
-}
-
-interface CalculationSchema {
-    companyCode: number
-    sequence: number
-    payCode: string
-    calCode: string
-    calFormula: string
-    calDescription: string
-    payCategory: string
-    contributor: string
-    status: boolean
-    createdBy: string
-}
-
-interface CompanyIdSelectOption {
-    label: string
-    value: number
-}
-
-interface ContributorSelectOption {
-    label: string
-    value: string
-}
-
 const companyOptions: CompanyIdSelectOption[] = [
     { value: 2000, label: '2000' },
     { value: 3000, label: '3000' },
@@ -85,6 +63,12 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     return render({ field, meta, helpers })
 }
 
+const getUsernameFromLocalStorage = () => {
+    const user = JSON.parse(localStorage.getItem('admin') ?? '')
+    const userName = JSON.parse(user.auth).user.userName
+    return userName
+}
+
 const initValues: CalculationSchema = {
     companyCode: companyOptions[0].value, // This will be the default one
     sequence: 0,
@@ -95,7 +79,7 @@ const initValues: CalculationSchema = {
     payCategory: '',
     contributor: contributorOptions[0].value,
     status: true,
-    createdBy: '3021ITFI',
+    createdBy: getUsernameFromLocalStorage(),
 }
 
 const validationSchema = Yup.object().shape({
@@ -113,7 +97,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
 
     const { disableSubmit = false, className } = props
 
-    const { getCalculations, addCalculations } = useCalculations()
+    const { addCalculations } = useCalculations()
 
     const onSubmit = async (
         values: CalculationSchema,
@@ -439,13 +423,13 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                     </Formik>
                 </div>
                 <div className="text-right mt-6">
-                    <Button
+                    {/* <Button
                         className="ltr:mr-2 rtl:ml-2"
                         variant="plain"
                         onClick={onClose}
                     >
                         Cancel
-                    </Button>
+                    </Button> */}
                     {/* <Button variant="solid" onClick={onDialogOk}>
                     Okay
                         </Button> */}
