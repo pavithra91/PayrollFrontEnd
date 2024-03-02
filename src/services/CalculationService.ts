@@ -19,3 +19,10 @@ export async function apiAddCalculations(data: CalculationData) {
         data,
     })
 }
+
+export async function apiGetTaxCalculations() {
+    return ApiService.fetchData<Response>({
+        url: '/admin/get-tax-details',
+        method: 'get',
+    })
+}

@@ -1,6 +1,7 @@
 import {
     apiGetCalculations,
     apiAddCalculations,
+    apiGetTaxCalculations,
 } from '@/services/CalculationService'
 
 import type { CalculationData } from '@/@types/calculation'
@@ -43,9 +44,28 @@ function useCalculations() {
             }
         }
     }
+
+    const getTaxCalculations = async () => {
+        try {
+            const resp = await apiGetTaxCalculations()
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
     return {
         getCalculations,
         addCalculations,
+        getTaxCalculations,
     }
 }
 

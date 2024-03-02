@@ -2,14 +2,10 @@ import type { CommonProps } from '@/@types/common'
 
 import ViewCalculation from './ViewCalculation'
 
-interface FormProps extends CommonProps {
-    disableSubmit?: boolean
-}
-
-const CalculationsPage = (props: FormProps) => {
+const CalculationsPage = () => {
     return (
         <>
-            <ViewCalculation></ViewCalculation>
+            <ViewCalculation />
         </>
     )
 }

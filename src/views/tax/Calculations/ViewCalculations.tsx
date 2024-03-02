@@ -11,13 +11,13 @@ interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
 
-const ViewCalculation = (props: FormProps) => {
-    const { getCalculations } = useCalculations()
+const ViewCalculations = (props: FormProps) => {
+    const { getTaxCalculations } = useCalculations()
 
     const [data, setData] = useState([])
 
     useEffect(() => {
-        const result = getCalculations()
+        const result = getTaxCalculations()
         result.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
 
@@ -150,4 +150,4 @@ const ViewCalculation = (props: FormProps) => {
     )
 }
 
-export default ViewCalculation
+export default ViewCalculations
