@@ -87,22 +87,6 @@ const ViewPayCodes = (props: FormProps) => {
                 )}
             </span>
             <span className="text-emerald-500 text-xl"></span>
-            {/* <span className="flex items-center">
-                <span className="mr-1 font-semibold">
-                    <Button variant="solid" onClick={openEditDialog}>
-                        Edit
-                    </Button>
-                    {isEditOpen && (
-                        <EditDialog
-                            onClose={closeEditDialog}
-                            isEditOpen={isEditOpen}
-                            props={props}
-                            item={undefined}
-                        />
-                    )}
-                </span>
-                <span className="text-emerald-500 text-xl"></span>
-            </span> */}
         </span>
     )
 
@@ -150,6 +134,11 @@ const ViewPayCodes = (props: FormProps) => {
                 accessorKey: 'rate',
             },
             {
+                header: 'Is Taxable Gross',
+                accessorKey: 'isTaxableGross',
+                show: false,
+            },
+            {
                 header: 'Created By',
                 accessorKey: 'createdBy',
             },
@@ -175,6 +164,12 @@ const ViewPayCodes = (props: FormProps) => {
     const table = useReactTable({
         data,
         columns,
+        initialState: {
+            columnVisibility: {
+                isTaxableGross: false, //hide this column by default
+            },
+            //...
+        },
         // Pipeline
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),

@@ -9,6 +9,7 @@ export type PayCodeData = {
 }
 
 export interface PayCodeSchema {
+    id: number
     companyCode: number
     payCode: string
     calCode: string
@@ -16,6 +17,7 @@ export interface PayCodeSchema {
     payCategory: string
     rate: number
     createdBy: string
+    isTaxableGross: boolean
 }
 
 export interface CompanyIdSelectOption {

@@ -22,6 +22,7 @@ import * as Yup from 'yup'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import usePayCodes from '@/utils/hooks/usePayCodes'
+import Checkbox from '@/components/ui/Checkbox'
 
 interface DialogProps {
     isEditOpen: boolean
@@ -69,6 +70,7 @@ const EditDialog: React.FC<DialogProps> = ({
     item,
 }) => {
     const initValues: PayCodeSchema = {
+        id: item.getValue('id'),
         companyCode: item.getValue('companyCode'), // This will be the default one
         payCode: item.getValue('payCode'),
         calCode: item.getValue('calCode'),
@@ -76,6 +78,7 @@ const EditDialog: React.FC<DialogProps> = ({
         payCategory: item.getValue('payCategory'),
         rate: item.getValue('rate'),
         createdBy: item.getValue('createdBy'),
+        isTaxableGross: item.getValue('isTaxableGross'),
     }
 
     const validationSchema = Yup.object().shape({
@@ -104,11 +107,14 @@ const EditDialog: React.FC<DialogProps> = ({
         )
     }
 
+    console.log(item.getValue('isTaxableGross'))
+
     const onSubmit = async (
         values: PayCodeSchema,
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
         const {
+            id,
             companyCode,
             payCode,
             calCode,
@@ -116,10 +122,12 @@ const EditDialog: React.FC<DialogProps> = ({
             payCategory,
             rate,
             createdBy,
+            isTaxableGross,
         } = values
         setSubmitting(true)
 
         const result = await updatePayCodes({
+            id,
             companyCode,
             payCode,
             calCode,
@@ -127,17 +135,18 @@ const EditDialog: React.FC<DialogProps> = ({
             payCategory,
             rate,
             createdBy,
+            isTaxableGross,
         })
 
-        console.log(result)
+        console.log(result?.status)
 
-        // if (result?.status === 'failed') {
-        //     setMessage(result.message)
-        // } else {
-        //     setMessage('Successfully Saved')
-        //     openNotification('success', 'Calculation Saved Successfully')
-        //     onClose()
-        // }
+        if (result?.status === 'failed') {
+            setMessage(result.message)
+        } else {
+            setMessage('Successfully Saved')
+            openNotification('success', 'Calculation Saved Successfully')
+            onClose()
+        }
 
         setSubmitting(false)
     }
@@ -295,7 +304,38 @@ const EditDialog: React.FC<DialogProps> = ({
                                         />
                                     </FormItem>
 
-                                    <div className="text-right mt-6"></div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <FormItem
+                                            label="Rate"
+                                            invalid={
+                                                (errors.rate &&
+                                                    touched.rate) as boolean
+                                            }
+                                            errorMessage={errors.rate}
+                                        >
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="rate"
+                                                placeholder="Rate"
+                                                component={Input}
+                                                defaultValue={item.getValue(
+                                                    'rate'
+                                                )}
+                                            />
+                                        </FormItem>
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <Field
+                                                className="mb-0 mx-2 my-10"
+                                                name="isTaxableGross"
+                                                component={Checkbox}
+                                            >
+                                                Is Taxable Gross
+                                            </Field>
+                                        </div>
+                                    </div>
+
+                                    <div className="text-right mt-4"></div>
 
                                     <div className="grid grid-cols-1 gap-4">
                                         <Button
