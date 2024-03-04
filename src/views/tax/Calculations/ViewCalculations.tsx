@@ -77,7 +77,8 @@ const ViewCalculations = (props: FormProps) => {
                         <EditDialog
                             onClose={closeEditDialog}
                             isEditOpen={isEditOpen}
-                            props={1}
+                            props={props}
+                            item={undefined}
                         />
                     )}
                 </span>
@@ -88,7 +89,7 @@ const ViewCalculations = (props: FormProps) => {
 
     const handleButtonClick = (item: any) => {
         console.log('button click ')
-        console.log(item.calCode)
+        console.log(item.id)
         if (isOpen) {
             openEditDialog()
         } else {
@@ -97,32 +98,28 @@ const ViewCalculations = (props: FormProps) => {
     }
 
     return (
-        <Card header="Calculations" headerExtra={headerExtraContent}>
+        <Card header="Tax Calculations" headerExtra={headerExtraContent}>
             <Table>
                 <THead>
                     <Tr>
-                        <Th>Company</Th>
-                        <Th>Sequence</Th>
-                        <Th>Pay Code</Th>
-                        <Th>Cal Code</Th>
+                        <Th>Range</Th>
                         <Th>Formula</Th>
                         <Th>Description</Th>
-                        <Th>Category</Th>
-                        <Th>Contributor</Th>
+                        <Th>Status</Th>
+                        <Th>Created By</Th>
+                        <Th>Created Date</Th>
                         <Th></Th>
                     </Tr>
                 </THead>
                 <TBody>
                     {data.map((item: any) => (
                         <Tr key={item.id}>
-                            <Td>{item.companyCode}</Td>
-                            <Td>{item.sequence}</Td>
-                            <Td>{item.payCode}</Td>
-                            <Td>{item.calCode}</Td>
+                            <Td>{item.range}</Td>
                             <Td>{item.calFormula}</Td>
-                            <Td>{item.calDescription}</Td>
-                            <Td>{item.payCategory}</Td>
-                            <Td>{item.contributor}</Td>
+                            <Td>{item.description}</Td>
+                            <Td>{item.status}</Td>
+                            <Td>{item.createdBy}</Td>
+                            <Td>{item.createdDate}</Td>
                             <Td>
                                 <Button
                                     id={item.id}
@@ -134,7 +131,7 @@ const ViewCalculations = (props: FormProps) => {
                                 </Button>
                                 {isEditOpen && (
                                     <EditDialog
-                                        key={item.calCode}
+                                        key={item.id}
                                         onClose={closeEditDialog}
                                         isEditOpen={isEditOpen}
                                         props={props}

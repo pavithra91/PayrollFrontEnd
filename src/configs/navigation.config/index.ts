@@ -48,10 +48,10 @@ const navigationConfig: NavigationTree[] = [
     },
     /** Example purpose only, please remove */
     {
-        key: 'singleMenuItem',
-        path: '/single-menu-view',
-        title: 'Single menu item',
-        translateKey: 'nav.singleMenuItem',
+        key: 'paycodes',
+        path: '/paycodes',
+        title: 'Pay Codes',
+        translateKey: 'nav.paycodes',
         icon: 'singleMenu',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
@@ -62,7 +62,7 @@ const navigationConfig: NavigationTree[] = [
         path: '',
         title: 'Calculations',
         translateKey: 'nav.collapseMenu.calculations',
-        icon: 'collapseMenu',
+        icon: 'calculator',
         type: NAV_ITEM_TYPE_COLLAPSE,
         authority: [],
         subMenu: [

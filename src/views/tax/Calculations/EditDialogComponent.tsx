@@ -1,27 +1,13 @@
-import React, { FC, useState } from 'react'
+import React from 'react'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import type { CommonProps } from '@/@types/common'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
-import {
-    Field,
-    FieldHelperProps,
-    FieldInputProps,
-    FieldMetaProps,
-    Form,
-    Formik,
-    FormikProps,
-    useField,
-} from 'formik'
-import {
-    CalculationSchema,
-    CompanyIdSelectOption,
-    ContributorSelectOption,
-} from '@/@types/Calculation'
+import { Field, Form, Formik, FormikProps } from 'formik'
+import { TaxCalculationSchema } from '@/@types/Calculation'
 import { FormContainer, FormItem } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Alert from '@/components/ui/Alert'
-import Select from '@/components/ui/Select'
 import * as Yup from 'yup'
 
 interface DialogProps {
@@ -31,89 +17,36 @@ interface DialogProps {
     item: any
 }
 
-const companyOptions: CompanyIdSelectOption[] = [
-    { value: 2000, label: '2000' },
-    { value: 3000, label: '3000' },
-]
-
-const contributorOptions: ContributorSelectOption[] = [
-    { value: 'E', label: 'Employee' },
-    { value: 'C', label: 'Company' },
-]
-
-interface RenderProps<V = any> {
-    field: FieldInputProps<V>
-    meta: FieldMetaProps<V>
-    helpers: FieldHelperProps<V>
-}
-
-interface FieldWrapperProps<V = any> {
-    name: string
-    render: (formikProps: RenderProps<V>) => React.ReactElement
-}
-
 interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
-const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
-    const [field, meta, helpers] = useField(name)
-
-    return render({ field, meta, helpers })
-}
-
 const EditDialog: React.FC<DialogProps> = ({
     onClose,
     isEditOpen,
     props,
     item,
 }) => {
-    const selectedContributor = Array.from(Object.values(item.contributor))
-    const foundItem = contributorOptions.find(
-        (option) => option.value === selectedContributor[0]
-    )
-    console.log(foundItem?.label)
-
-    const initValues: CalculationSchema = {
-        companyCode: item.companyCode, // This will be the default one
-        sequence: item.sequence,
-        payCode: item.payCode,
-        calCode: item.calCode,
+    const initValues: TaxCalculationSchema = {
+        range: item.range, // This will be the default one
         calFormula: item.calFormula,
-        calDescription: item.calDescription,
-        payCategory: item.payCategory,
-        contributor: 'test',
+        description: item.description,
         status: item.status,
         createdBy: item.createdBy,
     }
 
     const validationSchema = Yup.object().shape({
-        sequence: Yup.string().required('Please enter Calculation Sequence'),
-        payCode: Yup.string().required('Please enter Pay Code'),
-        calCode: Yup.string().required('Please enter Calculation Code'),
+        range: Yup.string().required('Please enter Calculation Sequence'),
         calFormula: Yup.string().required('Please enter Calculation Formula'),
-        payCategory: Yup.string().required('Please enter Calculation Type'),
-        contributor: Yup.object().required('Please enter Contributor'),
     })
 
     const { disableSubmit = false, className } = props
     const [message, setMessage] = useTimeOutMessage()
 
     const onSubmit = async (
-        values: CalculationSchema,
+        values: TaxCalculationSchema,
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
-        const {
-            companyCode,
-            sequence,
-            payCode,
-            calCode,
-            calFormula,
-            calDescription,
-            payCategory,
-            contributor,
-            status,
-            createdBy,
-        } = values
+        const { range, status, createdBy } = values
         setSubmitting(true)
 
         // const result = await addCalculations({
@@ -144,18 +77,11 @@ const EditDialog: React.FC<DialogProps> = ({
                             <>{message}</>
                         </Alert>
                     )}
-                    <Formik<CalculationSchema>
+                    <Formik<TaxCalculationSchema>
                         initialValues={initValues}
                         validationSchema={validationSchema}
                         onSubmit={(values, { setSubmitting }) => {
                             if (!disableSubmit) {
-                                const selectedContributor = Array.from(
-                                    Object.values(values.contributor)
-                                )
-
-                                values.contributor = selectedContributor[0]
-                                //   console.log(values)
-
                                 onSubmit(values, setSubmitting)
                             } else {
                                 setSubmitting(false)
@@ -166,92 +92,26 @@ const EditDialog: React.FC<DialogProps> = ({
                             touched,
                             errors,
                             isSubmitting,
-                        }: FormikProps<CalculationSchema>) => (
+                        }: FormikProps<TaxCalculationSchema>) => (
                             <Form>
                                 <FormContainer>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <FieldWrapper
-                                            name="companyCode"
-                                            render={({
-                                                field,
-                                                meta,
-                                                helpers,
-                                            }) => (
-                                                <FormItem
-                                                    label="Company Code"
-                                                    invalid={
-                                                        !!meta.error &&
-                                                        meta.touched
-                                                    }
-                                                    errorMessage={meta.error}
-                                                >
-                                                    <Field
-                                                        disabled
-                                                        type="text"
-                                                        autoComplete="off"
-                                                        name="companyCode"
-                                                        placeholder="Company Code"
-                                                        component={Input}
-                                                    />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <div className="grid grid-cols-1 gap-4">
-                                            <FormItem
-                                                label="Sequence"
-                                                invalid={
-                                                    (errors.sequence &&
-                                                        touched.sequence) as boolean
-                                                }
-                                                errorMessage={errors.sequence}
-                                            >
-                                                <Field
-                                                    type="text"
-                                                    autoComplete="off"
-                                                    name="sequence"
-                                                    placeholder="Sequence"
-                                                    component={Input}
-                                                />
-                                            </FormItem>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
                                         <FormItem
-                                            label="Pay Code"
+                                            label="Range"
                                             invalid={
-                                                (errors.payCode &&
-                                                    touched.payCode) as boolean
+                                                (errors.range &&
+                                                    touched.range) as boolean
                                             }
-                                            errorMessage={errors.payCode}
+                                            errorMessage={errors.range}
                                         >
                                             <Field
                                                 type="text"
                                                 autoComplete="off"
-                                                name="payCode"
-                                                placeholder="Pay Code"
+                                                name="range"
+                                                placeholder="Range"
                                                 component={Input}
                                             />
                                         </FormItem>
-                                        <div className="grid grid-cols-1 gap-4">
-                                            <FormItem
-                                                label="Calculation Code"
-                                                invalid={
-                                                    (errors.calCode &&
-                                                        touched.calCode) as boolean
-                                                }
-                                                errorMessage={errors.calCode}
-                                            >
-                                                <Field
-                                                    type="text"
-                                                    autoComplete="off"
-                                                    name="calCode"
-                                                    placeholder="Calculation Code"
-                                                    component={Input}
-                                                />
-                                            </FormItem>
-                                        </div>
                                     </div>
                                     <FormItem
                                         label="Calculation Formula"
@@ -273,77 +133,19 @@ const EditDialog: React.FC<DialogProps> = ({
                                     <FormItem
                                         label="Calculation Description"
                                         invalid={
-                                            (errors.calDescription &&
-                                                touched.calDescription) as boolean
+                                            (errors.description &&
+                                                touched.description) as boolean
                                         }
-                                        errorMessage={errors.calDescription}
+                                        errorMessage={errors.description}
                                     >
                                         <Field
                                             type="text"
                                             autoComplete="off"
-                                            name="calDescription"
+                                            name="description"
                                             placeholder="Calculation Description"
                                             component={Input}
                                         />
                                     </FormItem>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <FormItem
-                                            label="Category"
-                                            invalid={
-                                                (errors.payCategory &&
-                                                    touched.payCategory) as boolean
-                                            }
-                                            errorMessage={errors.payCategory}
-                                        >
-                                            <Field
-                                                type="text"
-                                                autoComplete="off"
-                                                name="payCategory"
-                                                placeholder="Category"
-                                                component={Input}
-                                            />
-                                        </FormItem>
-                                        <div className="grid grid-cols-1 gap-4">
-                                            <FieldWrapper
-                                                name="contributor"
-                                                render={({
-                                                    field,
-                                                    meta,
-                                                    helpers,
-                                                }) => (
-                                                    <FormItem
-                                                        label="Contributor"
-                                                        invalid={
-                                                            !!meta.error &&
-                                                            meta.touched
-                                                        }
-                                                        errorMessage={
-                                                            meta.error
-                                                        }
-                                                    >
-                                                        <Select
-                                                            name="contributor"
-                                                            id="contributor"
-                                                            value={field.value}
-                                                            onChange={(
-                                                                value
-                                                            ) => {
-                                                                helpers.setValue(
-                                                                    value
-                                                                )
-                                                            }}
-                                                            placeholder="Please Select Contributor"
-                                                            options={
-                                                                contributorOptions
-                                                            }
-                                                        ></Select>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-                                    </div>
-
                                     <div className="text-right mt-6"></div>
 
                                     <div className="grid grid-cols-1 gap-4">

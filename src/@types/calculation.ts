@@ -24,6 +24,22 @@ export interface CalculationSchema {
     createdBy: string
 }
 
+export interface TaxCalculationSchema {
+    range: number
+    calFormula: string
+    description: string
+    status: boolean
+    createdBy: string
+}
+
+export type TaxCalculationData = {
+    range: number
+    calFormula: string
+    description: string
+    status: boolean
+    createdBy: string
+}
+
 export interface CompanyIdSelectOption {
     label: string
     value: number

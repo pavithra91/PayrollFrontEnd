@@ -1,18 +1,17 @@
 import {
-    apiGetCalculations,
-    apiAddCalculations,
-    apiGetTaxCalculations,
-    apiAddTaxCalculations,
-} from '@/services/CalculationService'
+    apiGetPayCodes,
+    apiAddPayCodes,
+    apiUpdatePayCodes,
+} from '@/services/PayCodeService'
 
-import type { CalculationData, TaxCalculationData } from '@/@types/calculation'
+import type { PayCodeData } from '@/@types/paycode'
 
 type Status = 'success' | 'failed'
 
-function useCalculations() {
-    const getCalculations = async () => {
+function usePayCodes() {
+    const getPayCodes = async () => {
         try {
-            const resp = await apiGetCalculations()
+            const resp = await apiGetPayCodes()
             if (resp.data) {
                 return {
                     status: 'success',
@@ -28,9 +27,9 @@ function useCalculations() {
         }
     }
 
-    const addCalculations = async (values: CalculationData) => {
+    const addPayCodes = async (values: PayCodeData) => {
         try {
-            const resp = await apiAddCalculations(values)
+            const resp = await apiAddPayCodes(values)
             if (resp.data) {
                 return {
                     status: 'success',
@@ -46,9 +45,9 @@ function useCalculations() {
         }
     }
 
-    const getTaxCalculations = async () => {
+    const updatePayCodes = async (values: PayCodeData) => {
         try {
-            const resp = await apiGetTaxCalculations()
+            const resp = await apiUpdatePayCodes(values)
             if (resp.data) {
                 return {
                     status: 'success',
@@ -63,31 +62,11 @@ function useCalculations() {
             }
         }
     }
-
-    const addTaxCalculations = async (values: TaxCalculationData) => {
-        try {
-            const resp = await apiAddTaxCalculations(values)
-            if (resp.data) {
-                return {
-                    status: 'success',
-                    message: '',
-                    data: resp.data,
-                }
-            }
-        } catch (errors: any) {
-            return {
-                status: 'failed',
-                message: errors?.response?.data?.message || errors.toString(),
-            }
-        }
-    }
-
     return {
-        getCalculations,
-        addCalculations,
-        getTaxCalculations,
-        addTaxCalculations,
+        getPayCodes,
+        addPayCodes,
+        updatePayCodes,
     }
 }
 
-export default useCalculations
+export default usePayCodes
