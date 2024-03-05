@@ -15,6 +15,8 @@ import {
 import { CalculationData } from '@/@types/Calculation'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
+import type { PayrollDataSchema } from '@/@types/payroll'
+import LoadData from './LoadData'
 
 type Option = {
     value: number
@@ -32,16 +34,57 @@ const TransferDataView = (props: FormProps) => {
 
     const [data, setData] = useState([])
 
+    const initValues: PayCodeSchema = {
+        companyCode: 3000, // This will be the default one
+        period: 202312,
+    }
+
+    const openDialog = () => {
+        setIsOpen(true)
+    }
+
+    const closeDialog = () => {
+        setIsOpen(false)
+        console.log(dataFromChild)
+    }
+    const openEditDialog = (id: any) => {
+        setSelectedPayCode(id)
+        setEditIsOpen(true)
+    }
+
+    const onDialogClose = (e: MouseEvent) => {
+        console.log('onDialogClose', e)
+        setIsOpen(false)
+    }
+
+    const onDialogOk = (e: MouseEvent) => {
+        console.log('onDialogOk', e)
+        setIsOpen(false)
+    }
+
+    const [isOpen, setIsOpen] = useState(false)
+    const [isEditOpen, setEditIsOpen] = useState(false)
+
+    const closeEditDialog = () => setEditIsOpen(false)
+
+    const [dataFromChild, setDataFromChild] = useState(null)
+
+    const handleChildData = (data) => {
+        setDataFromChild(data)
+    }
+
+    console.log(dataFromChild)
+
     useEffect(() => {
-        const result = getDataTransferStatistics()
+        const result = getDataTransferStatistics(dataFromChild)
         result.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
 
-            setData(listItems)
+            setData(listItems[0].SAPPayData)
 
-            console.log('data load')
+            console.log(listItems)
         })
-    }, [])
+    }, [dataFromChild])
 
     const { Tr, Th, Td, THead, TBody } = Table
 
@@ -56,53 +99,16 @@ const TransferDataView = (props: FormProps) => {
     const columns = useMemo<ColumnDef<CalculationData>[]>(
         () => [
             {
-                header: 'Id',
-                accessorKey: 'id',
-            },
-            {
-                header: 'Company Code',
-                accessorKey: 'companyCode',
-            },
-            {
-                header: 'Sequence',
-                accessorKey: 'sequence',
-            },
-            {
                 header: 'Pay Code',
-                accessorKey: 'payCode',
+                accessorKey: 'PayCode',
             },
             {
-                header: 'Cal Code',
-                accessorKey: 'calCode',
+                header: 'Amount',
+                accessorKey: 'Amount',
             },
             {
-                header: 'Formula',
-                accessorKey: 'calFormula',
-            },
-            {
-                header: 'Description',
-                accessorKey: 'calDescription',
-            },
-            {
-                header: 'Category',
-                accessorKey: 'payCategory',
-            },
-            {
-                header: 'Contributor',
-                accessorKey: 'contributor',
-            },
-            {
-                header: 'Status',
-                accessorKey: 'status',
-                show: false,
-            },
-            {
-                header: 'Created By',
-                accessorKey: 'createdBy',
-            },
-            {
-                header: 'Action',
-                accessorKey: 'action',
+                header: 'Line_Item_Count',
+                accessorKey: 'Line_Item_Count',
             },
         ],
         []
@@ -133,8 +139,27 @@ const TransferDataView = (props: FormProps) => {
         table.setPageSize(Number(value))
     }
 
+    const headerExtraContent = (
+        <span className="flex items-center">
+            <span className="mr-1 font-semibold">
+                <Button variant="solid" onClick={openDialog}>
+                    Load
+                </Button>
+                {isOpen && (
+                    <LoadData
+                        onClose={closeDialog}
+                        isOpen={isOpen}
+                        props={props}
+                        onSendData={handleChildData}
+                    />
+                )}
+            </span>
+            <span className="text-emerald-500 text-xl"></span>
+        </span>
+    )
+
     return (
-        <Card header="Control">
+        <Card header="Control" headerExtra={headerExtraContent}>
             <Table>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (

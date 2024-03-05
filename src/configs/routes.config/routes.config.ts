@@ -49,6 +49,14 @@ export const protectedRoutes = [
         authority: ['Admin'],
     },
     {
+        key: 'DataVerification',
+        path: '/DataVerification',
+        component: lazy(
+            () => import('@/views/payroll/Control/DataVerification')
+        ),
+        authority: ['Admin'],
+    },
+    {
         key: 'groupMenu.single',
         path: '/group-single-menu-item-view',
         component: lazy(() => import('@/views/demo/GroupSingleMenuItemView')),

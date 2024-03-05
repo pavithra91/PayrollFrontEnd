@@ -1,13 +1,14 @@
 import { apiGetDataTransferStatistics } from '@/services/PayrunService'
+import type { PayrollDataSchema } from '@/@types/payroll'
 
 import type { CalculationData, TaxCalculationData } from '@/@types/calculation'
 
 type Status = 'success' | 'failed'
 
 function usePayrun() {
-    const getDataTransferStatistics = async () => {
+    const getDataTransferStatistics = async (values: PayrollDataSchema) => {
         try {
-            const resp = await apiGetDataTransferStatistics()
+            const resp = await apiGetDataTransferStatistics(values)
             if (resp.data) {
                 return {
                     status: 'success',
