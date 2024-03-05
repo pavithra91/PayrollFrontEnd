@@ -23,6 +23,11 @@ import Input from '@/components/ui/Input'
 import Alert from '@/components/ui/Alert'
 import Select from '@/components/ui/Select'
 import * as Yup from 'yup'
+import Checkbox from '@/components/ui/Checkbox'
+import toast from '@/components/ui/toast'
+import Notification from '@/components/ui/Notification'
+import useCalculations from '@/utils/hooks/useCalculation'
+import { escape } from 'lodash'
 
 interface DialogProps {
     isEditOpen: boolean
@@ -61,29 +66,39 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     return render({ field, meta, helpers })
 }
 
+const getUsernameFromLocalStorage = () => {
+    const user = JSON.parse(localStorage.getItem('admin') ?? '')
+    const userName = JSON.parse(user.auth).user.userName
+    return userName
+}
+
 const EditDialog: React.FC<DialogProps> = ({
     onClose,
     isEditOpen,
     props,
     item,
 }) => {
-    const selectedContributor = Array.from(Object.values(item.contributor))
+    console.log(item)
+    const selectedContributor = Array.from(
+        Object.values(item.getValue('contributor'))
+    )
     const foundItem = contributorOptions.find(
         (option) => option.value === selectedContributor[0]
     )
-    console.log(foundItem?.label)
 
     const initValues: CalculationSchema = {
-        companyCode: item.companyCode, // This will be the default one
-        sequence: item.sequence,
-        payCode: item.payCode,
-        calCode: item.calCode,
-        calFormula: item.calFormula,
-        calDescription: item.calDescription,
-        payCategory: item.payCategory,
-        contributor: 'test',
-        status: item.status,
-        createdBy: item.createdBy,
+        id: item.getValue('id'),
+        companyCode: item.getValue('companyCode'), // This will be the default one
+        sequence: item.getValue('sequence'),
+        payCode: item.getValue('payCode'),
+        calCode: item.getValue('calCode'),
+        calFormula: item.getValue('calFormula'),
+        calDescription: item.getValue('calDescription') ?? '',
+        payCategory: item.getValue('payCategory'),
+        contributor: item.getValue('contributor'),
+        status: item.getValue('status'),
+        createdBy: item.getValue('createdBy'),
+        lastUpdateBy: getUsernameFromLocalStorage(),
     }
 
     const validationSchema = Yup.object().shape({
@@ -98,11 +113,28 @@ const EditDialog: React.FC<DialogProps> = ({
     const { disableSubmit = false, className } = props
     const [message, setMessage] = useTimeOutMessage()
 
+    const { updateCalculations, deleteCalculations } = useCalculations()
+
+    const openNotification = (
+        type: 'success' | 'warning' | 'danger' | 'info',
+        message: string
+    ) => {
+        toast.push(
+            <Notification
+                title={type.charAt(0).toUpperCase() + type.slice(1)}
+                type={type}
+            >
+                {message}
+            </Notification>
+        )
+    }
+
     const onSubmit = async (
         values: CalculationSchema,
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
         const {
+            id,
             companyCode,
             sequence,
             payCode,
@@ -112,22 +144,63 @@ const EditDialog: React.FC<DialogProps> = ({
             payCategory,
             contributor,
             status,
-            createdBy,
+            lastUpdateBy,
         } = values
         setSubmitting(true)
 
-        // const result = await addCalculations({
-        //     companyCode,
-        //     sequence,
-        //     payCode,
-        //     calCode,
-        //     calFormula,
-        //     calDescription,
-        //     payCategory,
-        //     contributor,
-        //     status,
-        //     createdBy,
-        // })
+        if (status) {
+            const result = await updateCalculations({
+                id,
+                companyCode,
+                sequence,
+                payCode,
+                calCode,
+                calFormula,
+                calDescription,
+                payCategory,
+                contributor,
+                status,
+                lastUpdateBy,
+            })
+
+            console.log(result?.status)
+
+            if (result?.status === 'failed') {
+                setMessage(result.message)
+            } else {
+                setMessage('Successfully Saved')
+                openNotification('success', 'Calculation Updated Successfully')
+                onClose()
+            }
+
+            setSubmitting(false)
+        } else {
+            const result = await deleteCalculations({
+                id,
+                companyCode,
+                sequence,
+                payCode,
+                calCode,
+                calFormula,
+                calDescription,
+                payCategory,
+                contributor,
+                status,
+                lastUpdateBy,
+            })
+
+            console.log(result?.status)
+
+            if (result?.status === 'failed') {
+                setMessage(result.message)
+            } else {
+                setMessage('Successfully Saved')
+                openNotification('success', 'Calculation Deleted Successfully')
+                onClose()
+            }
+
+            setSubmitting(false)
+        }
     }
     return (
         <>
@@ -212,6 +285,9 @@ const EditDialog: React.FC<DialogProps> = ({
                                                     name="sequence"
                                                     placeholder="Sequence"
                                                     component={Input}
+                                                    defaultValue={item.getValue(
+                                                        'sequence'
+                                                    )}
                                                 />
                                             </FormItem>
                                         </div>
@@ -232,6 +308,9 @@ const EditDialog: React.FC<DialogProps> = ({
                                                 name="payCode"
                                                 placeholder="Pay Code"
                                                 component={Input}
+                                                defaultValue={item.getValue(
+                                                    'payCode'
+                                                )}
                                             />
                                         </FormItem>
                                         <div className="grid grid-cols-1 gap-4">
@@ -249,6 +328,9 @@ const EditDialog: React.FC<DialogProps> = ({
                                                     name="calCode"
                                                     placeholder="Calculation Code"
                                                     component={Input}
+                                                    defaultValue={item.getValue(
+                                                        'calCode'
+                                                    )}
                                                 />
                                             </FormItem>
                                         </div>
@@ -267,6 +349,9 @@ const EditDialog: React.FC<DialogProps> = ({
                                             name="calFormula"
                                             placeholder="Calculation Formula"
                                             component={Input}
+                                            defaultValue={item.getValue(
+                                                'calFormula'
+                                            )}
                                         />
                                     </FormItem>
 
@@ -284,6 +369,9 @@ const EditDialog: React.FC<DialogProps> = ({
                                             name="calDescription"
                                             placeholder="Calculation Description"
                                             component={Input}
+                                            defaultValue={item.getValue(
+                                                'calDescription'
+                                            )}
                                         />
                                     </FormItem>
 
@@ -302,6 +390,9 @@ const EditDialog: React.FC<DialogProps> = ({
                                                 name="payCategory"
                                                 placeholder="Category"
                                                 component={Input}
+                                                defaultValue={item.getValue(
+                                                    'payCategory'
+                                                )}
                                             />
                                         </FormItem>
                                         <div className="grid grid-cols-1 gap-4">
@@ -325,7 +416,9 @@ const EditDialog: React.FC<DialogProps> = ({
                                                         <Select
                                                             name="contributor"
                                                             id="contributor"
-                                                            value={field.value}
+                                                            defaultValue={
+                                                                foundItem
+                                                            }
                                                             onChange={(
                                                                 value
                                                             ) => {
@@ -342,6 +435,16 @@ const EditDialog: React.FC<DialogProps> = ({
                                                 )}
                                             />
                                         </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-4">
+                                        <Field
+                                            className="mb-0"
+                                            name="status"
+                                            component={Checkbox}
+                                        >
+                                            Active
+                                        </Field>
                                     </div>
 
                                     <div className="text-right mt-6"></div>

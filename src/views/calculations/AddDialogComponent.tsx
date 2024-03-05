@@ -70,6 +70,7 @@ const getUsernameFromLocalStorage = () => {
 }
 
 const initValues: CalculationSchema = {
+    id: 0,
     companyCode: companyOptions[0].value, // This will be the default one
     sequence: 0,
     payCode: '',
@@ -104,6 +105,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
         const {
+            id,
             companyCode,
             sequence,
             payCode,
@@ -118,6 +120,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
         setSubmitting(true)
 
         const result = await addCalculations({
+            id,
             companyCode,
             sequence,
             payCode,

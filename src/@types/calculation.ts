@@ -1,4 +1,5 @@
 export type CalculationData = {
+    id: number
     companyCode: number
     sequence: number
     payCode: string
@@ -8,10 +9,12 @@ export type CalculationData = {
     payCategory: string
     contributor: string
     status: boolean
-    createdBy: string
+    createdBy?: string
+    lastUpdateBy?: string
 }
 
 export interface CalculationSchema {
+    id: number
     companyCode: number
     sequence: number
     payCode: string
@@ -21,7 +24,8 @@ export interface CalculationSchema {
     payCategory: string
     contributor: string
     status: boolean
-    createdBy: string
+    createdBy?: string
+    lastUpdateBy?: string
 }
 
 export interface TaxCalculationSchema {

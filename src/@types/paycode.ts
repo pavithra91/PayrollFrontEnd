@@ -1,4 +1,5 @@
 export type PayCodeData = {
+    id: number
     companyCode: number
     payCode: string
     calCode: string
@@ -6,6 +7,8 @@ export type PayCodeData = {
     payCategory: string
     rate: number
     createdBy: string
+    isTaxableGross: boolean
+    lastUpdateBy?: string
 }
 
 export interface PayCodeSchema {
@@ -18,6 +21,7 @@ export interface PayCodeSchema {
     rate: number
     createdBy: string
     isTaxableGross: boolean
+    lastUpdateBy?: string
 }
 
 export interface CompanyIdSelectOption {

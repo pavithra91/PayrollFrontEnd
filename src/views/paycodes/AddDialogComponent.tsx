@@ -22,6 +22,7 @@ import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import { useState } from 'react'
 import type { PayCodeSchema, CompanyIdSelectOption } from '@/@types/paycode'
 import usePayCodes from '@/utils/hooks/usePayCodes'
+import Checkbox from '@/components/ui/Checkbox'
 
 interface DialogProps {
     isOpen: boolean // Type for the 'isOpen' prop
@@ -69,6 +70,8 @@ const initValues: PayCodeSchema = {
     payCategory: '',
     rate: 0,
     createdBy: getUsernameFromLocalStorage(),
+    id: 0,
+    isTaxableGross: false,
 }
 
 const validationSchema = Yup.object().shape({
@@ -109,6 +112,8 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
             payCategory,
             rate,
             createdBy,
+            id: 0,
+            isTaxableGross: false,
         })
 
         console.log(result?.status)
@@ -306,6 +311,16 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                             component={Input}
                                         />
                                     </FormItem>
+
+                                    <div className="grid grid-cols-1 gap-4">
+                                        <Field
+                                            className="mb-0 mx-2 my-10"
+                                            name="isTaxableGross"
+                                            component={Checkbox}
+                                        >
+                                            Is Taxable Gross
+                                        </Field>
+                                    </div>
 
                                     <div className="text-right mt-6"></div>
 

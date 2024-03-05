@@ -79,6 +79,7 @@ const EditDialog: React.FC<DialogProps> = ({
         rate: item.getValue('rate'),
         createdBy: item.getValue('createdBy'),
         isTaxableGross: item.getValue('isTaxableGross'),
+        lastUpdateBy: getUsernameFromLocalStorage(),
     }
 
     const validationSchema = Yup.object().shape({
@@ -107,8 +108,6 @@ const EditDialog: React.FC<DialogProps> = ({
         )
     }
 
-    console.log(item.getValue('isTaxableGross'))
-
     const onSubmit = async (
         values: PayCodeSchema,
         setSubmitting: (isSubmitting: boolean) => void
@@ -123,6 +122,7 @@ const EditDialog: React.FC<DialogProps> = ({
             rate,
             createdBy,
             isTaxableGross,
+            lastUpdateBy,
         } = values
         setSubmitting(true)
 
@@ -136,6 +136,7 @@ const EditDialog: React.FC<DialogProps> = ({
             rate,
             createdBy,
             isTaxableGross,
+            lastUpdateBy,
         })
 
         console.log(result?.status)

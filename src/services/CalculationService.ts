@@ -20,6 +20,22 @@ export async function apiAddCalculations(data: CalculationData) {
     })
 }
 
+export async function apiUpdateCalculations(data: CalculationData) {
+    return ApiService.fetchData<Response>({
+        url: '/admin/update-calculation',
+        method: 'put',
+        data,
+    })
+}
+
+export async function apiDeleteCalculations(data: CalculationData) {
+    return ApiService.fetchData<Response>({
+        url: '/admin/delete-calculation',
+        method: 'put',
+        data,
+    })
+}
+
 export async function apiGetTaxCalculations() {
     return ApiService.fetchData<Response>({
         url: '/admin/get-tax-details',

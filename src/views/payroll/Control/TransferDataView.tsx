@@ -1,10 +1,8 @@
-import useCalculations from '@/utils/hooks/useCalculation'
+import usePayrun from '@/utils/hooks/usePayrun'
 import { useState, useEffect, useMemo } from 'react'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import AddDialogComponent from './AddDialogComponent'
 import type { CommonProps } from '@/@types/common'
-import EditDialog from './EditDialogComponent'
 import Table from '@/components/ui/Table'
 import {
     useReactTable,
@@ -27,15 +25,15 @@ interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
 
-const ViewCalculation = (props: FormProps) => {
-    const { getCalculations } = useCalculations()
+const TransferDataView = (props: FormProps) => {
+    const { getDataTransferStatistics } = usePayrun()
 
     const [selectedCalculation, setSelectedCalculation] = useState({})
 
     const [data, setData] = useState([])
 
     useEffect(() => {
-        const result = getCalculations()
+        const result = getDataTransferStatistics()
         result.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
 
@@ -46,53 +44,6 @@ const ViewCalculation = (props: FormProps) => {
     }, [])
 
     const { Tr, Th, Td, THead, TBody } = Table
-
-    const openDialog = () => {
-        setIsOpen(true)
-    }
-    const openEditDialog = (id: any) => {
-        setSelectedCalculation(id)
-        setEditIsOpen(true)
-    }
-
-    const onDialogClose = (e: MouseEvent) => {
-        console.log('onDialogClose', e)
-        setIsOpen(false)
-    }
-
-    const onDialogOk = (e: MouseEvent) => {
-        console.log('onDialogOk', e)
-        setIsOpen(false)
-    }
-
-    const [isOpen, setIsOpen] = useState(false)
-    const [isEditOpen, setEditIsOpen] = useState(false)
-
-    const closeDialog = () => setIsOpen(false)
-    const closeEditDialog = () => setEditIsOpen(false)
-
-    const headerExtraContent = (
-        <span className="flex items-center">
-            <span className="mr-1 font-semibold">
-                <Button variant="solid" onClick={openDialog}>
-                    Add
-                </Button>
-                {isOpen && (
-                    <AddDialogComponent
-                        onClose={closeDialog}
-                        isOpen={isOpen}
-                        props={props}
-                    />
-                )}
-            </span>
-            <span className="text-emerald-500 text-xl"></span>
-        </span>
-    )
-
-    const handleShowEditModal = (id: any) => {
-        console.log(id)
-        openEditDialog(id)
-    }
 
     const pageSizeOption = [
         { value: 10, label: '10 / page' },
@@ -152,14 +103,6 @@ const ViewCalculation = (props: FormProps) => {
             {
                 header: 'Action',
                 accessorKey: 'action',
-                cell: (cell) => (
-                    <Button
-                        variant="solid"
-                        onClick={() => handleShowEditModal(cell.row)}
-                    >
-                        Edit
-                    </Button>
-                ),
             },
         ],
         []
@@ -191,15 +134,7 @@ const ViewCalculation = (props: FormProps) => {
     }
 
     return (
-        <Card header="Calculations" headerExtra={headerExtraContent}>
-            {isEditOpen && (
-                <EditDialog
-                    onClose={closeEditDialog}
-                    isEditOpen={isEditOpen}
-                    props={props}
-                    item={selectedCalculation}
-                />
-            )}
+        <Card header="Control">
             <Table>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -265,4 +200,4 @@ const ViewCalculation = (props: FormProps) => {
     )
 }
 
-export default ViewCalculation
+export default TransferDataView
