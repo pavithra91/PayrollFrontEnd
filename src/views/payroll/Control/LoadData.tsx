@@ -18,11 +18,15 @@ import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
+import type { CommonProps } from '@/@types/common'
+import type { FC, MouseEvent } from 'react'
+import Alert from '@/components/ui/Alert'
 
 interface DialogProps {
     isOpen: boolean // Type for the 'isOpen' prop
     onClose: () => void // Type for the 'onClose' prop
     props: FormProps
+    onSendData: any
 }
 
 interface FormProps extends CommonProps {
@@ -122,7 +126,7 @@ const DialogComponent: React.FC<DialogProps> = ({
                             <>{message}</>
                         </Alert>
                     )}
-                    <Formik<PayCodeSchema>
+                    <Formik<PayrollDataSchema>
                         initialValues={initValues}
                         validationSchema={validationSchema}
                         onSubmit={(values, { setSubmitting }) => {
@@ -143,7 +147,7 @@ const DialogComponent: React.FC<DialogProps> = ({
                             touched,
                             errors,
                             isSubmitting,
-                        }: FormikProps<PayCodeSchema>) => (
+                        }: FormikProps<PayrollDataSchema>) => (
                             <Form>
                                 <FormContainer>
                                     <div className="grid grid-cols-2 gap-4">

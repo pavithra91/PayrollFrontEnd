@@ -11,12 +11,16 @@ import {
     getPaginationRowModel,
     flexRender,
     ColumnDef,
+    ColumnSort,
+    getSortedRowModel,
 } from '@tanstack/react-table'
 import { CalculationData } from '@/@types/Calculation'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import type { PayrollDataSchema } from '@/@types/payroll'
 import LoadData from './LoadData'
+import { Tag } from '@/components/ui/Tag'
+import jsPDF from 'jspdf'
 
 type Option = {
     value: number
@@ -30,11 +34,9 @@ interface FormProps extends CommonProps {
 const TransferDataView = (props: FormProps) => {
     const { getDataTransferStatistics } = usePayrun()
 
-    const [selectedCalculation, setSelectedCalculation] = useState({})
-
     const [data, setData] = useState([])
 
-    const initValues: PayCodeSchema = {
+    const initValues: PayrollDataSchema = {
         companyCode: 3000, // This will be the default one
         period: 202312,
     }
@@ -45,11 +47,17 @@ const TransferDataView = (props: FormProps) => {
 
     const closeDialog = () => {
         setIsOpen(false)
-        console.log(dataFromChild)
+        // console.log(dataFromChild)
     }
-    const openEditDialog = (id: any) => {
-        setSelectedPayCode(id)
-        setEditIsOpen(true)
+    const handlePDFDownload = () => {
+        const tableData = arr
+
+        // Create a new PDF document
+        const doc = new jsPDF()
+
+        doc.text('Hello world!', 10, 10)
+        // Save the PDF document
+        doc.save('my_table_report.pdf')
     }
 
     const onDialogClose = (e: MouseEvent) => {
@@ -69,24 +77,86 @@ const TransferDataView = (props: FormProps) => {
 
     const [dataFromChild, setDataFromChild] = useState(null)
 
-    const handleChildData = (data) => {
+    const handleChildData = (data: any) => {
         setDataFromChild(data)
     }
 
-    console.log(dataFromChild)
+    // console.log(dataFromChild)
+
+    const payrollDataArr: {
+        sapPayCode: any
+        sapAmount: number
+        sapLineCount: any
+        nonSapPayCode: any
+        nonSapAmount: number
+        nonSapLineCount: number
+        status: boolean
+    }[] = []
+
+    type SAPPayCodes = {
+        PayCode: number
+        Amount: number
+        Line_Item_Count: number
+    }
+
+    interface CompanyIdSelectOption {
+        sapPayCode: number
+        sapAmount: number
+        sapLineCount: number
+        nonSAPPayCode: number
+        nonSapAmount: number
+        nonSapLineCount: number
+        status: boolean
+    }
+
+    const arr: CompanyIdSelectOption[] = []
 
     useEffect(() => {
-        const result = getDataTransferStatistics(dataFromChild)
-        result.then((res) => {
-            const listItems = JSON.parse(res?.data?.data ?? '')
+        if (dataFromChild != null) {
+            const result = getDataTransferStatistics(dataFromChild)
+            result.then((res) => {
+                const listItems = JSON.parse(res?.data?.data ?? '')
 
-            setData(listItems[0].SAPPayData)
+                listItems[0].SAPPayData.map(
+                    (item: SAPPayCodes, index: number) => {
+                        var matched = false
+                        let nonSAPAmount = parseFloat(
+                            listItems[0].nonSAPPayData[index].Amount
+                        )
+                        let nonSAPLineCount = parseFloat(
+                            listItems[0].nonSAPPayData[index].Line_Item_Count
+                        )
+                        if (
+                            listItems[0].nonSAPPayData[index].PayCode ===
+                                item.PayCode &&
+                            nonSAPLineCount === item.Line_Item_Count &&
+                            nonSAPAmount == item.Amount
+                        ) {
+                            matched = true
+                        }
 
-            console.log(listItems)
-        })
+                        arr.push({
+                            sapPayCode: item.PayCode,
+                            sapAmount: item.Amount,
+                            sapLineCount: item.Line_Item_Count,
+                            nonSAPPayCode:
+                                listItems[0].nonSAPPayData[index].PayCode,
+                            nonSapAmount:
+                                listItems[0].nonSAPPayData[index].Amount,
+                            nonSapLineCount:
+                                listItems[0].nonSAPPayData[index]
+                                    .Line_Item_Count,
+                            status: matched,
+                        })
+                    }
+                )
+
+                setData(arr)
+            })
+        }
     }, [dataFromChild])
 
-    const { Tr, Th, Td, THead, TBody } = Table
+    const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
     const pageSizeOption = [
         { value: 10, label: '10 / page' },
@@ -96,39 +166,81 @@ const TransferDataView = (props: FormProps) => {
         { value: 50, label: '50 / page' },
     ]
 
-    const columns = useMemo<ColumnDef<CalculationData>[]>(
+    const columns = useMemo<ColumnDef<typeof arr>[]>(
         () => [
             {
-                header: 'Pay Code',
-                accessorKey: 'PayCode',
+                header: 'SAP',
+                enableSorting: false,
+                columns: [
+                    {
+                        header: 'Pay Code',
+                        accessorKey: 'sapPayCode',
+                    },
+                    {
+                        header: 'SAP Amount',
+                        accessorKey: 'sapAmount',
+                    },
+                    {
+                        header: 'Record Count',
+                        accessorKey: 'sapLineCount',
+                    },
+                ],
+            },
+
+            {
+                header: 'Non SAP',
+                enableSorting: false,
+                columns: [
+                    {
+                        header: 'Pay Code',
+                        accessorKey: 'nonSAPPayCode',
+                    },
+                    {
+                        header: 'Non SAP Amount',
+                        accessorKey: 'nonSapAmount',
+                    },
+                    {
+                        header: 'Record Count',
+                        accessorKey: 'nonSapLineCount',
+                    },
+                ],
             },
             {
-                header: 'Amount',
-                accessorKey: 'Amount',
-            },
-            {
-                header: 'Line_Item_Count',
-                accessorKey: 'Line_Item_Count',
+                header: 'Status',
+                accessorKey: 'status',
+                cell: ({ row }) => {
+                    const { status } = row.original
+                    return (
+                        <Tag
+                            className={
+                                status == true
+                                    ? 'text-green-600 bg-green-300 dark:text-green-100 dark:bg-green-500/20 border-0'
+                                    : 'text-red-600 bg-red-200 dark:text-red-100 dark:bg-red-500/20 border-0'
+                            }
+                        >
+                            {status == true ? 'Matched' : 'Not Matched'}
+                        </Tag>
+                    )
+                },
             },
         ],
         []
     )
 
     const totalData = data.length
+    const [sorting, setSorting] = useState<ColumnSort[]>([])
 
     const table = useReactTable({
         data,
         columns,
-        initialState: {
-            columnVisibility: {
-                isTaxableGross: false, //hide this column by default
-            },
-            //...
+        state: {
+            sorting,
         },
-        // Pipeline
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        onSortingChange: setSorting,
     })
 
     const onPaginationChange = (page: number) => {
@@ -154,6 +266,11 @@ const TransferDataView = (props: FormProps) => {
                     />
                 )}
             </span>
+            <span className="mr-1 font-semibold">
+                <Button variant="solid" onClick={handlePDFDownload}>
+                    Print
+                </Button>
+            </span>
             <span className="text-emerald-500 text-xl"></span>
         </span>
     )
@@ -170,9 +287,28 @@ const TransferDataView = (props: FormProps) => {
                                         key={header.id}
                                         colSpan={header.colSpan}
                                     >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
+                                        {header.isPlaceholder ? null : (
+                                            <div
+                                                {...{
+                                                    className:
+                                                        header.column.getCanSort()
+                                                            ? 'cursor-pointer select-none'
+                                                            : '',
+                                                    onClick:
+                                                        header.column.getToggleSortingHandler(),
+                                                }}
+                                            >
+                                                {flexRender(
+                                                    header.column.columnDef
+                                                        .header,
+                                                    header.getContext()
+                                                )}
+                                                {
+                                                    <Sorter
+                                                        sort={header.column.getIsSorted()}
+                                                    />
+                                                }
+                                            </div>
                                         )}
                                     </Th>
                                 )
