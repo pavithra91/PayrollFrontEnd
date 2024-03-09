@@ -21,6 +21,7 @@ import type { PayrollDataSchema } from '@/@types/payroll'
 import LoadData from './LoadData'
 import { Tag } from '@/components/ui/Tag'
 import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 type Option = {
     value: number
@@ -48,16 +49,6 @@ const TransferDataView = (props: FormProps) => {
     const closeDialog = () => {
         setIsOpen(false)
         // console.log(dataFromChild)
-    }
-    const handlePDFDownload = () => {
-        const tableData = arr
-
-        // Create a new PDF document
-        const doc = new jsPDF()
-
-        doc.text('Hello world!', 10, 10)
-        // Save the PDF document
-        doc.save('my_table_report.pdf')
     }
 
     const onDialogClose = (e: MouseEvent) => {
@@ -155,6 +146,41 @@ const TransferDataView = (props: FormProps) => {
             })
         }
     }, [dataFromChild])
+
+    const [tableData] = useState(
+        arr.map((item) => [
+            typeof item.sapPayCode,
+            typeof item.sapAmount,
+            typeof item.sapLineCount,
+        ])
+    )
+
+    const handlePDFDownload = () => {
+        //  const tableData = arr
+
+        console.log(tableData)
+
+        const doc = new jsPDF()
+
+        autoTable(doc, {
+            head: [
+                [
+                    'sapPayCode',
+                    'sapAmount',
+                    'sapLineCount',
+                    'nonSAPPayCode',
+                    'nonSapAmount',
+                    'nonSapLineCount',
+                    'status',
+                ],
+            ],
+            body: [tableData],
+        })
+
+        doc.text('Hello world!', 10, 10)
+        // Save the PDF document
+        doc.save('my_table_report.pdf')
+    }
 
     const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
