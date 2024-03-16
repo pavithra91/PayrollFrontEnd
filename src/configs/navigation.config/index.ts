@@ -108,6 +108,16 @@ const navigationConfig: NavigationTree[] = [
                 subMenu: [],
             },
             {
+                key: 'collapseMenu.ProcessPayroll',
+                path: '/ProcessPayroll',
+                title: 'Process Payroll',
+                translateKey: 'nav.collapseMenu.ProcessPayroll',
+                icon: '',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: ['Admin'],
+                subMenu: [],
+            },
+            {
                 key: 'collapseMenu.taxCalculations',
                 path: '/tax/Calculations/calculations',
                 title: 'Tax Calculations',

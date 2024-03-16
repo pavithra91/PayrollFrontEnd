@@ -1,7 +1,9 @@
-import { apiGetDataTransferStatistics } from '@/services/PayrunService'
-import type { PayrollDataSchema } from '@/@types/payroll'
-
-import type { CalculationData, TaxCalculationData } from '@/@types/calculation'
+import {
+    apiGetDataTransferStatistics,
+    apiConfirmDataTransfer,
+    apiRollBackDataTransfer,
+} from '@/services/PayrunService'
+import type { PayrollDataSchema, ConfirmDataTransfer } from '@/@types/payroll'
 
 type Status = 'success' | 'failed'
 
@@ -23,8 +25,47 @@ function usePayrun() {
             }
         }
     }
+
+    const confirmDataTransfer = async (values: ConfirmDataTransfer) => {
+        try {
+            const resp = await apiConfirmDataTransfer(values)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
+
+    const rollbackDataTransfer = async (values: ConfirmDataTransfer) => {
+        try {
+            const resp = await apiRollBackDataTransfer(values)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
+
     return {
         getDataTransferStatistics,
+        confirmDataTransfer,
+        rollbackDataTransfer,
     }
 }
 

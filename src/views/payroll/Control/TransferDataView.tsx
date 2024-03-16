@@ -14,14 +14,14 @@ import {
     ColumnSort,
     getSortedRowModel,
 } from '@tanstack/react-table'
-import { CalculationData } from '@/@types/Calculation'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import type { PayrollDataSchema } from '@/@types/payroll'
 import LoadData from './LoadData'
+import ConfirmData from './ConfirmData'
+import RejectData from './RejectData'
 import { Tag } from '@/components/ui/Tag'
 import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
+import autoTable, { RowInput } from 'jspdf-autotable'
 
 type Option = {
     value: number
@@ -37,34 +37,38 @@ const TransferDataView = (props: FormProps) => {
 
     const [data, setData] = useState([])
 
-    const initValues: PayrollDataSchema = {
-        companyCode: 3000, // This will be the default one
-        period: 202312,
-    }
-
     const openDialog = () => {
         setIsOpen(true)
     }
 
     const closeDialog = () => {
         setIsOpen(false)
-        // console.log(dataFromChild)
     }
 
-    const onDialogClose = (e: MouseEvent) => {
-        console.log('onDialogClose', e)
-        setIsOpen(false)
+    const openConfirmDialog = () => {
+        if (isDataLoad) {
+            setIsConfirmOpen(true)
+        }
     }
 
-    const onDialogOk = (e: MouseEvent) => {
-        console.log('onDialogOk', e)
-        setIsOpen(false)
+    const closeConfirmDialog = () => {
+        setIsConfirmOpen(false)
+    }
+
+    const openRejectDialog = () => {
+        if (isDataLoad) {
+            setIsRejectOpen(true)
+        }
+    }
+
+    const closeRejectDialog = () => {
+        setIsRejectOpen(false)
     }
 
     const [isOpen, setIsOpen] = useState(false)
-    const [isEditOpen, setEditIsOpen] = useState(false)
-
-    const closeEditDialog = () => setEditIsOpen(false)
+    const [isDataLoad, setisDataLoad] = useState(false)
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false)
+    const [isRejectOpen, setIsRejectOpen] = useState(false)
 
     const [dataFromChild, setDataFromChild] = useState(null)
 
@@ -72,27 +76,15 @@ const TransferDataView = (props: FormProps) => {
         setDataFromChild(data)
     }
 
-    // console.log(dataFromChild)
-
-    const payrollDataArr: {
-        sapPayCode: any
-        sapAmount: number
-        sapLineCount: any
-        nonSapPayCode: any
-        nonSapAmount: number
-        nonSapLineCount: number
-        status: boolean
-    }[] = []
-
     type SAPPayCodes = {
         PayCode: number
         Amount: number
         Line_Item_Count: number
     }
 
-    interface CompanyIdSelectOption {
+    type dataGrid = {
         sapPayCode: number
-        sapAmount: number
+        sapAmount: string
         sapLineCount: number
         nonSAPPayCode: number
         nonSapAmount: number
@@ -100,7 +92,7 @@ const TransferDataView = (props: FormProps) => {
         status: boolean
     }
 
-    const arr: CompanyIdSelectOption[] = []
+    const arr: dataGrid[] = []
 
     useEffect(() => {
         if (dataFromChild != null) {
@@ -128,12 +120,19 @@ const TransferDataView = (props: FormProps) => {
 
                         arr.push({
                             sapPayCode: item.PayCode,
-                            sapAmount: item.Amount,
+                            sapAmount: item.Amount.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            }),
                             sapLineCount: item.Line_Item_Count,
                             nonSAPPayCode:
                                 listItems[0].nonSAPPayData[index].PayCode,
-                            nonSapAmount:
-                                listItems[0].nonSAPPayData[index].Amount,
+                            nonSapAmount: listItems[0].nonSAPPayData[
+                                index
+                            ].Amount.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            }),
                             nonSapLineCount:
                                 listItems[0].nonSAPPayData[index]
                                     .Line_Item_Count,
@@ -141,39 +140,27 @@ const TransferDataView = (props: FormProps) => {
                         })
                     }
                 )
-
                 setData(arr)
+                setisDataLoad(true)
             })
         }
     }, [dataFromChild])
 
-    const [tableData] = useState(
-        arr.map((item) => [
-            typeof item.sapPayCode,
-            typeof item.sapAmount,
-            typeof item.sapLineCount,
-        ])
-    )
-
     const handlePDFDownload = () => {
-        //  const tableData = arr
+        data.map((elemento) => Object.values(elemento))
+
+        const tableData: RowInput = []
+
+        let header = ['sapPayCode', 'sapAmount']
+
+        data.map((item) => [tableData.push(Object.values(item).toString())])
 
         console.log(tableData)
 
         const doc = new jsPDF()
 
         autoTable(doc, {
-            head: [
-                [
-                    'sapPayCode',
-                    'sapAmount',
-                    'sapLineCount',
-                    'nonSAPPayCode',
-                    'nonSapAmount',
-                    'nonSapLineCount',
-                    'status',
-                ],
-            ],
+            head: [[header]],
             body: [tableData],
         })
 
@@ -293,9 +280,47 @@ const TransferDataView = (props: FormProps) => {
                 )}
             </span>
             <span className="mr-1 font-semibold">
-                <Button variant="solid" onClick={handlePDFDownload}>
+                <Button
+                    variant="solid"
+                    color="blue-600"
+                    onClick={handlePDFDownload}
+                >
                     Print
                 </Button>
+            </span>
+            <span className="mr-1 font-semibold">
+                <Button
+                    variant="solid"
+                    color="green-500"
+                    onClick={openConfirmDialog}
+                >
+                    Confirm
+                </Button>
+                {isConfirmOpen && (
+                    <ConfirmData
+                        onClose={closeConfirmDialog}
+                        isConfirmOpen={isConfirmOpen}
+                        props={props}
+                        data={dataFromChild}
+                    />
+                )}
+            </span>
+            <span className="mr-1 font-semibold">
+                <Button
+                    variant="solid"
+                    color="red-500"
+                    onClick={openRejectDialog}
+                >
+                    Reject
+                </Button>
+                {isRejectOpen && (
+                    <RejectData
+                        onClose={closeRejectDialog}
+                        isRejectOpen={isRejectOpen}
+                        props={props}
+                        data={dataFromChild}
+                    />
+                )}
             </span>
             <span className="text-emerald-500 text-xl"></span>
         </span>

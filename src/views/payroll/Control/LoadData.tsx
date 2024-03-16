@@ -1,7 +1,5 @@
-import { useState } from 'react'
 import type { CompanyIdSelectOption } from '@/@types/paycode'
 import type { PayrollDataSchema } from '@/@types/payroll'
-import usePayrun from '@/utils/hooks/usePayrun'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import {
     FieldHelperProps,
@@ -16,10 +14,8 @@ import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
-import toast from '@/components/ui/toast'
-import Notification from '@/components/ui/Notification'
 import type { CommonProps } from '@/@types/common'
-import type { FC, MouseEvent } from 'react'
+import type { FC } from 'react'
 import Alert from '@/components/ui/Alert'
 
 interface DialogProps {
@@ -75,8 +71,6 @@ const DialogComponent: React.FC<DialogProps> = ({
 
     const { disableSubmit = false, className } = props
 
-    const { getDataTransferStatistics } = usePayrun()
-
     const onSubmit = async (
         values: PayrollDataSchema,
         setSubmitting: (isSubmitting: boolean) => void
@@ -88,33 +82,6 @@ const DialogComponent: React.FC<DialogProps> = ({
         onClose()
     }
 
-    const [dialogIsOpen, setIsOpen] = useState(false)
-
-    const openDialog = () => {
-        setIsOpen(true)
-    }
-
-    const onDialogClose = (e: MouseEvent) => {
-        setIsOpen(false)
-    }
-
-    const onDialogOk = (e: MouseEvent) => {
-        setIsOpen(false)
-    }
-
-    const openNotification = (
-        type: 'success' | 'warning' | 'danger' | 'info',
-        message: string
-    ) => {
-        toast.push(
-            <Notification
-                title={type.charAt(0).toUpperCase() + type.slice(1)}
-                type={type}
-            >
-                {message}
-            </Notification>
-        )
-    }
     return (
         <>
             <Dialog isOpen={isOpen} onClose={onClose} onRequestClose={onClose}>
