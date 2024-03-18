@@ -16,3 +16,8 @@ export type TableQueries = {
         key: string | number
     }
 }
+
+export interface CompanyIdSelectOption {
+    label: string
+    value: number
+}

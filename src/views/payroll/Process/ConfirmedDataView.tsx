@@ -1,58 +1,104 @@
-import type { CommonProps } from '@/@types/common'
-import { useState } from 'react'
-import Steps from '@/components/ui/Steps'
+import type { CommonProps, CompanyIdSelectOption } from '@/@types/common'
+import { FC, useState } from 'react'
 import Button from '@/components/ui/Button'
-
-type Option = {
-    value: number
-    label: string
-}
+import { Formik, Field, Form } from 'formik'
+import { FormItem, FormContainer } from '@/components/ui/Form'
+import Input from '@/components/ui/Input'
+import Card from '@/components/ui/Card'
+import {
+    FieldHelperProps,
+    FieldInputProps,
+    FieldMetaProps,
+    useField,
+} from 'formik'
+import Select from '@/components/ui/Select'
 
 interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
 
+interface RenderProps<V = any> {
+    field: FieldInputProps<V>
+    meta: FieldMetaProps<V>
+    helpers: FieldHelperProps<V>
+}
+
+interface FieldWrapperProps<V = any> {
+    name: string
+    render: (formikProps: RenderProps<V>) => React.ReactElement
+}
+
+const companyOptions: CompanyIdSelectOption[] = [
+    { value: 2000, label: '2000' },
+    { value: 3000, label: '3000' },
+]
+
+type FormLayout = 'inline'
+
+const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
+    const [field, meta, helpers] = useField(name)
+
+    return render({ field, meta, helpers })
+}
+
 const ConfirmedDataView = (props: FormProps) => {
-    const [step, setStep] = useState(0)
-
-    const onChange = (nextStep: number) => {
-        if (nextStep < 0) {
-            setStep(0)
-        } else if (nextStep > 3) {
-            setStep(3)
-        } else {
-            setStep(nextStep)
-        }
-    }
-
-    const onNext = () => onChange(step + 1)
-
-    const onPrevious = () => onChange(step - 1)
+    const [layout, setLayout] = useState<FormLayout>('inline')
 
     return (
         <>
-            <Steps current={step}>
-                <Steps.Item title="Confirm Data Transfer" />
-                <Steps.Item title="Process Payroll" />
-                <Steps.Item title="Create Unrecovered" />
-                <Steps.Item title="Payroll Summary" />
-            </Steps>
-            <div className="mt-6 h-40 bg-gray-50 dark:bg-gray-700 rounded flex items-center justify-center">
-                <h6>Step {`${step + 1}`} content</h6>
-            </div>
-            {step == 2 && <h6>Step is two content</h6>}
-            <div className="mt-4 text-right">
-                <Button
-                    className="mx-2"
-                    disabled={step === 0}
-                    onClick={onPrevious}
+            <Card header="Process">
+                <Formik
+                    initialValues={{
+                        companyCode: '',
+                        period: '202312',
+                    }}
+                    onSubmit={async (values) => {
+                        await new Promise((r) => setTimeout(r, 500))
+                        alert(JSON.stringify(values, null, 2))
+                    }}
                 >
-                    Previous
-                </Button>
-                <Button disabled={step === 3} variant="solid" onClick={onNext}>
-                    {step === 3 ? 'Completed' : 'Next'}
-                </Button>
-            </div>
+                    <Form>
+                        <FormContainer layout={layout}>
+                            <div className="grid grid-cols-1 gap-4">
+                                <FieldWrapper
+                                    name="companyCode"
+                                    render={({ field, meta, helpers }) => (
+                                        <FormItem
+                                            label="Company Code"
+                                            invalid={
+                                                !!meta.error && meta.touched
+                                            }
+                                            errorMessage={meta.error}
+                                        >
+                                            <Select
+                                                name="companyCode"
+                                                id="companyCode"
+                                                value={field.value}
+                                                onChange={(value) => {
+                                                    helpers.setValue(value)
+                                                }}
+                                                placeholder="Please Select"
+                                                options={companyOptions}
+                                            ></Select>
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                            <FormItem label="Period">
+                                <Field
+                                    type="text"
+                                    name="period"
+                                    placeholder="Please enter Period"
+                                    component={Input}
+                                />
+                            </FormItem>
+                            <FormItem>
+                                <Button type="submit">Load</Button>
+                            </FormItem>
+                        </FormContainer>
+                    </Form>
+                </Formik>
+            </Card>
         </>
     )
 }
