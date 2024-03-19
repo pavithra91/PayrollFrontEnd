@@ -33,3 +33,12 @@ export async function apiRollBackDataTransfer(data: ConfirmDataTransfer) {
         data,
     })
 }
+
+export async function apiProcessPayroll(data: ConfirmDataTransfer) {
+    return ApiService.fetchData<Response>({
+        url: '/Payroll/ProcessPayroll',
+        method: 'post',
+        timeout: 240000,
+        data,
+    })
+}
