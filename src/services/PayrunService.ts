@@ -42,3 +42,14 @@ export async function apiProcessPayroll(data: ConfirmDataTransfer) {
         data,
     })
 }
+
+export async function apiGetPayrunByPeriod(values: PayrollDataSchema) {
+    return ApiService.fetchData<Response>({
+        url:
+            '/Payroll/get-payrun-by-period?companyCode=' +
+            values.companyCode +
+            '&period=' +
+            values.period,
+        method: 'get',
+    })
+}

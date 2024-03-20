@@ -16,15 +16,20 @@ type DropdownList = {
 const dropdownItemList: DropdownList[] = []
 
 const _UserDropdown = ({ className }: CommonProps) => {
-
     const { signOut } = useAuth()
+
+    const getUsernameFromLocalStorage = () => {
+        const user = JSON.parse(localStorage.getItem('admin') ?? '')
+        const userName = JSON.parse(user.auth).user.userName
+        return userName
+    }
 
     const UserAvatar = (
         <div className={classNames(className, 'flex items-center gap-2')}>
             <Avatar size={32} shape="circle" icon={<HiOutlineUser />} />
             <div className="hidden md:block">
                 <div className="text-xs capitalize">admin</div>
-                <div className="font-bold">User01</div>
+                <div className="font-bold">{getUsernameFromLocalStorage()}</div>
             </div>
         </div>
     )
@@ -40,9 +45,15 @@ const _UserDropdown = ({ className }: CommonProps) => {
                     <div className="py-2 px-3 flex items-center gap-2">
                         <Avatar shape="circle" icon={<HiOutlineUser />} />
                         <div>
-                            <div className="font-bold text-gray-900 dark:text-gray-100">
-                                User01
-                            </div>
+                            <Link
+                                className="flex h-full w-full px-2"
+                                to="/Settings"
+                            >
+                                <div className="font-bold text-gray-900 dark:text-gray-100">
+                                    {getUsernameFromLocalStorage()}
+                                </div>
+                            </Link>
+
                             <div className="text-xs">user01@mail.com</div>
                         </div>
                     </div>
@@ -54,8 +65,8 @@ const _UserDropdown = ({ className }: CommonProps) => {
                         eventKey={item.label}
                         className="mb-1 px-0"
                     >
-                        <Link 
-                            className="flex h-full w-full px-2" 
+                        <Link
+                            className="flex h-full w-full px-2"
                             to={item.path}
                         >
                             <span className="flex gap-2 items-center w-full">

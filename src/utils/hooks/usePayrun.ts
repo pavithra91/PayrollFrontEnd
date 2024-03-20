@@ -3,6 +3,7 @@ import {
     apiConfirmDataTransfer,
     apiRollBackDataTransfer,
     apiProcessPayroll,
+    apiGetPayrunByPeriod,
 } from '@/services/PayrunService'
 import type { PayrollDataSchema, ConfirmDataTransfer } from '@/@types/payroll'
 
@@ -81,11 +82,30 @@ function usePayrun() {
         }
     }
 
+    const getPayrunByPeriod = async (values: PayrollDataSchema) => {
+        try {
+            const resp = await apiGetPayrunByPeriod(values)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
+
     return {
         getDataTransferStatistics,
         confirmDataTransfer,
         rollbackDataTransfer,
         processPayroll,
+        getPayrunByPeriod,
     }
 }
 

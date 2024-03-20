@@ -63,6 +63,18 @@ export const protectedRoutes = [
         authority: ['Admin'],
     },
     {
+        key: 'Settings',
+        path: '/Settings',
+        component: lazy(() => import('@/views/users/Account/Settings')),
+        authority: [],
+    },
+    {
+        key: 'ViewUsers',
+        path: '/ViewUsers',
+        component: lazy(() => import('@/views/users/Users/ViewUsers')),
+        authority: [],
+    },
+    {
         key: 'groupMenu.single',
         path: '/group-single-menu-item-view',
         component: lazy(() => import('@/views/demo/GroupSingleMenuItemView')),

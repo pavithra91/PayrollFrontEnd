@@ -41,8 +41,6 @@ const ViewPayCodes = (props: FormProps) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
 
             setData(listItems)
-
-            console.log('data load')
         })
     }, [])
 
