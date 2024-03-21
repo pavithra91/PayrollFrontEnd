@@ -1,33 +1,35 @@
+import React, { FC, useState } from 'react'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
-import React from 'react'
-import { Field, Form, Formik, FormikProps } from 'formik'
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import Input from '@/components/ui/Input'
-import Alert from '@/components/ui/Alert'
-import Select from '@/components/ui/Select'
-import type { CommonProps } from '@/@types/common'
-import type { FC, MouseEvent } from 'react'
+import type { CommonProps, RoleSelectOption } from '@/@types/common'
+import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import {
+    Field,
     FieldHelperProps,
     FieldInputProps,
     FieldMetaProps,
+    Form,
+    Formik,
+    FormikProps,
     useField,
 } from 'formik'
+import { FormContainer, FormItem } from '@/components/ui/Form'
+import Input from '@/components/ui/Input'
+import Alert from '@/components/ui/Alert'
+import Select from '@/components/ui/Select'
 import * as Yup from 'yup'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
-import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
-import { useState } from 'react'
-import type { CompanyIdSelectOption, RoleSelectOption } from '@/@types/common'
+import usePayCodes from '@/utils/hooks/usePayCodes'
 import Checkbox from '@/components/ui/Checkbox'
 import { AccountSchema } from '@/@types/Account'
 import useAccount from '@/utils/hooks/useAccount'
 
 interface DialogProps {
-    isOpen: boolean // Type for the 'isOpen' prop
-    onClose: () => void // Type for the 'onClose' prop
+    isEditOpen: boolean
+    onClose: () => void
     props: FormProps
+    item: any
 }
 
 interface FormProps extends CommonProps {
@@ -45,16 +47,6 @@ interface FieldWrapperProps<V = any> {
     render: (formikProps: RenderProps<V>) => React.ReactElement
 }
 
-const companyOptions: CompanyIdSelectOption[] = [
-    { value: 2000, label: '2000' },
-    { value: 3000, label: '3000' },
-]
-
-const roleOptions: RoleSelectOption[] = [
-    { value: 'Admin', label: 'Admin' },
-    { value: 'User', label: 'User' },
-]
-
 const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     const [field, meta, helpers] = useField(name)
 
@@ -67,94 +59,45 @@ const getUsernameFromLocalStorage = () => {
     return userName
 }
 
-const initValues: AccountSchema = {
-    companyCode: companyOptions[0].value, // This will be the default one
-    costCenter: '',
-    epf: 0,
-    empName: '',
-    role: roleOptions[0].value,
-    userID: '',
-    password: '',
-    status: false,
-    createdBy: getUsernameFromLocalStorage(),
-}
+const roleOptions: RoleSelectOption[] = [
+    { value: 'Admin', label: 'Admin' },
+    { value: 'User', label: 'User' },
+]
 
-const validationSchema = Yup.object().shape({
-    companyCode: Yup.object().required('Please select Company Code'),
-    costCenter: Yup.string().required('Please enter Cost Center'),
-    epf: Yup.string().required('Please enter EPF'),
-    userID: Yup.string().required('Please enter User ID'),
-    empName: Yup.string().required('Please enter User Name'),
-    password: Yup.string().required('Please enter Password'),
-    role: Yup.object().required('Please select User Role'),
-})
+const EditDialog: React.FC<DialogProps> = ({
+    onClose,
+    isEditOpen,
+    props,
+    item,
+}) => {
+    const foundItem = roleOptions.find(
+        (option) => option.value === item.getValue('role')
+    )
 
-const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
-    const [message, setMessage] = useTimeOutMessage()
+    const initValues: AccountSchema = {
+        id: item.getValue('id'),
+        companyCode: item.getValue('companyCode'), // This will be the default one
+        costCenter: item.getValue('costCenter'),
+        epf: item.getValue('epf'),
+        empName: item.getValue('empName'),
+        role: item.getValue('role'),
+        userID: item.getValue('userID'),
+        status: item.getValue('status'),
+        createdBy: item.getValue('createdBy'),
+        lastUpdateBy: getUsernameFromLocalStorage(),
+        password: '',
+    }
+
+    const validationSchema = Yup.object().shape({
+        costCenter: Yup.string().required('Please enter Cost Center'),
+        empName: Yup.string().required('Please enter User Name'),
+        role: Yup.object().required('Please enter User Role'),
+    })
 
     const { disableSubmit = false, className } = props
+    const [message, setMessage] = useTimeOutMessage()
 
-    const { addUser } = useAccount()
-
-    const onSubmit = async (
-        values: AccountSchema,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
-        const {
-            companyCode,
-            costCenter,
-            epf,
-            empName,
-            role,
-            userID,
-            password,
-            status,
-            createdBy,
-        } = values
-        setSubmitting(true)
-
-        const result = await addUser({
-            companyCode,
-            costCenter,
-            epf,
-            empName,
-            role,
-            userID,
-            password,
-            status,
-            createdBy,
-        })
-
-        console.log(result?.status)
-
-        if (result?.status === 'failed') {
-            setMessage(result.message)
-            console.log(result.message)
-            openNotification('danger', result.message)
-        } else {
-            setMessage('Successfully Saved')
-            openNotification('success', 'User Account Created Successfully')
-            onClose()
-        }
-
-        setSubmitting(false)
-    }
-
-    const [dialogIsOpen, setIsOpen] = useState(false)
-
-    const openDialog = () => {
-        setIsOpen(true)
-    }
-
-    const onDialogClose = (e: MouseEvent) => {
-        console.log('onDialogClose', e)
-        setIsOpen(false)
-    }
-
-    const onDialogOk = (e: MouseEvent) => {
-        console.log('onDialogOk', e)
-        setIsOpen(false)
-    }
+    const { updateUser } = useAccount()
 
     const openNotification = (
         type: 'success' | 'warning' | 'danger' | 'info',
@@ -169,10 +112,57 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
             </Notification>
         )
     }
+
+    const onSubmit = async (
+        values: AccountSchema,
+        setSubmitting: (isSubmitting: boolean) => void
+    ) => {
+        const {
+            id,
+            companyCode,
+            costCenter,
+            epf,
+            empName,
+            role,
+            userID,
+            status,
+            lastUpdateBy,
+            createdBy,
+        } = values
+        setSubmitting(true)
+
+        const result = await updateUser({
+            id,
+            companyCode,
+            costCenter,
+            epf,
+            empName,
+            role,
+            userID,
+            status,
+            lastUpdateBy,
+            password: '',
+            createdBy,
+        })
+
+        if (result?.status === 'failed') {
+            setMessage(result.message)
+        } else {
+            setMessage('Successfully Saved')
+            openNotification('success', 'Changes Saved Successfully')
+            onClose()
+        }
+
+        setSubmitting(false)
+    }
     return (
         <>
-            <Dialog isOpen={isOpen} onClose={onClose} onRequestClose={onClose}>
-                <h5 className="mb-4">Create User Account</h5>
+            <Dialog
+                isOpen={isEditOpen}
+                onClose={onClose}
+                onRequestClose={onClose}
+            >
+                <h5 className="mb-4">Edit User Details</h5>
 
                 <div className={className}>
                     {message && (
@@ -185,18 +175,11 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                         validationSchema={validationSchema}
                         onSubmit={(values, { setSubmitting }) => {
                             if (!disableSubmit) {
-                                const selectedCompanyCode = Array.from(
-                                    Object.values(values.companyCode)
-                                )
-
                                 const selectedRole = Array.from(
                                     Object.values(values.role)
                                 )
 
-                                values.companyCode = selectedCompanyCode[0]
                                 values.role = selectedRole[0]
-                                console.log(values)
-
                                 onSubmit(values, setSubmitting)
                             } else {
                                 setSubmitting(false)
@@ -213,11 +196,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                     <div className="grid grid-cols-2 gap-4">
                                         <FieldWrapper
                                             name="companyCode"
-                                            render={({
-                                                field,
-                                                meta,
-                                                helpers,
-                                            }) => (
+                                            render={({ meta }) => (
                                                 <FormItem
                                                     label="Company Code"
                                                     invalid={
@@ -226,18 +205,17 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                                     }
                                                     errorMessage={meta.error}
                                                 >
-                                                    <Select
+                                                    <Field
+                                                        disabled
+                                                        type="text"
+                                                        autoComplete="off"
                                                         name="companyCode"
-                                                        id="companyCode"
-                                                        value={field.value}
-                                                        onChange={(value) => {
-                                                            helpers.setValue(
-                                                                value
-                                                            )
-                                                        }}
-                                                        placeholder="Please Select"
-                                                        options={companyOptions}
-                                                    ></Select>
+                                                        placeholder="Company Code"
+                                                        component={Input}
+                                                        value={item.getValue(
+                                                            'companyCode'
+                                                        )}
+                                                    />
                                                 </FormItem>
                                             )}
                                         />
@@ -256,6 +234,9 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                                     name="costCenter"
                                                     placeholder="Cost Center"
                                                     component={Input}
+                                                    value={item.getValue(
+                                                        'costCenter'
+                                                    )}
                                                 />
                                             </FormItem>
                                         </div>
@@ -271,16 +252,18 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                             errorMessage={errors.epf}
                                         >
                                             <Field
+                                                disabled
                                                 type="text"
                                                 autoComplete="off"
                                                 name="epf"
                                                 placeholder="EPF"
                                                 component={Input}
+                                                value={item.getValue('epf')}
                                             />
                                         </FormItem>
                                         <div className="grid grid-cols-1 gap-4">
                                             <FormItem
-                                                label="user ID"
+                                                label="User ID"
                                                 invalid={
                                                     (errors.userID &&
                                                         touched.userID) as boolean
@@ -291,8 +274,11 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                                     type="text"
                                                     autoComplete="off"
                                                     name="userID"
-                                                    placeholder="user ID"
+                                                    placeholder="User ID"
                                                     component={Input}
+                                                    value={item.getValue(
+                                                        'userID'
+                                                    )}
                                                 />
                                             </FormItem>
                                         </div>
@@ -312,61 +298,53 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                             name="empName"
                                             placeholder="Name"
                                             component={Input}
+                                            value={item.getValue('empName')}
                                         />
                                     </FormItem>
 
-                                    <FieldWrapper
-                                        name="role"
-                                        render={({ field, meta, helpers }) => (
-                                            <FormItem
-                                                label="Role"
-                                                invalid={
-                                                    !!meta.error && meta.touched
-                                                }
-                                                errorMessage={meta.error}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <FieldWrapper
+                                            name="role"
+                                            render={({
+                                                field,
+                                                meta,
+                                                helpers,
+                                            }) => (
+                                                <FormItem
+                                                    label="User Role"
+                                                    invalid={
+                                                        !!meta.error &&
+                                                        meta.touched
+                                                    }
+                                                    errorMessage={meta.error}
+                                                >
+                                                    <Select
+                                                        name="role"
+                                                        id="role"
+                                                        defaultValue={foundItem}
+                                                        onChange={(value) => {
+                                                            helpers.setValue(
+                                                                value
+                                                            )
+                                                        }}
+                                                        placeholder="Please Select User Role"
+                                                        options={roleOptions}
+                                                    ></Select>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <Field
+                                                className="mb-0 mx-2 my-10"
+                                                name="status"
+                                                component={Checkbox}
                                             >
-                                                <Select
-                                                    name="role"
-                                                    id="role"
-                                                    value={field.value}
-                                                    onChange={(value) => {
-                                                        helpers.setValue(value)
-                                                    }}
-                                                    placeholder="Please Select"
-                                                    options={roleOptions}
-                                                ></Select>
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormItem
-                                        label="Password"
-                                        invalid={
-                                            (errors.password &&
-                                                touched.password) as boolean
-                                        }
-                                        errorMessage={errors.password}
-                                    >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="password"
-                                            placeholder="Password"
-                                            component={Input}
-                                        />
-                                    </FormItem>
-
-                                    <div className="grid grid-cols-1 gap-4">
-                                        <Field
-                                            className="mb-0 mx-2"
-                                            name="status"
-                                            component={Checkbox}
-                                        >
-                                            Status
-                                        </Field>
+                                                Status
+                                            </Field>
+                                        </div>
                                     </div>
 
-                                    <div className="text-right mt-6"></div>
+                                    <div className="text-right mt-4"></div>
 
                                     <div className="grid grid-cols-1 gap-4">
                                         <Button
@@ -377,7 +355,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                         >
                                             {isSubmitting
                                                 ? 'Saving...'
-                                                : 'Create User'}
+                                                : 'Edit Changes'}
                                         </Button>
                                     </div>
                                 </FormContainer>
@@ -385,21 +363,9 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                         )}
                     </Formik>
                 </div>
-                <div className="text-right mt-6">
-                    {/* <Button
-                        className="ltr:mr-2 rtl:ml-2"
-                        variant="plain"
-                        onClick={onClose}
-                    >
-                        Cancel
-                    </Button> */}
-                    {/* <Button variant="solid" onClick={onDialogOk}>
-                    Okay
-                        </Button> */}
-                </div>
             </Dialog>
         </>
     )
 }
 
-export default DialogComponent
+export default EditDialog

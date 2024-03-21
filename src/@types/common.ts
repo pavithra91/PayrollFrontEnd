@@ -21,3 +21,8 @@ export interface CompanyIdSelectOption {
     label: string
     value: number
 }
+
+export interface RoleSelectOption {
+    label: string
+    value: string
+}
