@@ -9,7 +9,9 @@ export type SignInResponse = {
         userName: string
         authority: string[]
         avatar: string
-        email: string
+        id: string
+        epf: string
+        userID: string
     }
     _userDetails: any
 }

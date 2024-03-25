@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import classNames from 'classnames'
 import { HiOutlineLogout, HiOutlineUser } from 'react-icons/hi'
 import type { CommonProps } from '@/@types/common'
+import { useEffect, useState } from 'react'
 
 type DropdownList = {
     label: string
@@ -18,18 +19,32 @@ const dropdownItemList: DropdownList[] = []
 const _UserDropdown = ({ className }: CommonProps) => {
     const { signOut } = useAuth()
 
-    const getUsernameFromLocalStorage = () => {
-        const user = JSON.parse(localStorage.getItem('admin') ?? '')
-        const userName = JSON.parse(user.auth).user.userName
-        return userName
-    }
+    const [UserID, setUserID] = useState()
+    const [Role, setRole] = useState()
+    const [UserName, setUserName] = useState()
+
+    useEffect(() => {
+        const fetchData = async () => {
+            await new Promise((resolve) => setTimeout(resolve, 100))
+
+            const user = JSON.parse(localStorage.getItem('admin') ?? '')
+            const userID = JSON.parse(user.auth).user.userID
+            const userRole = JSON.parse(user.auth).user.authority[0]
+            const userName = JSON.parse(user.auth).user.userName
+
+            setUserID(userID)
+            setRole(userRole)
+            setUserName(userName)
+        }
+        fetchData()
+    }, [])
 
     const UserAvatar = (
         <div className={classNames(className, 'flex items-center gap-2')}>
             <Avatar size={32} shape="circle" icon={<HiOutlineUser />} />
             <div className="hidden md:block">
-                <div className="text-xs capitalize">admin</div>
-                <div className="font-bold">{getUsernameFromLocalStorage()}</div>
+                <div className="text-xs capitalize">{Role}</div>
+                <div className="font-bold">{UserID}</div>
             </div>
         </div>
     )
@@ -50,11 +65,11 @@ const _UserDropdown = ({ className }: CommonProps) => {
                                 to="/Settings"
                             >
                                 <div className="font-bold text-gray-900 dark:text-gray-100">
-                                    {getUsernameFromLocalStorage()}
+                                    {UserID}
                                 </div>
                             </Link>
 
-                            <div className="text-xs">user01@mail.com</div>
+                            <div className="text-xs">{UserName}</div>
                         </div>
                     </div>
                 </Dropdown.Item>

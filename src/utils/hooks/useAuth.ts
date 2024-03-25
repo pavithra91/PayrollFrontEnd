@@ -35,7 +35,7 @@ function useAuth() {
         try {
             const resp = await apiSignIn(values)
             if (resp.data) {
-                console.log(resp.data)
+                console.log(resp.data._userDetails)
 
                 const { jwtToken } = resp.data
 
@@ -48,9 +48,12 @@ function useAuth() {
                     setUser(
                         resp.data.user || {
                             avatar: '',
-                            userName: resp.data._userDetails.epf,
+                            userName: resp.data._userDetails.empName,
+                            epf: resp.data._userDetails.epf,
+                            userID: resp.data._userDetails.userID,
                             authority: ['Admin'],
-                            email: 'carolyn.p@elstar.com',
+                            id: resp.data._userDetails.id,
+                            costCenter: resp.data._userDetails.costCenter,
                         }
                     )
                 )
@@ -86,7 +89,10 @@ function useAuth() {
                                 avatar: '',
                                 userName: 'Anonymous',
                                 authority: ['USER'],
-                                email: '',
+                                id: '',
+                                userID: '',
+                                epf: '',
+                                costCenter: '',
                             }
                         )
                     )
@@ -115,7 +121,10 @@ function useAuth() {
             setUser({
                 avatar: '',
                 userName: '',
-                email: '',
+                epf: '',
+                userID: '',
+                id: '',
+                costCenter: '',
                 authority: [],
             })
         )
