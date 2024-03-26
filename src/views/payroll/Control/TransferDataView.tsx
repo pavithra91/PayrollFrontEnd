@@ -35,8 +35,6 @@ interface FormProps extends CommonProps {
 const TransferDataView = (props: FormProps) => {
     const { getDataTransferStatistics } = usePayrun()
 
-    const [data, setData] = useState([])
-
     const openDialog = () => {
         setIsOpen(true)
     }
@@ -65,16 +63,23 @@ const TransferDataView = (props: FormProps) => {
         setIsRejectOpen(false)
     }
 
+    const [data, setData] = useState([])
+
     const [isOpen, setIsOpen] = useState(false)
     const [isDataLoad, setisDataLoad] = useState(false)
     const [isConfirmOpen, setIsConfirmOpen] = useState(false)
     const [isRejectOpen, setIsRejectOpen] = useState(false)
 
     const [dataFromChild, setDataFromChild] = useState(null)
+    const [printData, setPrintData] = useState<PostData[]>()
 
     const handleChildData = (data: any) => {
         setDataFromChild(data)
     }
+
+    interface PostData { 
+        SAPPayData: []
+     }
 
     type SAPPayCodes = {
         PayCode: number
@@ -92,6 +97,7 @@ const TransferDataView = (props: FormProps) => {
         status: boolean
     }
 
+    
     const arr: dataGrid[] = []
 
     useEffect(() => {
@@ -99,6 +105,8 @@ const TransferDataView = (props: FormProps) => {
             const result = getDataTransferStatistics(dataFromChild)
             result.then((res) => {
                 const listItems = JSON.parse(res?.data?.data ?? '')
+
+                setPrintData(listItems)
 
                 listItems[0].SAPPayData.map(
                     (item: SAPPayCodes, index: number) => {
@@ -147,26 +155,46 @@ const TransferDataView = (props: FormProps) => {
     }, [dataFromChild])
 
     const handlePDFDownload = () => {
-        data.map((elemento) => Object.values(elemento))
+        if(printData!=null)
+        {
+            Object.entries(data).forEach(([key, value]) => {
+               
+                console.log(data[key].status)
+                 if(data[key].status === true){     
+                    data[key].status = "Matched"
+                  }
+                  else{
+                    data[key].status = "Un Matched"
+                  }
+            });
 
-        const tableData: RowInput = []
+            //console.log(data)
 
-        let header = ['sapPayCode', 'sapAmount']
+            const doc = new jsPDF()     
+            
+            doc.text("Data Transfer Report", 100, 10, {align: 'center'});
+            
+            autoTable(doc, {
+                columnStyles: { europe: { halign: 'center' } },
+                body: 
+                    data
+                ,
+                columns: [
+                    
+                  { header: 'SAP PayCode', dataKey: 'sapPayCode' },
+                  { header: 'SAP Amount', dataKey: 'sapAmount' },
+                  { header: 'SAP Item Count', dataKey: 'sapLineCount' },
+                  { header: 'Non SAP PayCode', dataKey: 'nonSAPPayCode' },
+                  { header: 'Non SAP Amount', dataKey: 'nonSapAmount' },
+                  { header: 'Non SAP Item Count', dataKey: 'nonSapLineCount' },
+                  { header: 'Status', dataKey: 'status' },
+                ],
+              })
 
-        data.map((item) => [tableData.push(Object.values(item).toString())])
-
-        console.log(tableData)
-
-        const doc = new jsPDF()
-
-        autoTable(doc, {
-            head: [[header]],
-            body: [tableData],
-        })
-
-        doc.text('Hello world!', 10, 10)
-        // Save the PDF document
         doc.save('my_table_report.pdf')
+
+        }
+        
     }
 
     const { Tr, Th, Td, THead, TBody, Sorter } = Table
