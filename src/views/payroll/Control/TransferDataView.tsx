@@ -22,6 +22,7 @@ import RejectData from './RejectData'
 import { Tag } from '@/components/ui/Tag'
 import jsPDF from 'jspdf'
 import autoTable, { RowInput } from 'jspdf-autotable'
+import { number } from 'yup'
 
 type Option = {
     value: number
@@ -77,9 +78,9 @@ const TransferDataView = (props: FormProps) => {
         setDataFromChild(data)
     }
 
-    interface PostData { 
+    interface PostData {
         SAPPayData: []
-     }
+    }
 
     type SAPPayCodes = {
         PayCode: number
@@ -97,7 +98,6 @@ const TransferDataView = (props: FormProps) => {
         status: boolean
     }
 
-    
     const arr: dataGrid[] = []
 
     useEffect(() => {
@@ -155,46 +155,43 @@ const TransferDataView = (props: FormProps) => {
     }, [dataFromChild])
 
     const handlePDFDownload = () => {
-        if(printData!=null)
-        {
-            Object.entries(data).forEach(([key, value]) => {
-               
+        if (printData != null) {
+            Object.entries(data).forEach((key) => {
+                console.log(key)
+
                 console.log(data[key].status)
-                 if(data[key].status === true){     
-                    data[key].status = "Matched"
-                  }
-                  else{
-                    data[key].status = "Un Matched"
-                  }
-            });
+                if (data[key].status === true) {
+                    data[key].status = 'Matched'
+                } else {
+                    data[key].status = 'Un Matched'
+                }
+            })
 
             //console.log(data)
 
-            const doc = new jsPDF()     
-            
-            doc.text("Data Transfer Report", 100, 10, {align: 'center'});
-            
+            const doc = new jsPDF()
+
+            doc.text('Data Transfer Report', 100, 10, { align: 'center' })
+
             autoTable(doc, {
                 columnStyles: { europe: { halign: 'center' } },
-                body: 
-                    data
-                ,
+                body: data,
                 columns: [
-                    
-                  { header: 'SAP PayCode', dataKey: 'sapPayCode' },
-                  { header: 'SAP Amount', dataKey: 'sapAmount' },
-                  { header: 'SAP Item Count', dataKey: 'sapLineCount' },
-                  { header: 'Non SAP PayCode', dataKey: 'nonSAPPayCode' },
-                  { header: 'Non SAP Amount', dataKey: 'nonSapAmount' },
-                  { header: 'Non SAP Item Count', dataKey: 'nonSapLineCount' },
-                  { header: 'Status', dataKey: 'status' },
+                    { header: 'SAP PayCode', dataKey: 'sapPayCode' },
+                    { header: 'SAP Amount', dataKey: 'sapAmount' },
+                    { header: 'SAP Item Count', dataKey: 'sapLineCount' },
+                    { header: 'Non SAP PayCode', dataKey: 'nonSAPPayCode' },
+                    { header: 'Non SAP Amount', dataKey: 'nonSapAmount' },
+                    {
+                        header: 'Non SAP Item Count',
+                        dataKey: 'nonSapLineCount',
+                    },
+                    { header: 'Status', dataKey: 'status' },
                 ],
-              })
+            })
 
-        doc.save('my_table_report.pdf')
-
+            doc.save('my_table_report.pdf')
         }
-        
     }
 
     const { Tr, Th, Td, THead, TBody, Sorter } = Table

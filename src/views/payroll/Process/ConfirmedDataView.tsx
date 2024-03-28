@@ -58,6 +58,10 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
 }
 
 const ConfirmedDataView = (props: FormProps) => {
+    const { getPayrunByPeriod } = usePayrun()
+
+    const [isUnrecoveredActive, setIsUnrecoveredActive] = useState(false)
+
     const [layout, setLayout] = useState<FormLayout>('inline')
     const { getDataTransferStatistics } = usePayrun()
     const [message, setMessage] = useTimeOutMessage()
@@ -65,7 +69,7 @@ const ConfirmedDataView = (props: FormProps) => {
     const [isDataLoad, setisDataLoad] = useState(false)
     const [isSubmitting, setisSubmitting] = useState(false)
 
-    const { processPayroll } = usePayrun()
+    const { processPayroll, createUnRecovered } = usePayrun()
 
     const [dataFromChild, setDataFromChild] =
         useState<PayrollDataSchema | null>(null)
@@ -111,8 +115,22 @@ const ConfirmedDataView = (props: FormProps) => {
                     }
                 )
                 setData(arr)
-                console.log(arr)
+                //console.log(arr)
                 setisDataLoad(true)
+            })
+
+            const payRunResults = getPayrunByPeriod(dataFromChild)
+            payRunResults.then((res) => {
+                const listItems = JSON.parse(res?.data?.data ?? '')
+                if (listItems.length > 0) {
+                    console.log(listItems[0])
+                    if (listItems[0].payrunStatus == 'Payrun Complete') {
+                        setIsUnrecoveredActive(true)
+                        console.log(isUnrecoveredActive)
+                    } else {
+                        setIsUnrecoveredActive(false)
+                    }
+                }
             })
         }
     }, [dataFromChild])
@@ -194,6 +212,39 @@ const ConfirmedDataView = (props: FormProps) => {
             } else {
                 setMessage('Successfully Saved')
                 openNotification('success', 'Payroll Process Successfully')
+            }
+
+            console.log(isSubmitting)
+
+            setisSubmitting(false)
+        }
+    }
+
+    const createUnrecovered = async () => {
+        setisSubmitting(true)
+
+        if (isDataLoad && dataFromChild != null) {
+            const companyCode = dataFromChild.companyCode
+            const period = dataFromChild.period
+            const approvedBy = getUsernameFromLocalStorage()
+
+            const result = await createUnRecovered({
+                companyCode,
+                period,
+                approvedBy,
+            })
+
+            console.log(result?.status)
+
+            if (result?.status === 'failed') {
+                setMessage(result.message)
+                openNotification('danger', result.message)
+            } else {
+                setMessage('Successfully Saved')
+                openNotification(
+                    'success',
+                    'Unrecovered File Created Successfully'
+                )
             }
 
             console.log(isSubmitting)
@@ -287,7 +338,9 @@ const ConfirmedDataView = (props: FormProps) => {
                         </Formik>
                     </div>
 
-                    <div className="col-span-1..."></div>
+                    {!isUnrecoveredActive && (
+                        <div className="col-span-1..."></div>
+                    )}
 
                     <div className="col-span-1...">
                         <span className="mr-1 font-semibold">
@@ -303,6 +356,23 @@ const ConfirmedDataView = (props: FormProps) => {
                             </Button>
                         </span>
                     </div>
+
+                    {isUnrecoveredActive && (
+                        <div className="col-span-1...">
+                            <span className="mr-1 font-semibold">
+                                <Button
+                                    variant="solid"
+                                    color="emerald-600"
+                                    onClick={createUnrecovered}
+                                    loading={isSubmitting}
+                                >
+                                    {isSubmitting
+                                        ? 'Processing...'
+                                        : 'Create Unrecovered'}
+                                </Button>
+                            </span>
+                        </div>
+                    )}
                 </div>
             </Card>
             <div className="mb-4"></div>

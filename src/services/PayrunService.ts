@@ -53,3 +53,12 @@ export async function apiGetPayrunByPeriod(values: PayrollDataSchema) {
         method: 'get',
     })
 }
+
+export async function apiCreateUnRecovered(data: ConfirmDataTransfer) {
+    return ApiService.fetchData<Response>({
+        url: '/Payroll/create-unrecovered',
+        method: 'post',
+        timeout: 240000,
+        data,
+    })
+}
