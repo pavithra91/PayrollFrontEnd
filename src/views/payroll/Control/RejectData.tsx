@@ -20,8 +20,8 @@ interface FormProps extends CommonProps {
 
 const getUsernameFromLocalStorage = () => {
     const user = JSON.parse(localStorage.getItem('admin') ?? '')
-    const userName = JSON.parse(user.auth).user.userName
-    return userName
+    const userID = JSON.parse(user.auth).user.userID
+    return userID
 }
 
 const DialogComponent: React.FC<DialogProps> = ({

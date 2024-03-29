@@ -17,8 +17,9 @@ import { PayrollDataSchema } from '@/@types/payroll'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
-import DataSummary from './DataSummary'
-import PayrollSummary from './PayrollSummary'
+import PayrollSummary from '../Process/PayrollSummary'
+import jsPDF from 'jspdf'
+import autoTable, { RowInput } from 'jspdf-autotable'
 
 interface FormProps extends CommonProps {
     disableSubmit?: boolean
@@ -48,10 +49,8 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     return render({ field, meta, helpers })
 }
 
-const ConfirmedDataView = (props: FormProps) => {
+const SummaryView = (props: FormProps) => {
     const { getPayrunByPeriod, getPayrollSummary } = usePayrun()
-
-    const [isUnrecoveredActive, setIsUnrecoveredActive] = useState(false)
 
     const [isProcessPayrollBloacked, setIsProcessPayrollBloacked] =
         useState(false)
@@ -65,10 +64,6 @@ const ConfirmedDataView = (props: FormProps) => {
 
     const [isDataLoad, setisDataLoad] = useState(false)
     const [isSubmitting, setisSubmitting] = useState(false)
-    const [isUnRecoveredSubmitting, setisUnRecoveredSubmitting] =
-        useState(false)
-
-    const { processPayroll, createUnRecovered } = usePayrun()
 
     const [dataFromChild, setDataFromChild] =
         useState<PayrollDataSchema | null>(null)
@@ -81,12 +76,6 @@ const ConfirmedDataView = (props: FormProps) => {
         }
     }
 
-    type SAPPayCodes = {
-        PayCode: number
-        Amount: number
-        Line_Item_Count: number
-    }
-
     type dataGrid = {
         sapPayCode: number
         sapAmount: string
@@ -97,121 +86,27 @@ const ConfirmedDataView = (props: FormProps) => {
 
     useEffect(() => {
         if (dataFromChild != null) {
-            const result = getDataTransferStatistics(dataFromChild)
-            result.then((res) => {
-                const listItems = JSON.parse(res?.data?.data ?? '')
-
-                listItems[0].SAPPayData.map(
-                    (item: SAPPayCodes, index: number) => {
-                        arr.push({
-                            sapPayCode: item.PayCode,
-                            sapAmount: item.Amount.toLocaleString('en-US', {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                            }),
-                            sapLineCount: item.Line_Item_Count,
-                        })
-                    }
-                )
-                setData(arr)
-                //console.log(arr)
-                setisDataLoad(true)
-            })
-
             const payRunResults = getPayrunByPeriod(dataFromChild)
             payRunResults.then((res) => {
                 const listItems = JSON.parse(res?.data?.data ?? '')
                 if (listItems.length > 0) {
                     console.log(listItems[0])
-                    if (listItems[0].payrunStatus == 'EPF/TAX Calculated') {
-                        setIsUnrecoveredActive(true)
-                        setIsProcessPayrollBloacked(true)
+                    setIsProcessPayrollBloacked(true)
 
-                        const result = getPayrollSummary(dataFromChild)
-                        result.then((res) => {
-                            const listItems = JSON.parse(res?.data?.data ?? '')
+                    const result = getPayrollSummary(dataFromChild)
+                    result.then((res) => {
+                        const listItems = JSON.parse(res?.data?.data ?? '')
 
-                            setPayrollData(listItems)
+                        setPayrollData(listItems)
 
-                            console.log(listItems)
-                        })
-                    } else {
-                        setIsProcessPayrollBloacked(false)
-                        setIsUnrecoveredActive(false)
-                    }
+                        console.log(listItems)
+                    })
+                } else {
+                    openNotification('danger', 'No Data Available')
                 }
             })
         }
     }, [dataFromChild])
-
-    const getUsernameFromLocalStorage = () => {
-        const user = JSON.parse(localStorage.getItem('admin') ?? '')
-        const userID = JSON.parse(user.auth).user.userID
-        return userID
-    }
-
-    const processPayrollData = async () => {
-        setisSubmitting(true)
-
-        if (isDataLoad && dataFromChild != null) {
-            const companyCode = dataFromChild.companyCode
-            const period = dataFromChild.period
-            const approvedBy = getUsernameFromLocalStorage()
-
-            const result = await processPayroll({
-                companyCode,
-                period,
-                approvedBy,
-            })
-
-            console.log(result?.status)
-
-            if (result?.status === 'failed') {
-                setMessage(result.message)
-                openNotification('danger', result.message)
-            } else {
-                setMessage('Successfully Saved')
-                openNotification('success', 'Payroll Process Successfully')
-            }
-
-            console.log(isSubmitting)
-
-            setisSubmitting(false)
-        }
-    }
-
-    const createUnrecovered = async () => {
-        setisUnRecoveredSubmitting(true)
-
-        if (isDataLoad && dataFromChild != null) {
-            const companyCode = dataFromChild.companyCode
-            const period = dataFromChild.period
-            const approvedBy = getUsernameFromLocalStorage()
-
-            const result = await createUnRecovered({
-                companyCode,
-                period,
-                approvedBy,
-            })
-
-            console.log(result?.status)
-
-            if (result?.status === 'failed') {
-                setMessage(result.message)
-                openNotification('danger', result.message)
-            } else {
-                setMessage('Successfully Saved')
-                openNotification(
-                    'success',
-                    'Unrecovered File Created Successfully'
-                )
-            }
-
-            console.log(setisUnRecoveredSubmitting)
-
-            setisUnRecoveredSubmitting(false)
-        }
-    }
 
     const openNotification = (
         type: 'success' | 'warning' | 'danger' | 'info',
@@ -226,6 +121,42 @@ const ConfirmedDataView = (props: FormProps) => {
             </Notification>
         )
     }
+
+    const printReport = () => {
+        if (payrollData != null) {
+            // Object.entries(data).forEach((key) => {
+            //     console.log(key)
+            //     console.log(data[key].status)
+            //     if (data[key].status === true) {
+            //         data[key].status = 'Matched'
+            //     } else {
+            //         data[key].status = 'Un Matched'
+            //     }
+            // })
+            //console.log(data)
+            const doc = new jsPDF()
+            doc.text('Payroll Summary Report', 100, 10, { align: 'center' })
+            autoTable(doc, {
+                columnStyles: { europe: { halign: 'center' } },
+                body: payrollData,
+                columns: [
+                    { header: 'Location', dataKey: 'location' },
+                    { header: 'EPF', dataKey: 'epf' },
+                    { header: 'Name', dataKey: 'empName' },
+                    { header: 'EPF Employee', dataKey: 'emp_contribution' },
+                    { header: 'EPF Company', dataKey: 'comp_contribution' },
+                    {
+                        header: 'ETF',
+                        dataKey: 'etf',
+                    },
+                    { header: 'TAX', dataKey: 'tax' },
+                ],
+            })
+            let last_page = doc.getNumberOfPages()
+            doc.save('payroll_summary_report.pdf')
+        }
+    }
+
     return (
         <>
             <Card header="Process">
@@ -298,53 +229,27 @@ const ConfirmedDataView = (props: FormProps) => {
                         </Formik>
                     </div>
 
-                    {!isUnrecoveredActive && (
-                        <div className="col-span-1..."></div>
-                    )}
+                    <div className="col-span-1..."></div>
 
                     <div className="col-span-1...">
                         <span className="mr-1 font-semibold">
                             <Button
-                                disabled={isProcessPayrollBloacked}
                                 variant="solid"
                                 color="blue-600"
-                                onClick={processPayrollData}
+                                onClick={printReport}
                                 loading={isSubmitting}
                             >
-                                {isSubmitting
-                                    ? 'Processing...'
-                                    : 'Process Payroll'}
+                                {isSubmitting ? 'Processing...' : 'Print'}
                             </Button>
                         </span>
                     </div>
-
-                    {isUnrecoveredActive && (
-                        <div className="col-span-1...">
-                            <span className="mr-1 font-semibold">
-                                <Button
-                                    variant="solid"
-                                    color="emerald-600"
-                                    onClick={createUnrecovered}
-                                    loading={isUnRecoveredSubmitting}
-                                >
-                                    {isUnRecoveredSubmitting
-                                        ? 'Processing...'
-                                        : 'Create Unrecovered'}
-                                </Button>
-                            </span>
-                        </div>
-                    )}
                 </div>
             </Card>
             <div className="mb-4"></div>
             <Card>
-                {isProcessPayrollBloacked ? (
-                    <PayrollSummary data={payrollData} />
-                ) : (
-                    <DataSummary data={data} />
-                )}
+                <PayrollSummary data={payrollData} />
             </Card>
         </>
     )
 }
-export default ConfirmedDataView
+export default SummaryView

@@ -5,6 +5,7 @@ import {
     apiProcessPayroll,
     apiGetPayrunByPeriod,
     apiCreateUnRecovered,
+    apiGetPayrollSummary,
 } from '@/services/PayrunService'
 import type { PayrollDataSchema, ConfirmDataTransfer } from '@/@types/payroll'
 
@@ -119,6 +120,24 @@ function usePayrun() {
         }
     }
 
+    const getPayrollSummary = async (values: PayrollDataSchema) => {
+        try {
+            const resp = await apiGetPayrollSummary(values)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
+
     return {
         getDataTransferStatistics,
         confirmDataTransfer,
@@ -126,6 +145,7 @@ function usePayrun() {
         processPayroll,
         getPayrunByPeriod,
         createUnRecovered,
+        getPayrollSummary,
     }
 }
 

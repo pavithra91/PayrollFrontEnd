@@ -63,6 +63,12 @@ export const protectedRoutes = [
         authority: ['Admin'],
     },
     {
+        key: 'PayrollSummary',
+        path: '/PayrollSummary',
+        component: lazy(() => import('@/views/payroll/Summary/PayrollSummary')),
+        authority: ['Admin'],
+    },
+    {
         key: 'Settings',
         path: '/Settings',
         component: lazy(() => import('@/views/users/Account/Settings')),

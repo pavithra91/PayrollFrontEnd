@@ -21,8 +21,7 @@ import ConfirmData from './ConfirmData'
 import RejectData from './RejectData'
 import { Tag } from '@/components/ui/Tag'
 import jsPDF from 'jspdf'
-import autoTable, { RowInput } from 'jspdf-autotable'
-import { number } from 'yup'
+import autoTable from 'jspdf-autotable'
 
 type Option = {
     value: number
@@ -124,6 +123,10 @@ const TransferDataView = (props: FormProps) => {
                             nonSAPAmount == item.Amount
                         ) {
                             matched = true
+                        }
+
+                        if (item.PayCode === 867) {
+                            console.log(listItems[0].nonSAPPayData)
                         }
 
                         arr.push({

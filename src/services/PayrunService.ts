@@ -62,3 +62,14 @@ export async function apiCreateUnRecovered(data: ConfirmDataTransfer) {
         data,
     })
 }
+
+export async function apiGetPayrollSummary(values: PayrollDataSchema) {
+    return ApiService.fetchData<Response>({
+        url:
+            '/Payroll/get-payroll-summary?companyCode=' +
+            values.companyCode +
+            '&period=' +
+            values.period,
+        method: 'get',
+    })
+}
