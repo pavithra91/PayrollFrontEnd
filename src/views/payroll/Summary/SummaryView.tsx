@@ -21,9 +21,6 @@ import PayrollSummary from '../Process/PayrollSummary'
 import jsPDF from 'jspdf'
 import autoTable, { RowInput } from 'jspdf-autotable'
 
-interface FormProps extends CommonProps {
-    disableSubmit?: boolean
-}
 
 interface RenderProps<V = any> {
     field: FieldInputProps<V>
@@ -49,20 +46,16 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     return render({ field, meta, helpers })
 }
 
-const SummaryView = (props: FormProps) => {
+const SummaryView = () => {
     const { getPayrunByPeriod, getPayrollSummary } = usePayrun()
 
     const [isProcessPayrollBloacked, setIsProcessPayrollBloacked] =
         useState(false)
 
     const [layout, setLayout] = useState<FormLayout>('inline')
-    const { getDataTransferStatistics } = usePayrun()
     const [message, setMessage] = useTimeOutMessage()
-    const [data, setData] = useState<dataGrid[]>([])
 
     const [payrollData, setPayrollData] = useState<dataGrid[]>([])
-
-    const [isDataLoad, setisDataLoad] = useState(false)
     const [isSubmitting, setisSubmitting] = useState(false)
 
     const [dataFromChild, setDataFromChild] =
@@ -82,7 +75,6 @@ const SummaryView = (props: FormProps) => {
         sapLineCount: number
     }
 
-    const arr: dataGrid[] = []
 
     useEffect(() => {
         if (dataFromChild != null) {
@@ -124,21 +116,12 @@ const SummaryView = (props: FormProps) => {
 
     const printReport = () => {
         if (payrollData != null) {
-            // Object.entries(data).forEach((key) => {
-            //     console.log(key)
-            //     console.log(data[key].status)
-            //     if (data[key].status === true) {
-            //         data[key].status = 'Matched'
-            //     } else {
-            //         data[key].status = 'Un Matched'
-            //     }
-            // })
-            //console.log(data)
             const doc = new jsPDF()
             doc.text('Payroll Summary Report', 100, 10, { align: 'center' })
             autoTable(doc, {
                 columnStyles: { europe: { halign: 'center' } },
                 body: payrollData,
+                margin: {bottom: 20},
                 columns: [
                     { header: 'Location', dataKey: 'location' },
                     { header: 'EPF', dataKey: 'epf' },
@@ -152,7 +135,28 @@ const SummaryView = (props: FormProps) => {
                     { header: 'TAX', dataKey: 'tax' },
                 ],
             })
-            let last_page = doc.getNumberOfPages()
+            const pageCount = (doc as any).internal.getNumberOfPages()
+
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setFontSize(10);
+                // Go to page i
+                doc.setPage(i);
+                var pageSize = doc.internal.pageSize;
+                var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+                doc.text('Page ' + String(i) + ' of ' + String(pageCount), doc.internal.pageSize.getWidth() / 2, pageHeight - 8, {align: 'center'}); //data.settings.margin.left if you want it on the left
+              }
+
+              doc.setPage(pageCount)
+
+              var pageSize = doc.internal.pageSize;
+              var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+
+              doc.text('Checked By', (doc.internal.pageSize.getWidth() / 8)+8, pageHeight - 15, { align: 'left' })
+              doc.text('....................................', doc.internal.pageSize.getWidth() / 8, pageHeight - 20, { align: 'left' })
+
+               doc.text('Approved By', doc.internal.pageSize.getWidth()-20, pageHeight - 15, { align: 'right' })
+               doc.text('....................................', doc.internal.pageSize.getWidth()-12, pageHeight - 20, { align: 'right' })
+            
             doc.save('payroll_summary_report.pdf')
         }
     }
@@ -167,7 +171,7 @@ const SummaryView = (props: FormProps) => {
                                 companyCode: 0,
                                 period: 202312,
                             }}
-                            onSubmit={(values, { setSubmitting }) => {
+                            onSubmit={(values) => {
                                 //    if (!disableSubmit) {
                                 const selectedCompanyCode = Array.from(
                                     Object.values(values.companyCode)

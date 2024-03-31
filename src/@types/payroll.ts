@@ -14,3 +14,8 @@ export type ConfirmDataTransfer = {
     period: number
     approvedBy: string
 }
+
+export interface PaysheetDataSchema {
+    epf: number
+    period: number
+}

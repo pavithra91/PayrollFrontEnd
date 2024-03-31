@@ -63,10 +63,22 @@ export const protectedRoutes = [
         authority: ['Admin'],
     },
     {
-        key: 'PayrollSummary',
-        path: '/PayrollSummary',
-        component: lazy(() => import('@/views/payroll/Summary/PayrollSummary')),
+        key: 'Paysheet',
+        path: '/Paysheet',
+        component: lazy(() => import('@/views/paysheet/PaysheetPrint/Paysheet')),
         authority: ['Admin'],
+    },
+    {
+        key: 'PaysheetPrint',
+        path: '/PaysheetPrint',
+        component: lazy(() => import('@/views/paysheet/IndividualPrint/PaysheetPrint')),
+        authority: ['Admin'],
+    },
+    {
+        key: 'paysheet',
+        path: '/paysheet',
+        component: lazy(() => import('@/views/paysheet/IndividualPrint/PaysheetPrint')),
+        authority: [],
     },
     {
         key: 'Settings',

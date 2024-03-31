@@ -1,5 +1,5 @@
 import ApiService from './ApiService'
-import type { ConfirmDataTransfer, PayrollDataSchema } from '@/@types/payroll'
+import type { ConfirmDataTransfer, PayrollDataSchema, PaysheetDataSchema } from '@/@types/payroll'
 
 type Response = {
     data: string
@@ -68,6 +68,17 @@ export async function apiGetPayrollSummary(values: PayrollDataSchema) {
         url:
             '/Payroll/get-payroll-summary?companyCode=' +
             values.companyCode +
+            '&period=' +
+            values.period,
+        method: 'get',
+    })
+}
+
+export async function apiGetPaysheetByEPF(values: PaysheetDataSchema) {
+    return ApiService.fetchData<Response>({
+        url:
+            '/Payroll/get-paysheet?epf=' +
+            values.epf +
             '&period=' +
             values.period,
         method: 'get',

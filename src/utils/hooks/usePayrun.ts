@@ -6,8 +6,9 @@ import {
     apiGetPayrunByPeriod,
     apiCreateUnRecovered,
     apiGetPayrollSummary,
+    apiGetPaysheetByEPF,
 } from '@/services/PayrunService'
-import type { PayrollDataSchema, ConfirmDataTransfer } from '@/@types/payroll'
+import type { PayrollDataSchema, ConfirmDataTransfer, PaysheetDataSchema } from '@/@types/payroll'
 
 type Status = 'success' | 'failed'
 
@@ -138,6 +139,24 @@ function usePayrun() {
         }
     }
 
+    const getPaysheetByEPF = async (values: PaysheetDataSchema) => {
+        try {
+            const resp = await apiGetPaysheetByEPF(values)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
+
     return {
         getDataTransferStatistics,
         confirmDataTransfer,
@@ -146,6 +165,7 @@ function usePayrun() {
         getPayrunByPeriod,
         createUnRecovered,
         getPayrollSummary,
+        getPaysheetByEPF,
     }
 }
 
