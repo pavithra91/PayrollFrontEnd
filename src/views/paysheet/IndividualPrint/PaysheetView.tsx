@@ -18,6 +18,7 @@ import Input from '@/components/ui/Input'
 import Card from '@/components/ui/Card'
 import jsPDF from 'jspdf'
 import autoTable, { RowInput } from 'jspdf-autotable'
+import EmpData from './EmpData'
 
 type FormLayout = 'inline'
 
@@ -35,44 +36,18 @@ interface FieldWrapperProps<V = any> {
     name: string
     render: (formikProps: RenderProps<V>) => React.ReactElement
 }
-
-type empData = {
-    epf: number
-    empName: string
-    companyCode: number
-    location: number
-    costCenter: string
-    empGrade: string
-    gradeCode: number
-}
-
-type salData = {
-    epfGross: number
-    taxableGross: number
-    tax: number
-    emp_contribution: number
-    comp_contribution: number
-    etf: number
-}
-
-type earningData = {
-    name: string
-    payCode: number
-    amount: number
-    calCode: string
-}
-
 type payData = {
-    empData: empData
-    salData: salData
-    earningData: earningData
-    deductionData: number
+    empData: string
+    salData: string
+    earningData: string
+    deductionData: string
 }
 
 const PaysheetView = (props: FormProps) => {
     const { getPaysheetByEPF } = usePayrun()
 
-    const [payrollData, setPayrollData] = useState<payData[]>([])
+    const [payrollData, setPayrollData] = useState<payData | null>(null)
+    const [isDataAvailable, setIsDataAvailable] = useState(false)
 
     const [isSubmitting, setisSubmitting] = useState(false)
     const [dataFromChild, setDataFromChild] =
@@ -93,8 +68,11 @@ const PaysheetView = (props: FormProps) => {
             payRunResults.then((res) => {
                 const listItems = JSON.parse(res?.data?.data ?? '')
                 if (listItems.length > 0) {
-                    console.log(listItems[0].earningData)
+                    console.log(listItems[0].deductionData)
                     setPayrollData(listItems[0])
+                    setIsDataAvailable(true)
+
+                    console.log(typeof payrollData?.empData)
                 } else {
                     openNotification('danger', 'No Data Available')
                 }
@@ -122,6 +100,7 @@ const PaysheetView = (props: FormProps) => {
             doc.text('Employee Paysheet', 100, 10, { align: 'center' })
 
             let emp = JSON.parse(payrollData.empData)
+
             let earnings = JSON.parse(payrollData.earningData)
 
             // console.log(earnings)
@@ -241,6 +220,15 @@ const PaysheetView = (props: FormProps) => {
                     </div>
                 </div>
             </Card>
+            <br />
+            {isDataAvailable && (
+                <EmpData
+                    empData={payrollData?.empData ?? ''}
+                    earningsData={payrollData?.earningData ?? ''}
+                    deductionsData={payrollData?.deductionData ?? ''}
+                    salData={payrollData?.salData ?? ''}
+                />
+            )}
         </>
     )
 }
