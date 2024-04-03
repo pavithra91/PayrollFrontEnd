@@ -17,6 +17,7 @@ import {
 import { CalculationData } from '@/@types/Calculation'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
+import Badge from '@/components/ui/Badge'
 
 type Option = {
     value: number
@@ -25,6 +26,11 @@ type Option = {
 
 interface FormProps extends CommonProps {
     disableSubmit?: boolean
+}
+
+const statusColor: Record<string, string> = {
+    active: 'bg-emerald-500',
+    blocked: 'bg-red-500',
 }
 
 const ViewCalculation = (props: FormProps) => {
@@ -139,11 +145,33 @@ const ViewCalculation = (props: FormProps) => {
             {
                 header: 'Contributor',
                 accessorKey: 'contributor',
+                cell: (cell) => (
+                    <div className="flex items-center">
+                        <span className="ml-2 rtl:mr-2 capitalize">
+                            {cell.getValue() == 'E' ? 'Employee' : 'Company'}
+                        </span>
+                    </div>
+                ),
             },
             {
                 header: 'Status',
                 accessorKey: 'status',
-                show: false,
+                cell: (cell) => (
+                    <div className="flex items-center">
+                        <Badge
+                            className={
+                                statusColor[
+                                    cell.getValue() == true
+                                        ? 'active'
+                                        : 'blocked'
+                                ]
+                            }
+                        />
+                        <span className="ml-2 rtl:mr-2 capitalize">
+                            {cell.getValue() == true ? 'Active' : 'Inactive'}
+                        </span>
+                    </div>
+                ),
             },
             {
                 header: 'Created By',

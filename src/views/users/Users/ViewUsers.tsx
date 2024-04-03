@@ -18,6 +18,7 @@ import {
 } from '@tanstack/react-table'
 import useAccount from '@/utils/hooks/useAccount'
 import { AccountData } from '@/@types/Account'
+import Badge from '@/components/ui/Badge'
 
 type Option = {
     value: number
@@ -26,6 +27,11 @@ type Option = {
 
 interface FormProps extends CommonProps {
     disableSubmit?: boolean
+}
+
+const statusColor: Record<string, string> = {
+    active: 'bg-emerald-500',
+    blocked: 'bg-red-500',
 }
 
 const ViewUsers = (props: FormProps) => {
@@ -125,10 +131,42 @@ const ViewUsers = (props: FormProps) => {
             {
                 header: 'Status',
                 accessorKey: 'status',
+                cell: (cell) => (
+                    <div className="flex items-center">
+                        <Badge
+                            className={
+                                statusColor[
+                                    cell.getValue() == true
+                                        ? 'active'
+                                        : 'blocked'
+                                ]
+                            }
+                        />
+                        <span className="ml-2 rtl:mr-2 capitalize">
+                            {cell.getValue() == true ? 'Active' : 'Inactive'}
+                        </span>
+                    </div>
+                ),
             },
             {
                 header: 'Account Locked',
                 accessorKey: 'isAccountLocked',
+                cell: (cell) => (
+                    <div className="flex items-center">
+                        <Badge
+                            className={
+                                statusColor[
+                                    cell.getValue() == true
+                                        ? 'blocked'
+                                        : 'active'
+                                ]
+                            }
+                        />
+                        <span className="ml-2 rtl:mr-2 capitalize">
+                            {cell.getValue() == true ? 'Locked' : 'Active'}
+                        </span>
+                    </div>
+                ),
             },
             {
                 header: 'Created By',

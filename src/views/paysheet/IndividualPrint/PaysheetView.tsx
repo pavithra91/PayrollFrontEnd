@@ -17,7 +17,6 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Card from '@/components/ui/Card'
 import jsPDF from 'jspdf'
-import autoTable, { RowInput } from 'jspdf-autotable'
 import EmpData from './EmpData'
 
 type FormLayout = 'inline'
@@ -68,11 +67,8 @@ const PaysheetView = (props: FormProps) => {
             payRunResults.then((res) => {
                 const listItems = JSON.parse(res?.data?.data ?? '')
                 if (listItems.length > 0) {
-                    console.log(listItems[0].deductionData)
                     setPayrollData(listItems[0])
                     setIsDataAvailable(true)
-
-                    console.log(typeof payrollData?.empData)
                 } else {
                     openNotification('danger', 'No Data Available')
                 }
@@ -96,31 +92,93 @@ const PaysheetView = (props: FormProps) => {
 
     const printReport = () => {
         if (payrollData != null) {
-            const doc = new jsPDF()
-            doc.text('Employee Paysheet', 100, 10, { align: 'center' })
+            const doc = new jsPDF('p', 'mm', [330, 305])
+
+            doc.setFontSize(14)
+
+            // doc.text('Employee Paysheet', 100, 10, { align: 'center' })
 
             let emp = JSON.parse(payrollData.empData)
-
             let earnings = JSON.parse(payrollData.earningData)
+            let deductions = JSON.parse(payrollData.deductionData)
+            let summary = JSON.parse(payrollData.salData)
 
-            // console.log(earnings)
+            doc.text(emp[0].epf.toString(), 175, 50, { align: 'left' })
+            doc.text(emp[0].empName.toString(), 217, 50, { align: 'left' })
+            doc.text(emp[0].empGrade.toString(), 308, 50, { align: 'left' })
 
-            doc.text(emp[0].epf.toString(), 20, 20, { align: 'center' })
-            doc.text(emp[0].empName.toString(), 100, 20, { align: 'center' })
-            doc.text(emp[0].empGrade.toString(), 150, 20, { align: 'center' })
+            let x = 197
+            let y = 73
+            earnings.forEach(
+                (element: {
+                    payCode: { toString: () => string | string[] }
+                    amount: {
+                        toFixed: (arg0: number) => {
+                            (): any
+                            new (): any
+                            toString: { (): string | string[]; new (): any }
+                        }
+                    }
+                }) => {
+                    doc.text(element.payCode.toString(), x, y, {
+                        align: 'left',
+                    })
+                    console.log(element.amount.toFixed(2).toString())
+                    doc.text(element.amount.toFixed(2).toString(), 232, y, {
+                        align: 'right',
+                    })
+                    y = y + 4
+                }
+            )
 
-            let x = 30
-            let y = 50
-            earnings.forEach((element) => {
-                // console.log(element.payCode)
-                doc.text(element.payCode.toString(), x, y, {
-                    align: 'center',
-                })
-                doc.text(element.amount.toString(), x + 80, y, {
-                    align: 'center',
-                })
-                y = y + 10
+            let z = 180
+            y = y + 5
+
+            doc.text('GROSS PAY', z, y, { align: 'left' })
+            doc.text(summary[0].taxableGross.toFixed(2), 232, y, {
+                align: 'right',
             })
+
+            y = y + 6
+
+            deductions.forEach(
+                (element: {
+                    payCode: { toString: () => string | string[] }
+                    amount: {
+                        toFixed: (arg0: number) => {
+                            (): any
+                            new (): any
+                            toString: { (): string | string[]; new (): any }
+                        }
+                    }
+                }) => {
+                    // console.log(element.payCode)
+                    doc.text(element.payCode.toString(), x, y, {
+                        align: 'left',
+                    })
+                    doc.text(element.amount.toFixed(2).toString(), 232, y, {
+                        align: 'right',
+                    })
+                    y = y + 4
+                }
+            )
+
+            y = y + 5
+
+            doc.text('DEDUCTIONS', z, y, { align: 'left' })
+
+            y = 289
+            z = 247
+            let tottalContribution =
+                parseFloat(summary[0].comp_contribution) +
+                parseFloat(summary[0].emp_contribution)
+            doc.text(summary[0].comp_contribution.toFixed(2), z, y, {
+                align: 'left',
+            })
+
+            z = 273
+
+            doc.text(tottalContribution.toFixed(2), z, y, { align: 'left' })
 
             // autoTable(doc, {
             //     columnStyles: { europe: { halign: 'center' } },
