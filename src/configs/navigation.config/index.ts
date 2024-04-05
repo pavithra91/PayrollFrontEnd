@@ -182,6 +182,16 @@ const navigationConfig: NavigationTree[] = [
         ],
     },
     {
+        key: 'knowledgebase',
+        path: '/knowledgebase',
+        title: 'Knowledge Base',
+        translateKey: 'nav.knowledgebase',
+        icon: 'singleMenu',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+    },
+    {
         key: 'groupMenu',
         path: '',
         title: 'Group Menu',
