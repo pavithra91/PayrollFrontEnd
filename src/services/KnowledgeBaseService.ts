@@ -1,3 +1,4 @@
+import { ArticleData, CategoryData } from '@/@types/KnowledgeBase'
 import ApiService from './ApiService'
 
 // export async function apiGetCategoriesData<T>() {
@@ -13,8 +14,24 @@ type Response = {
 
 export async function apiGetCategoriesData() {
     return ApiService.fetchData<Response>({
-        url: '/knowledge-base/categories',
+        url: '/Help/get-categories',
         method: 'get',
+    })
+}
+
+export async function apiGetArticleByCategory(values: CategoryData) {
+    return ApiService.fetchData<Response>({
+        url: '/Help//get-articles-id?id=' + values.id,
+        method: 'get',
+    })
+}
+
+export async function apiAddArticle(data: ArticleData) {
+    console.log(data)
+    return ApiService.fetchData<Response>({
+        url: '/Help/add-article',
+        method: 'post',
+        data,
     })
 }
 
@@ -22,7 +39,7 @@ export async function apiQueryArticleList<T, U extends Record<string, unknown>>(
     data: U
 ) {
     return ApiService.fetchData<T>({
-        url: '/knowledge-base/articles-query',
+        url: '/Help/articles-query',
         method: 'post',
         data,
     })

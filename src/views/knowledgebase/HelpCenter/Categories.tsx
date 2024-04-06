@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card'
 import useKnowledgeBase from '@/utils/hooks/useKnowledgeBase'
 import { useEffect, useMemo, useState } from 'react'
 import ListView from './ListView'
+import { number } from 'yup'
 
 type cat = {
     id: number
@@ -11,30 +12,34 @@ type cat = {
     articleCounts: number
 }
 
-const demoData = '[{"id": 0, "name": "Accounts", "articleCounts": 5}, {"id": 1, "name": "Payroll", "articleCounts": 2}]'
+const demoData =
+    '[{"id": 0, "name": "Accounts", "articleCounts": 5}, {"id": 1, "name": "Payroll", "articleCounts": 2}]'
 
 const Categories = () => {
     const { getCategoriesData } = useKnowledgeBase()
     const [data, setData] = useState([])
-    const [categoryId, setListView] = useState(' ')
+    const [categoryId, setListView] = useState(0)
     const [isCategorySelected, setIsCategorySelected] = useState(false)
-    
+
     useEffect(() => {
-        setData(JSON.parse(demoData))
-           // const categories = getCategoriesData()
-            //categories.then((res) => {
-           //     const listItems = JSON.parse(res?.data?.data ?? '')
-                // if (listItems.length > 0) {
-                //     setData(listItems[0])
-                
-                // } else {
-                //     openNotification('danger', 'No Data Available')
-                // }
-          //  })
+        //setData(JSON.parse(demoData))
+        const categories = getCategoriesData()
+        categories.then((res) => {
+            const listItems = JSON.parse(res?.data?.data ?? '')
+
+            setData(listItems)
+            console.log(listItems)
+            // if (listItems.length > 0) {
+            //     setData(listItems[0])
+
+            // } else {
+            //     openNotification('danger', 'No Data Available')
+            // }
+        })
     }, [])
 
-    const onCategoryClick = (name: string) => {
-        setListView(name)
+    const onCategoryClick = (id: number) => {
+        setListView(id)
         setIsCategorySelected(true)
     }
 
@@ -45,33 +50,40 @@ const Categories = () => {
                 darkModeSrc: `/img/thumbs/help-center-category-${type}-dark.png`,
             }
         }, [type])
-    
+
         return <DoubleSidedImage {...iconTypeProps} alt="" />
     }
 
     return (
         <>
-        { !isCategorySelected && (<div className="grid lg:grid-cols-2 2xl:grid-cols-4 gap-4">
-            {data.map((cat : {id: number, name : string, articleCounts: number}) => (
-                <Card
-                    key={cat.id}
-                    clickable
-                    onClick={() => onCategoryClick(cat.name)}
-                >
-                    <div className="mb-4 flex justify-center">
-                        <CategoryIcon type={cat.id.toString()} />
-                    </div>
-                    <div className="text-center">
-                        <h5 className="mb-1">{cat.name}</h5>
-                        <strong>{cat.articleCounts} </strong>
-                        <span>Articles</span>
-                    </div>
-                </Card>
-            ))}
-        </div>)} 
+            {!isCategorySelected && (
+                <div className="grid lg:grid-cols-2 2xl:grid-cols-4 gap-4">
+                    {data.map(
+                        (cat: {
+                            id: number
+                            categoryName: string
+                            articleCount: number
+                        }) => (
+                            <Card
+                                key={cat.id}
+                                clickable
+                                onClick={() => onCategoryClick(cat.id)}
+                            >
+                                <div className="mb-4 flex justify-center">
+                                    <CategoryIcon type={cat.id.toString()} />
+                                </div>
+                                <div className="text-center">
+                                    <h5 className="mb-1">{cat.categoryName}</h5>
+                                    <strong>{cat.articleCount} </strong>
+                                    <span>Articles</span>
+                                </div>
+                            </Card>
+                        )
+                    )}
+                </div>
+            )}
 
-        {isCategorySelected && (<ListView categoryId={categoryId} />)} 
-
+            {isCategorySelected && <ListView categoryId={categoryId} />}
         </>
     )
 }
