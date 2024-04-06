@@ -94,9 +94,13 @@ const PaysheetView = (props: FormProps) => {
         if (payrollData != null) {
             const doc = new jsPDF('p', 'mm', [330, 305])
 
+            doc.setFont('Courier', 'Regular')
+
             doc.setFontSize(14)
 
-            // doc.text('Employee Paysheet', 100, 10, { align: 'center' })
+            doc.text('Employee Paysheet', 100, 10, { align: 'center' })
+
+            doc.setFontSize(12)
 
             let emp = JSON.parse(payrollData.empData)
             let earnings = JSON.parse(payrollData.earningData)

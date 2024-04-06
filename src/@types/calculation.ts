@@ -37,11 +37,13 @@ export interface TaxCalculationSchema {
 }
 
 export type TaxCalculationData = {
+    id?: number
     range: number
     calFormula: string
     description: string
     status: boolean
     createdBy: string
+    lastUpdateBy?: string
 }
 
 export interface CompanyIdSelectOption {
@@ -52,4 +54,15 @@ export interface CompanyIdSelectOption {
 export interface ContributorSelectOption {
     label: string
     value: string
+}
+
+export type TaxData = {
+    id: number
+    range: number
+    calFormula: string
+    description: string
+    status: boolean
+    createdBy: string
+    createdDate: string
+    lastUpdateBy?: string
 }

@@ -61,10 +61,10 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     return render({ field, meta, helpers })
 }
 
-const getUsernameFromLocalStorage = () => {
+const getUserIDFromLocalStorage = () => {
     const user = JSON.parse(localStorage.getItem('admin') ?? '')
-    const userName = JSON.parse(user.auth).user.userName
-    return userName
+    const userID = JSON.parse(user.auth).user.userID
+    return userID
 }
 
 const initValues: AccountSchema = {
@@ -76,7 +76,7 @@ const initValues: AccountSchema = {
     userID: '',
     password: '',
     status: false,
-    createdBy: getUsernameFromLocalStorage(),
+    createdBy: getUserIDFromLocalStorage(),
 }
 
 const validationSchema = Yup.object().shape({

@@ -18,7 +18,7 @@ interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
 
-const getUsernameFromLocalStorage = () => {
+const getUserIDFromLocalStorage = () => {
     const user = JSON.parse(localStorage.getItem('admin') ?? '')
     const userID = JSON.parse(user.auth).user.userID
     return userID
@@ -51,7 +51,7 @@ const DialogComponent: React.FC<DialogProps> = ({
     const ConfirmDataTransfer = {
         companyCode: data.companyCode,
         period: data.period,
-        approvedBy: getUsernameFromLocalStorage(),
+        approvedBy: getUserIDFromLocalStorage(),
     }
 
     const confirmData = async () => {

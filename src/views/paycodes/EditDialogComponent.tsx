@@ -57,10 +57,10 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     return render({ field, meta, helpers })
 }
 
-const getUsernameFromLocalStorage = () => {
+const getUserIDFromLocalStorage = () => {
     const user = JSON.parse(localStorage.getItem('admin') ?? '')
-    const userName = JSON.parse(user.auth).user.userName
-    return userName
+    const userID = JSON.parse(user.auth).user.userID
+    return userID
 }
 
 const EditDialog: React.FC<DialogProps> = ({
@@ -79,7 +79,7 @@ const EditDialog: React.FC<DialogProps> = ({
         rate: item.getValue('rate'),
         createdBy: item.getValue('createdBy'),
         isTaxableGross: item.getValue('isTaxableGross'),
-        lastUpdateBy: getUsernameFromLocalStorage(),
+        lastUpdateBy: getUserIDFromLocalStorage(),
     }
 
     const validationSchema = Yup.object().shape({

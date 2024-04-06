@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC } from 'react'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import type { CommonProps, RoleSelectOption } from '@/@types/common'
@@ -20,7 +20,6 @@ import Select from '@/components/ui/Select'
 import * as Yup from 'yup'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
-import usePayCodes from '@/utils/hooks/usePayCodes'
 import Checkbox from '@/components/ui/Checkbox'
 import { AccountSchema } from '@/@types/Account'
 import useAccount from '@/utils/hooks/useAccount'
@@ -53,10 +52,10 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     return render({ field, meta, helpers })
 }
 
-const getUsernameFromLocalStorage = () => {
+const getUserIDFromLocalStorage = () => {
     const user = JSON.parse(localStorage.getItem('admin') ?? '')
-    const userName = JSON.parse(user.auth).user.userName
-    return userName
+    const userID = JSON.parse(user.auth).user.userID
+    return userID
 }
 
 const roleOptions: RoleSelectOption[] = [
@@ -83,8 +82,9 @@ const EditDialog: React.FC<DialogProps> = ({
         role: item.getValue('role'),
         userID: item.getValue('userID'),
         status: item.getValue('status'),
+        isAccountLocked: item.getValue('isAccountLocked'),
         createdBy: item.getValue('createdBy'),
-        lastUpdateBy: getUsernameFromLocalStorage(),
+        lastUpdateBy: getUserIDFromLocalStorage(),
         password: '',
     }
 
@@ -126,6 +126,7 @@ const EditDialog: React.FC<DialogProps> = ({
             role,
             userID,
             status,
+            isAccountLocked,
             lastUpdateBy,
             createdBy,
         } = values
@@ -140,6 +141,7 @@ const EditDialog: React.FC<DialogProps> = ({
             role,
             userID,
             status,
+            isAccountLocked,
             lastUpdateBy,
             password: '',
             createdBy,
@@ -302,47 +304,72 @@ const EditDialog: React.FC<DialogProps> = ({
                                         />
                                     </FormItem>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <FieldWrapper
-                                            name="role"
-                                            render={({
-                                                field,
-                                                meta,
-                                                helpers,
-                                            }) => (
-                                                <FormItem
-                                                    label="User Role"
-                                                    invalid={
-                                                        !!meta.error &&
-                                                        meta.touched
-                                                    }
-                                                    errorMessage={meta.error}
-                                                >
-                                                    <Select
-                                                        name="role"
-                                                        id="role"
-                                                        defaultValue={foundItem}
-                                                        onChange={(value) => {
-                                                            helpers.setValue(
+                                    <div className="grid grid-cols-4 gap-4">
+                                        <div className="col-span-2 ...">
+                                            <FieldWrapper
+                                                name="role"
+                                                render={({
+                                                    field,
+                                                    meta,
+                                                    helpers,
+                                                }) => (
+                                                    <FormItem
+                                                        label="User Role"
+                                                        invalid={
+                                                            !!meta.error &&
+                                                            meta.touched
+                                                        }
+                                                        errorMessage={
+                                                            meta.error
+                                                        }
+                                                    >
+                                                        <Select
+                                                            name="role"
+                                                            id="role"
+                                                            defaultValue={
+                                                                foundItem
+                                                            }
+                                                            onChange={(
                                                                 value
-                                                            )
-                                                        }}
-                                                        placeholder="Please Select User Role"
-                                                        options={roleOptions}
-                                                    ></Select>
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <div className="grid grid-cols-1 gap-4">
-                                            <Field
-                                                className="mb-0 mx-2 my-10"
-                                                name="status"
-                                                component={Checkbox}
-                                            >
-                                                Status
-                                            </Field>
+                                                            ) => {
+                                                                helpers.setValue(
+                                                                    value
+                                                                )
+                                                            }}
+                                                            placeholder="Please Select User Role"
+                                                            options={
+                                                                roleOptions
+                                                            }
+                                                        ></Select>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+
+                                        <div className="col-span-2 ...">
+                                            <div className="...">
+                                                <Field
+                                                    className="mb-0 mx-8 my-3"
+                                                    name="status"
+                                                    component={Checkbox}
+                                                >
+                                                    Status
+                                                </Field>
+                                            </div>
+
+                                            <div className="...">
+                                                <Field
+                                                    className="mb-0 mx-8  my-3"
+                                                    name="isAccountLocked"
+                                                    component={Checkbox}
+                                                >
+                                                    Account Locked
+                                                </Field>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <div className="grid grid-cols-2 gap-4"></div>
 
                                     <div className="text-right mt-4"></div>
 

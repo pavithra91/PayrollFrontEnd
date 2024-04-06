@@ -50,3 +50,11 @@ export async function apiAddTaxCalculations(data: TaxCalculationData) {
         data,
     })
 }
+
+export async function apiUpdateTaxCalculations(data: TaxCalculationData) {
+    return ApiService.fetchData<Response>({
+        url: '/admin/update-tax',
+        method: 'put',
+        data,
+    })
+}

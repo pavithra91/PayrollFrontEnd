@@ -5,6 +5,7 @@ import {
     apiDeleteCalculations,
     apiGetTaxCalculations,
     apiAddTaxCalculations,
+    apiUpdateTaxCalculations,
 } from '@/services/CalculationService'
 
 import type { CalculationData, TaxCalculationData } from '@/@types/calculation'
@@ -120,6 +121,24 @@ function useCalculations() {
         }
     }
 
+    const updateTaxCalculations = async (values: TaxCalculationData) => {
+        try {
+            const resp = await apiUpdateTaxCalculations(values)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
+
     return {
         getCalculations,
         addCalculations,
@@ -127,6 +146,7 @@ function useCalculations() {
         deleteCalculations,
         getTaxCalculations,
         addTaxCalculations,
+        updateTaxCalculations,
     }
 }
 

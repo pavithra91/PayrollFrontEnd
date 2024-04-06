@@ -25,4 +25,5 @@ export interface AccountSchema {
     status: boolean
     createdBy: string
     lastUpdateBy?: string
+    isAccountLocked?: boolean
 }

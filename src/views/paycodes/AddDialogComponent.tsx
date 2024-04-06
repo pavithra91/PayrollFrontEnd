@@ -55,10 +55,10 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     return render({ field, meta, helpers })
 }
 
-const getUsernameFromLocalStorage = () => {
+const getUserIDFromLocalStorage = () => {
     const user = JSON.parse(localStorage.getItem('admin') ?? '')
-    const userName = JSON.parse(user.auth).user.userName
-    return userName
+    const userID = JSON.parse(user.auth).user.userID
+    return userID
 }
 
 const initValues: PayCodeSchema = {
@@ -68,7 +68,7 @@ const initValues: PayCodeSchema = {
     description: '',
     payCategory: '',
     rate: 0,
-    createdBy: getUsernameFromLocalStorage(),
+    createdBy: getUserIDFromLocalStorage(),
     id: 0,
     isTaxableGross: false,
 }
