@@ -21,7 +21,7 @@ export async function apiGetCategoriesData() {
 
 export async function apiGetArticleByCategory(values: CategoryData) {
     return ApiService.fetchData<Response>({
-        url: '/Help//get-articles-id?id=' + values.id,
+        url: '/Help/get-articles-id?id=' + values.id,
         method: 'get',
     })
 }
@@ -29,7 +29,7 @@ export async function apiGetArticleByCategory(values: CategoryData) {
 export async function apiAddArticle(data: ArticleData) {
     console.log(data)
     return ApiService.fetchData<Response>({
-        url: '/Help/add-article',
+        url: '/Help/create-article',
         method: 'post',
         data,
     })

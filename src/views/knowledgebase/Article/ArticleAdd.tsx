@@ -17,6 +17,9 @@ type FormModel = {
     title: string
     content: string
     category: string
+    categoryID: number
+    createdBy: string
+
 }
 
 const validationSchema = Yup.object().shape({
@@ -24,6 +27,14 @@ const validationSchema = Yup.object().shape({
     category: Yup.string().required('Category required'),
     content: Yup.string().required('Content required'),
 })
+
+
+const getUserIDFromLocalStorage = () => {
+    const user = JSON.parse(localStorage.getItem('admin') ?? '')
+    const userID = JSON.parse(user.auth).user.userID
+    return userID
+}
+
 
 const demoText =
     '<p>&lt;img src="/img/logo/logo-light-full.png" alt="CPSTL Payroll System logo"&gt;</p>'
@@ -34,14 +45,9 @@ const CreateArticle = ({ mode }: { mode: string }) => {
     const { addArticle } = useKnowledgeBase()
 
     const [categoryList, setCategoryList] = useState([
-        { label: 'Survey', value: 'survey' },
-        { label: 'Themes', value: 'themes' },
-        { label: 'Security', value: 'security' },
-        { label: 'Integration', value: 'integration' },
-        { label: 'Media', value: 'media' },
-        { label: 'Analytic', value: 'analytic' },
-        { label: 'Chatbot', value: 'chatbot' },
-        { label: 'Commission', value: 'commission' },
+        { label: 'User Account', value: '1' },
+        { label: 'Calculations', value: '2' },
+        { label: 'Payroll', value: '3' },
     ])
 
     const onComplete = async (
@@ -50,23 +56,23 @@ const CreateArticle = ({ mode }: { mode: string }) => {
     ) => {
         setSubmitting(true)
 
-        console.log(value)
-        // const newData = { ...article, ...value, categoryLabel }
+        value.categoryID = parseInt(value.category)
+        value.createdBy = getUserIDFromLocalStorage()
+
         const resp = await addArticle(value)
-        console.log(resp)
+        console.log(resp?.status)
         setSubmitting(false)
-        // if (resp.data) {
-        //     toast.push(
-        //         <Notification
-        //             title={`Successfully ${mode} article`}
-        //             type="success"
-        //         />,
-        //         {
-        //             placement: 'top-center',
-        //         }
-        //     )
-        //     //navigate('/app/knowledge-base/manage-articles')
-        // }
+        if (resp?.status) {
+            toast.push(
+                <Notification
+                    title={`Article Created Successfully`}
+                    type="success"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+       }
 
         setSubmitting(false)
     }
@@ -79,6 +85,8 @@ const CreateArticle = ({ mode }: { mode: string }) => {
                     title: '',
                     content: '',
                     category: '',
+                    createdBy: '',
+                    categoryID: 0,
                 }}
                 validationSchema={validationSchema}
                 onSubmit={(values, { setSubmitting }) => {
@@ -171,51 +179,6 @@ const CreateArticle = ({ mode }: { mode: string }) => {
                 )}
             </Formik>
         </>
-        // <Formik
-        //     enableReinitialize
-        //     initialValues={{
-        //         content: demoText.replace('&lt;', '<'),
-        //     }}
-        //     //  validationSchema={validationSchema}
-        //     onSubmit={(values, { setSubmitting }) => {
-        //         console.log(values)
-        //         //onComplete(values, setSubmitting)
-        //     }}
-        // >
-        //     {({ values, touched, errors, isSubmitting }) => (
-        //         <Form>
-        //             <FormContainer>
-        //                 <FormItem
-        //                     label="Content"
-        //                     className="mb-0"
-        //                     labelClass="!justify-start"
-        //                     //    invalid={errors.content && touched.content}
-        //                     //    errorMessage={errors.content}
-        //                 >
-        //                     <Field name="content">
-        //                         {({ field, form }: FieldProps) => (
-        //                             <RichTextEditor
-        //                                 value={field.value}
-        //                                 onChange={(val) =>
-        //                                     form.setFieldValue(field.name, val)
-        //                                 }
-        //                             />
-        //                         )}
-        //                     </Field>
-        //                 </FormItem>
-        //                 <div className="mt-4 flex justify-end">
-        //                     <Button
-        //                         type="submit"
-        //                         loading={isSubmitting}
-        //                         variant="solid"
-        //                     >
-        //                         Submit
-        //                     </Button>
-        //                 </div>
-        //             </FormContainer>
-        //         </Form>
-        //     )}
-        // </Formik>
     )
 }
 

@@ -99,6 +99,12 @@ export const protectedRoutes = [
         authority: [],
     },
     {
+        key: 'articleadd',
+        path: '/knowledgebase/Article/articleadd',
+        component: lazy(() => import('@/views/knowledgebase/Article/ArticleAdd')),
+        authority: [],
+    },
+    {
         key: 'groupMenu.single',
         path: '/group-single-menu-item-view',
         component: lazy(() => import('@/views/demo/GroupSingleMenuItemView')),

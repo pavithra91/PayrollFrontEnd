@@ -3,8 +3,9 @@ import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import { Card } from '@/components/ui/Card'
 import useKnowledgeBase from '@/utils/hooks/useKnowledgeBase'
 import { useEffect, useMemo, useState } from 'react'
-import ListView from './ListView'
+import ListView from './CategoryList'
 import { number } from 'yup'
+import CategoryList from './CategoryList'
 
 type cat = {
     id: number
@@ -83,7 +84,7 @@ const Categories = () => {
                 </div>
             )}
 
-            {isCategorySelected && <ListView categoryId={categoryId} />}
+            {isCategorySelected && <CategoryList categoryId={categoryId} />}
         </>
     )
 }
