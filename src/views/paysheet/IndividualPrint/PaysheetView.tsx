@@ -68,6 +68,7 @@ const PaysheetView = (props: FormProps) => {
                 const listItems = JSON.parse(res?.data?.data ?? '')
                 if (listItems.length > 0) {
                     setPayrollData(listItems[0])
+                    console.log(listItems[0])
                     setIsDataAvailable(true)
                 } else {
                     openNotification('danger', 'No Data Available')

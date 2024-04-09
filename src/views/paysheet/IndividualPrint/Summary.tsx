@@ -39,41 +39,39 @@ const Summary: React.FC<DialogProps> = ({ salData }) => {
             <Card bordered className="mb-4" header={cardHeader}>
                 <div className="grid grid-flow-row auto-rows-max gap-4">
                     {[...summary].map((elm) => (
-                        <>
-                            <AdaptableCard>
-                                <div className="grid grid-cols-5 gap-4">
-                                    <div className="col-span-2 ...">
-                                        <span className="text-s">Gross : </span>
-                                        <span className="text-s">
-                                            {elm.taxableGross.toFixed(2)}
-                                        </span>
-                                    </div>
-                                    <div className="col-span-3 ...">
-                                        <span className="text-s">
-                                            ETF Contribution (Employee) :{' '}
-                                        </span>
-                                        <span className="text-s">
-                                            {elm.emp_contribution.toFixed(2)}
-                                        </span>
-                                    </div>
+                        <AdaptableCard key={elm.id}>
+                            <div className="grid grid-cols-5 gap-4">
+                                <div className="col-span-2 ...">
+                                    <span className="text-s">Gross : </span>
+                                    <span className="text-s">
+                                        {elm.taxableGross.toFixed(2)}
+                                    </span>
                                 </div>
+                                <div className="col-span-3 ...">
+                                    <span className="text-s">
+                                        ETF Contribution (Employee) :{' '}
+                                    </span>
+                                    <span className="text-s">
+                                        {elm.emp_contribution.toFixed(2)}
+                                    </span>
+                                </div>
+                            </div>
 
-                                <div className="grid grid-cols-5 gap-4">
-                                    <div className="col-span-2 ...">
-                                        <span className="text-s">Tax : </span>
-                                        <span className="text-s">
-                                            {elm.tax.toFixed(2)}
-                                        </span>
-                                    </div>
-                                    <div className="col-span-3 ...">
-                                        <span className="text-s">ETF : </span>
-                                        <span className="text-s">
-                                            {elm.etf.toFixed(2)}
-                                        </span>
-                                    </div>
+                            <div className="grid grid-cols-5 gap-4">
+                                <div className="col-span-2 ...">
+                                    <span className="text-s">Tax : </span>
+                                    <span className="text-s">
+                                        {elm.tax.toFixed(2)}
+                                    </span>
                                 </div>
-                            </AdaptableCard>
-                        </>
+                                <div className="col-span-3 ...">
+                                    <span className="text-s">ETF : </span>
+                                    <span className="text-s">
+                                        {elm.etf.toFixed(2)}
+                                    </span>
+                                </div>
+                            </div>
+                        </AdaptableCard>
                     ))}
                 </div>
             </Card>

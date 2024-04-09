@@ -10,15 +10,16 @@ type earningsData = {
 
 interface DialogProps {
     earningsData: string | ''
+    salData: string | ''
 }
 
-const EarningsData: React.FC<DialogProps> = ({ earningsData }) => {
+const EarningsData: React.FC<DialogProps> = ({ earningsData, salData }) => {
     let earningData = null
-
-    console.log(earningsData)
+    let summary = null
 
     if (earningsData != '') {
         earningData = JSON.parse(earningsData ? earningsData : '')
+        summary = JSON.parse(salData ? salData : '')
     }
 
     const cardHeader = (
@@ -38,26 +39,42 @@ const EarningsData: React.FC<DialogProps> = ({ earningsData }) => {
             <Card bordered className="mb-4" header={cardHeader}>
                 <div className="grid grid-flow-row auto-rows-max gap-4">
                     {[...earningData].map((elm) => (
-                        <>
-                            <AdaptableCard>
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="col-span-2 ...">
-                                        <span className="text-s">
-                                            {elm.payCode} {elm.name}
-                                        </span>
-                                    </div>
-                                    <div className="...">
-                                        <span className="text-s">
-                                            {elm.amount.toFixed(2)}
-                                        </span>
-                                    </div>
+                        <AdaptableCard key={elm.id}>
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2 ...">
+                                    <span className="text-s">
+                                        {elm.payCode} {elm.name}
+                                    </span>
                                 </div>
-                            </AdaptableCard>
-
-                            {/* <span className="text-xs">{elm.amount}</span> */}
-                        </>
+                                <div className="...">
+                                    <span className="text-s">
+                                        {elm.amount.toFixed(2)}
+                                    </span>
+                                </div>
+                            </div>
+                        </AdaptableCard>
                     ))}
                 </div>
+
+                <br></br>
+                <hr></hr>
+                <div className="grid grid-flow-row auto-rows-max gap-4">
+                    <div className="grid grid-cols-3 gap-4 my-2">
+                        <div className="col-span-2 ...">
+                            <span className="text-s">
+                                <strong>GROSS PAY</strong>
+                            </span>
+                        </div>
+                        <div className="...">
+                            <span className="text-s">
+                                <strong>
+                                    {summary[0].taxableGross.toFixed(2)}
+                                </strong>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <hr></hr>
             </Card>
         </>
     )

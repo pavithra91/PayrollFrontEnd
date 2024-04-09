@@ -30,12 +30,12 @@ const SummaryCharts: React.FC<DialogProps> = ({ salData }) => {
             data: [summary[0].taxableGross],
         },
         {
-            name: 'Tax',
-            data: [summary[0].tax],
+            name: 'Gross Deduction',
+            data: [summary[0].deductionGross],
         },
         {
-            name: 'EPF',
-            data: [summary[0].emp_contribution],
+            name: 'Tax',
+            data: [summary[0].tax],
         },
     ]
 

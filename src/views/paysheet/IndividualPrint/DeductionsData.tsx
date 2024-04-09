@@ -10,15 +10,18 @@ type deductionsData = {
 
 interface DialogProps {
     deductionsData: string | ''
+    salData: string | ''
 }
 
-const DeductionsData: React.FC<DialogProps> = ({ deductionsData }) => {
+const DeductionsData: React.FC<DialogProps> = ({ deductionsData, salData }) => {
     let deductionData = null
+    let summary = null
 
     console.log(deductionsData)
 
     if (deductionsData != '') {
         deductionData = JSON.parse(deductionsData ? deductionsData : '')
+        summary = JSON.parse(salData ? salData : '')
     }
 
     const cardHeader = (
@@ -38,25 +41,43 @@ const DeductionsData: React.FC<DialogProps> = ({ deductionsData }) => {
             <Card bordered className="mb-4" header={cardHeader}>
                 <div className="grid grid-flow-row auto-rows-max gap-4">
                     {[...deductionData].map((elm) => (
-                        <>
-                            <AdaptableCard>
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="col-span-2 ...">
-                                        <span className="text-s">
-                                            {elm.payCode} <span> </span>
-                                            {elm.name}
-                                        </span>
-                                    </div>
-                                    <div className="...">
-                                        <span className="text-s">
-                                            {elm.amount.toFixed(2)}
-                                        </span>
-                                    </div>
+                        <AdaptableCard key={elm.id}>
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2 ...">
+                                    <span className="text-s">
+                                        {elm.payCode} <span> </span>
+                                        {elm.name}
+                                    </span>
                                 </div>
-                            </AdaptableCard>
-                        </>
+                                <div className="...">
+                                    <span className="text-s">
+                                        {elm.amount.toFixed(2)}
+                                    </span>
+                                </div>
+                            </div>
+                        </AdaptableCard>
                     ))}
                 </div>
+
+                <br></br>
+                <hr></hr>
+                <div className="grid grid-flow-row auto-rows-max gap-4">
+                    <div className="grid grid-cols-3 gap-4 my-2">
+                        <div className="col-span-2 ...">
+                            <span className="text-s">
+                                <strong>DEDUCTIONS</strong>
+                            </span>
+                        </div>
+                        <div className="...">
+                            <span className="text-s">
+                                <strong>
+                                    {summary[0].deductionGross.toFixed(2)}
+                                </strong>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <hr></hr>
             </Card>
         </>
     )

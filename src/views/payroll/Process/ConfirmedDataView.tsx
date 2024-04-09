@@ -132,8 +132,6 @@ const ConfirmedDataView = (props: FormProps) => {
                             const listItems = JSON.parse(res?.data?.data ?? '')
 
                             setPayrollData(listItems)
-
-                            console.log(listItems)
                         })
                     } else {
                         setIsProcessPayrollBloacked(false)
@@ -164,7 +162,7 @@ const ConfirmedDataView = (props: FormProps) => {
                 approvedBy,
             })
 
-            console.log(result?.status)
+            console.log(result)
 
             if (result?.status === 'failed') {
                 setMessage(result.message)
@@ -173,8 +171,6 @@ const ConfirmedDataView = (props: FormProps) => {
                 setMessage('Successfully Saved')
                 openNotification('success', 'Payroll Process Successfully')
             }
-
-            console.log(isSubmitting)
 
             setisSubmitting(false)
         }
@@ -194,7 +190,7 @@ const ConfirmedDataView = (props: FormProps) => {
                 approvedBy,
             })
 
-            console.log(result?.status)
+            console.log(result)
 
             if (result?.status === 'failed') {
                 setMessage(result.message)

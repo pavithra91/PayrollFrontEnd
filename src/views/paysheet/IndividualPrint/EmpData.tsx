@@ -73,8 +73,14 @@ const EmpData: React.FC<DialogProps> = ({
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <EarningsData earningsData={earningsData} />
-                    <DeductionsData deductionsData={deductionsData} />
+                    <EarningsData
+                        earningsData={earningsData}
+                        salData={salData}
+                    />
+                    <DeductionsData
+                        deductionsData={deductionsData}
+                        salData={salData}
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">
