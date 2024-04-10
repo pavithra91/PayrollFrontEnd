@@ -13,6 +13,9 @@ const Dashboard = () => {
                         <PayrunStatus companyCode={2000} period={202312} />
                     </div>
                 </AdaptableCard>
+                <AdaptableCard>
+                    <div className="grid grid-cols-2 gap-4"></div>
+                </AdaptableCard>
             </div>
         </>
     )
