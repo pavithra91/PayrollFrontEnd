@@ -27,9 +27,7 @@ const PayrunStatus: React.FC<DialogProps> = ({ companyCode, period }) => {
         })
         result.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
-            console.log(listItems)
             if (listItems.length > 0) {
-                console.log(listItems[0].payrunStatus)
                 setPayrunStatus(listItems[0].payrunStatus)
                 setPayrunTag(
                     'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-100 rounded-md border-0 mx-2'

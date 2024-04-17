@@ -1,6 +1,7 @@
 /** Example purpose only */
 import AdaptableCard from '@/components/shared/AdaptableCard'
 import PayrunStatus from './PayrunStatus'
+import OTHours from './OTHours'
 
 const Dashboard = () => {
     return (
@@ -14,7 +15,9 @@ const Dashboard = () => {
                     </div>
                 </AdaptableCard>
                 <AdaptableCard>
-                    <div className="grid grid-cols-2 gap-4"></div>
+                    <div className="grid grid-cols-1 gap-4">
+                        <OTHours companyCode={3000} period={202312}/>
+                    </div>
                 </AdaptableCard>
             </div>
         </>

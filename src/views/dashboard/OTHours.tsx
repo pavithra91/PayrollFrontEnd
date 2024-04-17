@@ -1,49 +1,50 @@
 import Card from '@/components/ui/Card'
-import { useEffect, useState } from 'react'
-import usePayrun from '@/utils/hooks/usePayrun'
+import { SetStateAction, useEffect, useState } from 'react'
 import { COLORS } from '@/constants/chart.constant'
 import Chart from 'react-apexcharts'
+import useCommon from '@/utils/hooks/useCommon'
 
 interface DialogProps {
     companyCode: any
     period: any
 }
 
+interface othoursList{
+    othours: any[]
+}
+
 const OTHours: React.FC<DialogProps> = ({ companyCode, period }) => {
-    const { getPayrunByPeriod } = usePayrun()
-    const [payrunStatus, setPayrunStatus] = useState('')
-    const [payrunTag, setPayrunTag] = useState('')
+    const { getOTHours } = useCommon()
+
+    const [otData, setData] = useState<othoursList>()
+    const [costCenters, setCostCenters] = useState()
 
     const today = new Date()
     const month = today.toLocaleDateString('en-US', { month: 'long' })
     const year = today.getFullYear()
 
     useEffect(() => {
-        const result = getPayrunByPeriod({
+        const result = getOTHours({
             companyCode,
             period,
         })
         result.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
-            console.log(listItems)
-            if (listItems.length > 0) {
-                console.log(listItems[0].payrunStatus)
-                setPayrunStatus(listItems[0].payrunStatus)
-                setPayrunTag(
-                    'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-100 rounded-md border-0 mx-2'
-                )
-            } else {
-                setPayrunStatus('Not Started')
-                setPayrunTag(
-                    'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-100 rounded-md border-0 mx-2'
-                )
-            }
+            const othours: any[] | ((prevState: never[]) => never[]) = []
+            const costcenters: any[] | SetStateAction<undefined> = []
+
+            listItems.map((elm: { othours: any; costCenter: any }) => {
+                othours.push(elm.othours)
+                costcenters.push(elm.costCenter)
+            })
+            setData(othours)
+            setCostCenters(costcenters)
         })
     }, [])
 
     const data = [
         {
-            data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380],
+            data: otData,
         },
     ]
 
@@ -54,7 +55,7 @@ const OTHours: React.FC<DialogProps> = ({ companyCode, period }) => {
                     options={{
                         plotOptions: {
                             bar: {
-                                horizontal: true,
+                                horizontal: false,
                             },
                         },
                         colors: COLORS,
@@ -62,23 +63,12 @@ const OTHours: React.FC<DialogProps> = ({ companyCode, period }) => {
                             enabled: false,
                         },
                         xaxis: {
-                            categories: [
-                                'South Korea',
-                                'Canada',
-                                'United Kingdom',
-                                'Netherlands',
-                                'Italy',
-                                'France',
-                                'Japan',
-                                'United States',
-                                'China',
-                                'Germany',
-                            ],
+                            categories: costCenters,
                         },
                     }}
                     series={data}
                     type="bar"
-                    height={300}
+                    height={400}
                 />
             </Card>
         </>
