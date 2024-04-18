@@ -7,6 +7,7 @@ import { HiOutlineClock, HiStar } from 'react-icons/hi'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import ReactHtmlParser from 'html-react-parser'
 import ArticleContent from '../Article/ArticleContent'
+import Button from '@/components/ui/Button/Button'
 
 export type Article = {
     id: string
@@ -47,7 +48,13 @@ const articleTagClass = (category: string) => {
     }
 }
 
-const ListView = ({ categoryId }: { categoryId?: number }) => {
+const ListView = ({
+    categoryId,
+    onSendData,
+}: {
+    categoryId?: number
+    onSendData: any
+}) => {
     const navigate = useNavigate()
 
     const { getArticleByCategory } = useKnowledgeBase()
@@ -75,6 +82,8 @@ const ListView = ({ categoryId }: { categoryId?: number }) => {
         articles.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
 
+            console.log(listItems)
+
             setData(listItems)
 
             // if (listItems.length > 0) {
@@ -88,6 +97,10 @@ const ListView = ({ categoryId }: { categoryId?: number }) => {
 
     const handleChildData = (data: any) => {
         setIsArticleIdClicked(data)
+    }
+
+    const backClick = () => {
+        onSendData(false)
     }
 
     return (
@@ -130,9 +143,12 @@ const ListView = ({ categoryId }: { categoryId?: number }) => {
                                 </div>
                                 <p>
                                     {article.content.length > 230
-                                        ? ReactHtmlParser(article.content || '')
-                                              .toString()
-                                              .substring(0, 229) + '...'
+                                        ? ReactHtmlParser(
+                                              article.content.substring(
+                                                  0,
+                                                  229
+                                              ) + '...' || ''
+                                          )
                                         : ReactHtmlParser(article.content)}
                                 </p>
                                 <div className="flex items-center justify-between mt-6">
@@ -158,6 +174,14 @@ const ListView = ({ categoryId }: { categoryId?: number }) => {
                         </Card>
                     </article>
                 ))}
+
+            <div className="mt-12">
+                <div className="mt-3 flex justify-end">
+                    <Button variant="solid" onClick={backClick}>
+                        Back
+                    </Button>
+                </div>
+            </div>
         </>
     )
 }

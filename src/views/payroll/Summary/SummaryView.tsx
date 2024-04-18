@@ -21,7 +21,6 @@ import PayrollSummary from '../Process/PayrollSummary'
 import jsPDF from 'jspdf'
 import autoTable, { RowInput } from 'jspdf-autotable'
 
-
 interface RenderProps<V = any> {
     field: FieldInputProps<V>
     meta: FieldMetaProps<V>
@@ -75,7 +74,6 @@ const SummaryView = () => {
         sapLineCount: number
     }
 
-
     useEffect(() => {
         if (dataFromChild != null) {
             const payRunResults = getPayrunByPeriod(dataFromChild)
@@ -121,7 +119,7 @@ const SummaryView = () => {
             autoTable(doc, {
                 columnStyles: { europe: { halign: 'center' } },
                 body: payrollData,
-                margin: {bottom: 20},
+                margin: { bottom: 20 },
                 columns: [
                     { header: 'Location', dataKey: 'location' },
                     { header: 'EPF', dataKey: 'epf' },
@@ -138,32 +136,61 @@ const SummaryView = () => {
             const pageCount = (doc as any).internal.getNumberOfPages()
 
             for (let i = 1; i <= pageCount; i++) {
-                doc.setFontSize(10);
+                doc.setFontSize(10)
                 // Go to page i
-                doc.setPage(i);
-                var pageSize = doc.internal.pageSize;
-                var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
-                doc.text('Page ' + String(i) + ' of ' + String(pageCount), doc.internal.pageSize.getWidth() / 2, pageHeight - 8, {align: 'center'}); //data.settings.margin.left if you want it on the left
-              }
+                doc.setPage(i)
+                var pageSize = doc.internal.pageSize
+                var pageHeight = pageSize.height
+                    ? pageSize.height
+                    : pageSize.getHeight()
+                doc.text(
+                    'Page ' + String(i) + ' of ' + String(pageCount),
+                    doc.internal.pageSize.getWidth() / 2,
+                    pageHeight - 8,
+                    { align: 'center' }
+                ) //data.settings.margin.left if you want it on the left
+            }
 
-              doc.setPage(pageCount)
+            doc.setPage(pageCount)
 
-              var pageSize = doc.internal.pageSize;
-              var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+            var pageSize = doc.internal.pageSize
+            var pageHeight = pageSize.height
+                ? pageSize.height
+                : pageSize.getHeight()
 
-              doc.text('Checked By', (doc.internal.pageSize.getWidth() / 8)+8, pageHeight - 15, { align: 'left' })
-              doc.text('....................................', doc.internal.pageSize.getWidth() / 8, pageHeight - 20, { align: 'left' })
+            doc.text(
+                'Checked By',
+                doc.internal.pageSize.getWidth() / 8 + 8,
+                pageHeight - 15,
+                { align: 'left' }
+            )
+            doc.text(
+                '....................................',
+                doc.internal.pageSize.getWidth() / 8,
+                pageHeight - 20,
+                { align: 'left' }
+            )
 
-               doc.text('Approved By', doc.internal.pageSize.getWidth()-20, pageHeight - 15, { align: 'right' })
-               doc.text('....................................', doc.internal.pageSize.getWidth()-12, pageHeight - 20, { align: 'right' })
-            
+            doc.text(
+                'Approved By',
+                doc.internal.pageSize.getWidth() - 20,
+                pageHeight - 15,
+                { align: 'right' }
+            )
+            doc.text(
+                '....................................',
+                doc.internal.pageSize.getWidth() - 12,
+                pageHeight - 20,
+                { align: 'right' }
+            )
+
             doc.save('payroll_summary_report.pdf')
         }
     }
 
     return (
         <>
-            <Card header="Process">
+            <Card header="Payroll Summary">
                 <div className="grid grid-cols-6 gap-4">
                     <div className="col-span-4 ...">
                         <Formik

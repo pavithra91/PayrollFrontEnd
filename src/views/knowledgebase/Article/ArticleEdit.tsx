@@ -1,16 +1,11 @@
-import { useState, useEffect } from 'react'
-import Input from '@/components/ui/Input'
+import { useState } from 'react'
 import { FormItem, FormContainer } from '@/components/ui/Form'
-import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import Notification from '@/components/ui/Notification'
-import toast from '@/components/ui/toast'
 import RichTextEditor from '@/components/shared/RichTextEditor'
 import { Field, Form, Formik } from 'formik'
-import { useNavigate } from 'react-router-dom'
-import ReactHtmlParser from 'html-react-parser'
-import * as Yup from 'yup'
 import type { FieldProps } from 'formik'
+import Input from '@/components/ui/Input/Input'
+import { title } from 'process'
 
 type FormModel = {
     title: string
@@ -18,12 +13,7 @@ type FormModel = {
     category: string
 }
 
-const demoText =
-    '<p>&lt;img src="/img/logo/logo-light-full.png" alt="CPSTL Payroll System logo"&gt;</p>'
-
-const Article = ({ mode }: { mode: string }) => {
-    const navigate = useNavigate()
-
+const ArticleEdit = ({ article }: { article: any }) => {
     const [categoryList, setCategoryList] = useState([
         { label: 'Survey', value: 'survey' },
         { label: 'Themes', value: 'themes' },
@@ -40,19 +30,18 @@ const Article = ({ mode }: { mode: string }) => {
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
         setSubmitting(true)
-console.log(value)
+        console.log(value)
         setSubmitting(false)
-
     }
-
 
     return (
         <Formik
             enableReinitialize
             initialValues={{
-                content: demoText.replace('&lt;','<'),
+                title: article.title,
+                content: article.content,
             }}
-          //  validationSchema={validationSchema}
+            //  validationSchema={validationSchema}
             onSubmit={(values, { setSubmitting }) => {
                 console.log(values)
                 //onComplete(values, setSubmitting)
@@ -60,38 +49,51 @@ console.log(value)
         >
             {({ values, touched, errors, isSubmitting }) => (
                 <Form>
-                        <FormContainer>
-                            <FormItem
-                                label="Content"
-                                className="mb-0"
-                                labelClass="!justify-start"
+                    <FormContainer>
+                        <FormItem
+                            label="Title"
+                            //invalid={errors.title && touched.title}
+                            // errorMessage={errors.title}
+                        >
+                            <Field
+                                autoComplete="off"
+                                name="title"
+                                component={Input}
+                                value={article.title}
+                            />
+                        </FormItem>
+                        <FormItem
+                            label="Content"
+                            className="mb-0"
+                            labelClass="!justify-start"
                             //    invalid={errors.content && touched.content}
                             //    errorMessage={errors.content}
+                        >
+                            <Field name="content">
+                                {({ field, form }: FieldProps) => (
+                                    <RichTextEditor
+                                        value={field.value}
+                                        onChange={(val) =>
+                                            form.setFieldValue(field.name, val)
+                                        }
+                                    />
+                                )}
+                            </Field>
+                        </FormItem>
+                        <div className="mt-4 flex justify-end">
+                            <Button
+                                type="submit"
+                                loading={isSubmitting}
+                                variant="solid"
                             >
-                                <Field name="content">
-                                    {({ field, form }: FieldProps) => (
-                                        <RichTextEditor
-                                            value={field.value}
-                                            onChange={(val) =>
-                                                form.setFieldValue(
-                                                    field.name,
-                                                    val
-                                                )
-                                            }
-                                        />
-                                    )}
-                                </Field>
-                            </FormItem>
-                            <div className="mt-4 flex justify-end">
-                                <Button type='submit' loading={isSubmitting} variant="solid">
-                                    Submit
-                                </Button>
-                            </div>
-                        </FormContainer>
+                                Submit
+                            </Button>
+                        </div>
+                    </FormContainer>
                 </Form>
             )}
         </Formik>
     )
 }
 
-export default Article
+export default ArticleEdit

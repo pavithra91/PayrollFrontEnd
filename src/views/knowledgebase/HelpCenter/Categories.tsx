@@ -21,6 +21,7 @@ const Categories = () => {
     const [data, setData] = useState([])
     const [categoryId, setListView] = useState(0)
     const [isCategorySelected, setIsCategorySelected] = useState(false)
+    const [isArticleIdClicked, setIsArticleIdClicked] = useState(false)
 
     useEffect(() => {
         //setData(JSON.parse(demoData))
@@ -42,6 +43,10 @@ const Categories = () => {
     const onCategoryClick = (id: number) => {
         setListView(id)
         setIsCategorySelected(true)
+    }
+
+    const handleChildData = (data: any) => {
+        setIsCategorySelected(data)
     }
 
     const CategoryIcon = ({ type }: { type: string }) => {
@@ -84,7 +89,12 @@ const Categories = () => {
                 </div>
             )}
 
-            {isCategorySelected && <CategoryList categoryId={categoryId} />}
+            {isCategorySelected && (
+                <CategoryList
+                    categoryId={categoryId}
+                    onSendData={handleChildData}
+                />
+            )}
         </>
     )
 }

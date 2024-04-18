@@ -17,12 +17,12 @@ export const protectedRoutes = [
         component: lazy(() => import('@/views/dashboard/Dashboard')),
         authority: [],
     },
-    {
-        key: 'empSplTax',
-        path: '/empSplTax',
-        component: lazy(() => import('@/views/empSplTax/EmpSplTax')),
-        authority: [],
-    },
+    // {
+    //     key: 'empSplTax',
+    //     path: '/empSplTax',
+    //     component: lazy(() => import('@/views/empSplTax/EmpSplTax')),
+    //     authority: [],
+    // },
     {
         key: 'calculations',
         path: '/calculations',
@@ -63,21 +63,33 @@ export const protectedRoutes = [
         authority: ['Admin'],
     },
     {
+        key: 'PayrollSummary',
+        path: '/PayrollSummary',
+        component: lazy(() => import('@/views/payroll/Summary/PayrollSummary')),
+        authority: ['Admin'],
+    },
+    {
         key: 'Paysheet',
         path: '/Paysheet',
-        component: lazy(() => import('@/views/paysheet/PaysheetPrint/Paysheet')),
+        component: lazy(
+            () => import('@/views/paysheet/PaysheetPrint/Paysheet')
+        ),
         authority: ['Admin'],
     },
     {
         key: 'PaysheetPrint',
         path: '/PaysheetPrint',
-        component: lazy(() => import('@/views/paysheet/IndividualPrint/PaysheetPrint')),
+        component: lazy(
+            () => import('@/views/paysheet/IndividualPrint/PaysheetPrint')
+        ),
         authority: ['Admin'],
     },
     {
         key: 'paysheet',
         path: '/paysheet',
-        component: lazy(() => import('@/views/paysheet/IndividualPrint/PaysheetPrint')),
+        component: lazy(
+            () => import('@/views/paysheet/IndividualPrint/PaysheetPrint')
+        ),
         authority: [],
     },
     {
@@ -95,13 +107,17 @@ export const protectedRoutes = [
     {
         key: 'knowledgebase',
         path: '/knowledgebase',
-        component: lazy(() => import('@/views/knowledgebase/HelpCenter/HelpCenter')),
+        component: lazy(
+            () => import('@/views/knowledgebase/HelpCenter/HelpCenter')
+        ),
         authority: [],
     },
     {
         key: 'articleadd',
         path: '/knowledgebase/Article/articleadd',
-        component: lazy(() => import('@/views/knowledgebase/Article/ArticleAdd')),
+        component: lazy(
+            () => import('@/views/knowledgebase/Article/ArticleAdd')
+        ),
         authority: [],
     },
     {

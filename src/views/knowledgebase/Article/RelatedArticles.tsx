@@ -30,10 +30,6 @@ type ArticleItemProps = {
     isLastChild?: boolean
 }
 
-
-
-
-
 const RelatedArticles = ({
     article,
     onSendData,
@@ -41,29 +37,27 @@ const RelatedArticles = ({
     article: Article[]
     onSendData: any
 }) => {
-
     const ArticleItem = ({ data = {}, isLastChild }: ArticleItemProps) => {
         const navigate = useNavigate()
-    
-        const onArticleClick = (id : string) => {
 
+        const onArticleClick = (id: string) => {
             let articles = article.find((item) => item.id == id.toString())
             onSendData(articles)
         }
-    
+
         // const onArticleClick = (id: number) => {
         //     let article = data.find((item) => item.id == id.toString())
-    
+
         //     setArticleId(article)
         //     setIsArticleIdClicked(true)
         // }
-    
-    
+
         return (
             <div
                 className={classNames(
                     'py-6 group cursor-pointer',
-                    !isLastChild && 'border-b border-gray-200 dark:border-gray-600'
+                    !isLastChild &&
+                        'border-b border-gray-200 dark:border-gray-600'
                 )}
                 onClick={() => onArticleClick(data.id ?? '')}
             >
@@ -71,7 +65,12 @@ const RelatedArticles = ({
                     {data.title}
                 </h6>
                 <p className="mb-1">
-                    <TextEllipsis text={ReactHtmlParser(data.content || '')} maxTextCount={40} />
+                    <TextEllipsis
+                        text={ReactHtmlParser(
+                            data.content?.substring(0, 40) || ''
+                        )}
+                        maxTextCount={40}
+                    />
                 </p>
                 <span className="text-xs">Updated {data.updateTime}</span>
             </div>
