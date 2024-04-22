@@ -26,6 +26,7 @@ interface DialogProps {
     earningsData: string | ''
     deductionsData: string | ''
     salData: string | ''
+    unRecoveredData: string | ''
 }
 
 const EmpData: React.FC<DialogProps> = ({
@@ -33,6 +34,7 @@ const EmpData: React.FC<DialogProps> = ({
     earningsData,
     deductionsData,
     salData,
+    unRecoveredData,
 }) => {
     let employeeData = null
 
@@ -80,6 +82,7 @@ const EmpData: React.FC<DialogProps> = ({
                     <DeductionsData
                         deductionsData={deductionsData}
                         salData={salData}
+                        unRecoveredData={unRecoveredData}
                     />
                 </div>
 

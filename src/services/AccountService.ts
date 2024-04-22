@@ -7,7 +7,7 @@ type Response = {
 
 export async function apiGetUsers() {
     return ApiService.fetchData<Response>({
-        url: '/User/GetUsers',
+        url: '/User/get-users',
         method: 'get',
     })
 }
@@ -15,7 +15,7 @@ export async function apiGetUsers() {
 export async function apiAddUser(data: AccountData) {
     console.log(data)
     return ApiService.fetchData<Response>({
-        url: '/User/CreateUser',
+        url: '/User/create-user',
         method: 'post',
         data,
     })

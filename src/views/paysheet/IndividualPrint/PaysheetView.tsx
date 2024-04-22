@@ -40,6 +40,7 @@ type payData = {
     salData: string
     earningData: string
     deductionData: string
+    unRecoveredData: string
 }
 
 const PaysheetView = (props: FormProps) => {
@@ -68,7 +69,6 @@ const PaysheetView = (props: FormProps) => {
                 const listItems = JSON.parse(res?.data?.data ?? '')
                 if (listItems.length > 0) {
                     setPayrollData(listItems[0])
-                    console.log(listItems[0])
                     setIsDataAvailable(true)
                 } else {
                     openNotification('danger', 'No Data Available')
@@ -128,7 +128,6 @@ const PaysheetView = (props: FormProps) => {
                     doc.text(element.payCode.toString(), x, y, {
                         align: 'left',
                     })
-                    console.log(element.amount.toFixed(2).toString())
                     doc.text(element.amount.toFixed(2).toString(), 232, y, {
                         align: 'right',
                     })
@@ -290,6 +289,7 @@ const PaysheetView = (props: FormProps) => {
                     earningsData={payrollData?.earningData ?? ''}
                     deductionsData={payrollData?.deductionData ?? ''}
                     salData={payrollData?.salData ?? ''}
+                    unRecoveredData={payrollData?.unRecoveredData ?? ''}
                 />
             )}
         </>

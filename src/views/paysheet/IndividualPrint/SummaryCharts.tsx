@@ -18,8 +18,6 @@ interface DialogProps {
 const SummaryCharts: React.FC<DialogProps> = ({ salData }) => {
     let summary = null
 
-    console.log(salData)
-
     if (salData != '') {
         summary = JSON.parse(salData ? salData : '')
     }

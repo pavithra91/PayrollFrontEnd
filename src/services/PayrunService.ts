@@ -23,7 +23,7 @@ export async function apiGetDataTransferStatistics(values: PayrollDataSchema) {
 export async function apiConfirmDataTransfer(data: ConfirmDataTransfer) {
     console.log(data)
     return ApiService.fetchData<Response>({
-        url: '/DataTransfer/ConfirmDataTransfer',
+        url: '/DataTransfer/confirm-data-transfer',
         method: 'post',
         data,
     })
@@ -40,7 +40,7 @@ export async function apiRollBackDataTransfer(data: ConfirmDataTransfer) {
 
 export async function apiProcessPayroll(data: ConfirmDataTransfer) {
     return ApiService.fetchData<Response>({
-        url: '/Payroll/ProcessPayroll',
+        url: '/Payroll/process-payroll',
         method: 'post',
         timeout: 240000,
         data,

@@ -11,18 +11,28 @@ type deductionsData = {
 interface DialogProps {
     deductionsData: string | ''
     salData: string | ''
+    unRecoveredData: string | ''
 }
 
-const DeductionsData: React.FC<DialogProps> = ({ deductionsData, salData }) => {
+const DeductionsData: React.FC<DialogProps> = ({
+    deductionsData,
+    salData,
+    unRecoveredData,
+}) => {
     let deductionData = null
     let summary = null
-
-    console.log(deductionsData)
+    let unRecovered = null
 
     if (deductionsData != '') {
         deductionData = JSON.parse(deductionsData ? deductionsData : '')
         summary = JSON.parse(salData ? salData : '')
     }
+
+    if (unRecoveredData != '') {
+        unRecovered = JSON.parse(unRecoveredData ? unRecoveredData : '')
+    }
+
+    console.log(unRecovered)
 
     const cardHeader = (
         <div className="flex items-center">
@@ -42,8 +52,8 @@ const DeductionsData: React.FC<DialogProps> = ({ deductionsData, salData }) => {
                 <div className="grid grid-flow-row auto-rows-max gap-4">
                     {[...deductionData].map((elm) => (
                         <AdaptableCard key={elm.id}>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="col-span-2 ...">
+                            <div className="grid grid-cols-7">
+                                <div className="col-span-5 ...">
                                     <span className="text-s">
                                         {elm.payCode} <span> </span>
                                         {elm.name}
@@ -53,6 +63,9 @@ const DeductionsData: React.FC<DialogProps> = ({ deductionsData, salData }) => {
                                     <span className="text-s">
                                         {elm.amount.toFixed(2)}
                                     </span>
+                                </div>
+                                <div className="...">
+                                    <span className="text-s"></span>
                                 </div>
                             </div>
                         </AdaptableCard>
