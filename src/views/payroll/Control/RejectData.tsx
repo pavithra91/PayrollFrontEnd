@@ -57,8 +57,6 @@ const DialogComponent: React.FC<DialogProps> = ({
         setSubmitting(true)
         const result = await rollbackDataTransfer(RejectDataTransfer)
 
-        console.log(result?.status)
-
         if (result?.status === 'failed') {
             setMessage('Error')
             openNotification('danger', result.message)

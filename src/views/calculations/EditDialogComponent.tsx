@@ -163,10 +163,12 @@ const EditDialog: React.FC<DialogProps> = ({
                 lastUpdateBy,
             })
 
-            console.log(result?.status)
-
             if (result?.status === 'failed') {
                 setMessage(result.message)
+                openNotification(
+                    'danger',
+                    'Error Occurred While Updating Data : ' + result.message
+                )
             } else {
                 setMessage('Successfully Saved')
                 openNotification('success', 'Calculation Updated Successfully')
@@ -189,10 +191,12 @@ const EditDialog: React.FC<DialogProps> = ({
                 lastUpdateBy,
             })
 
-            console.log(result?.status)
-
             if (result?.status === 'failed') {
                 setMessage(result.message)
+                openNotification(
+                    'danger',
+                    'Error Occurred While Deleting Data : ' + result.message
+                )
             } else {
                 setMessage('Successfully Saved')
                 openNotification('success', 'Calculation Deleted Successfully')
@@ -227,7 +231,6 @@ const EditDialog: React.FC<DialogProps> = ({
                                 )
 
                                 values.contributor = selectedContributor[0]
-                                //   console.log(values)
 
                                 onSubmit(values, setSubmitting)
                             } else {

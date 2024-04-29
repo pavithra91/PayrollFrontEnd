@@ -71,7 +71,7 @@ const getUserIDFromLocalStorage = () => {
 
 const initValues: CalculationSchema = {
     id: 0,
-    companyCode: companyOptions[0].value, // This will be the default one
+    companyCode: companyOptions[0].value,
     sequence: 0,
     payCode: '',
     calCode: '',
@@ -133,10 +133,12 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
             createdBy,
         })
 
-        console.log(result?.status)
-
         if (result?.status === 'failed') {
             setMessage(result.message)
+            openNotification(
+                'danger',
+                'Error Occurred While Saving Data : ' + result.message
+            )
         } else {
             setMessage('Successfully Saved')
             openNotification('success', 'Calculation Saved Successfully')
@@ -212,7 +214,6 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
 
                                 values.companyCode = selectedCompanyCode[0]
                                 values.contributor = selectedContributor[0]
-                                console.log(values)
 
                                 onSubmit(values, setSubmitting)
                             } else {

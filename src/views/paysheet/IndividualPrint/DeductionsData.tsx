@@ -14,6 +14,14 @@ interface DialogProps {
     unRecoveredData: string | ''
 }
 
+const unRecoveredTagClass = (paytype: string) => {
+    if (paytype == 'U') {
+        return 'text-red-500'
+    } else {
+        return 'text-black-600'
+    }
+}
+
 const DeductionsData: React.FC<DialogProps> = ({
     deductionsData,
     salData,
@@ -60,7 +68,12 @@ const DeductionsData: React.FC<DialogProps> = ({
                                     </span>
                                 </div>
                                 <div className="...">
-                                    <span className="text-s">
+                                    {/* <span className="text-s"> */}
+                                    <span
+                                        className={`text-s ${unRecoveredTagClass(
+                                            elm.paytype
+                                        )}`}
+                                    >
                                         {elm.amount.toFixed(2)}
                                     </span>
                                 </div>

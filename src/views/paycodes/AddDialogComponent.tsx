@@ -81,6 +81,20 @@ const validationSchema = Yup.object().shape({
     rate: Yup.number().required('Please enter Calculation Type'),
 })
 
+const openNotification = (
+    type: 'success' | 'warning' | 'danger' | 'info',
+    message: string
+) => {
+    toast.push(
+        <Notification
+            title={type.charAt(0).toUpperCase() + type.slice(1)}
+            type={type}
+        >
+            {message}
+        </Notification>
+    )
+}
+
 const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
     const [message, setMessage] = useTimeOutMessage()
 
@@ -115,10 +129,12 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
             isTaxableGross: false,
         })
 
-        console.log(result?.status)
-
         if (result?.status === 'failed') {
             setMessage(result.message)
+            openNotification(
+                'danger',
+                'Error Occurred While Saving Data : ' + result.message
+            )
         } else {
             setMessage('Successfully Saved')
             openNotification('success', 'Calculation Saved Successfully')
@@ -126,17 +142,6 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
         }
 
         setSubmitting(false)
-
-        // if (result?.status === 'failed') {
-        //     setMessage(result.message)
-        //     openNotification('danger', result.message)
-        // }
-
-        // setMessage('Successfully Saved')
-        // openNotification('success', 'Calculation Saved Successfully')
-        // setSubmitting(false)
-        // setIsOpen(false)
-        // onClose()
     }
 
     const [dialogIsOpen, setIsOpen] = useState(false)
@@ -153,20 +158,6 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
     const onDialogOk = (e: MouseEvent) => {
         console.log('onDialogOk', e)
         setIsOpen(false)
-    }
-
-    const openNotification = (
-        type: 'success' | 'warning' | 'danger' | 'info',
-        message: string
-    ) => {
-        toast.push(
-            <Notification
-                title={type.charAt(0).toUpperCase() + type.slice(1)}
-                type={type}
-            >
-                {message}
-            </Notification>
-        )
     }
     return (
         <>
@@ -189,7 +180,6 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                 )
 
                                 values.companyCode = selectedCompanyCode[0]
-                                console.log(values)
 
                                 onSubmit(values, setSubmitting)
                             } else {

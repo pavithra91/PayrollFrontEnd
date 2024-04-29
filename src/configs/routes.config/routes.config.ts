@@ -11,12 +11,12 @@ export const protectedRoutes = [
         component: lazy(() => import('@/views/Home')),
         authority: [],
     },
-    {
-        key: 'dashboard',
-        path: '/dashboard',
-        component: lazy(() => import('@/views/dashboard/Dashboard')),
-        authority: [],
-    },
+    // {
+    //     key: 'dashboard',
+    //     path: '/dashboard',
+    //     component: lazy(() => import('@/views/dashboard/Dashboard')),
+    //     authority: [],
+    // },
     // {
     //     key: 'empSplTax',
     //     path: '/empSplTax',
@@ -120,26 +120,26 @@ export const protectedRoutes = [
         ),
         authority: [],
     },
-    {
-        key: 'groupMenu.single',
-        path: '/group-single-menu-item-view',
-        component: lazy(() => import('@/views/demo/GroupSingleMenuItemView')),
-        authority: [],
-    },
-    {
-        key: 'groupMenu.collapse.item1',
-        path: '/group-collapse-menu-item-view-1',
-        component: lazy(
-            () => import('@/views/demo/GroupCollapseMenuItemView1')
-        ),
-        authority: [],
-    },
-    {
-        key: 'groupMenu.collapse.item2',
-        path: '/group-collapse-menu-item-view-2',
-        component: lazy(
-            () => import('@/views/demo/GroupCollapseMenuItemView2')
-        ),
-        authority: [],
-    },
+    // {
+    //     key: 'groupMenu.single',
+    //     path: '/group-single-menu-item-view',
+    //     component: lazy(() => import('@/views/demo/GroupSingleMenuItemView')),
+    //     authority: [],
+    // },
+    // {
+    //     key: 'groupMenu.collapse.item1',
+    //     path: '/group-collapse-menu-item-view-1',
+    //     component: lazy(
+    //         () => import('@/views/demo/GroupCollapseMenuItemView1')
+    //     ),
+    //     authority: [],
+    // },
+    // {
+    //     key: 'groupMenu.collapse.item2',
+    //     path: '/group-collapse-menu-item-view-2',
+    //     component: lazy(
+    //         () => import('@/views/demo/GroupCollapseMenuItemView2')
+    //     ),
+    //     authority: [],
+    // },
 ]

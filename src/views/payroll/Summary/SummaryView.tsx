@@ -80,7 +80,6 @@ const SummaryView = () => {
             payRunResults.then((res) => {
                 const listItems = JSON.parse(res?.data?.data ?? '')
                 if (listItems.length > 0) {
-                    console.log(listItems[0])
                     setIsProcessPayrollBloacked(true)
 
                     const result = getPayrollSummary(dataFromChild)
@@ -88,8 +87,6 @@ const SummaryView = () => {
                         const listItems = JSON.parse(res?.data?.data ?? '')
 
                         setPayrollData(listItems)
-
-                        console.log(listItems)
                     })
                 } else {
                     openNotification('danger', 'No Data Available')
@@ -112,11 +109,40 @@ const SummaryView = () => {
         )
     }
 
+    const getUserIDFromLocalStorage = () => {
+        const user = JSON.parse(localStorage.getItem('admin') ?? '')
+        const userID = JSON.parse(user.auth).user.userID
+        return userID
+    }
+
     const printReport = () => {
         if (payrollData != null) {
+            let companyName = ''
+            if (dataFromChild?.companyCode == 3000) {
+                companyName =
+                    'Ceylon Petroleum Storage Terminals Limited (CPSTL)'
+            } else {
+                companyName = 'Ceylon Petroleum Corporation (CPC)'
+            }
             const doc = new jsPDF()
             doc.text('Payroll Summary Report', 100, 10, { align: 'center' })
+
+            doc.setFontSize(10)
+            doc.text('Company : ' + companyName, 10, 20, {
+                align: 'left',
+            })
+            doc.text(
+                'Period : ' + dataFromChild?.period,
+                doc.internal.pageSize.getWidth() - 45,
+                20,
+                { align: 'left' }
+            )
+            doc.text('Printed By : ' + getUserIDFromLocalStorage(), 10, 26, {
+                align: 'left',
+            })
+
             autoTable(doc, {
+                startY: 31,
                 columnStyles: { europe: { halign: 'center' } },
                 body: payrollData,
                 margin: { bottom: 20 },
@@ -184,15 +210,17 @@ const SummaryView = () => {
                 { align: 'right' }
             )
 
-            doc.save('payroll_summary_report.pdf')
+            doc.save(
+                'payroll_summary_report - ' + dataFromChild?.period + '.pdf'
+            )
         }
     }
 
     return (
         <>
             <Card header="Payroll Summary">
-                <div className="grid grid-cols-6 gap-4">
-                    <div className="col-span-4 ...">
+                <div className="grid grid-cols-12 gap-4">
+                    <div className="col-span-10 ...">
                         <Formik
                             initialValues={{
                                 companyCode: 0,

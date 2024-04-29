@@ -38,8 +38,8 @@ const Summary: React.FC<DialogProps> = ({ salData }) => {
                 <div className="grid grid-flow-row auto-rows-max gap-4">
                     {[...summary].map((elm) => (
                         <AdaptableCard key={elm.id}>
-                            <div className="grid grid-cols-5 gap-4">
-                                <div className="col-span-2 ...">
+                            <div className="grid grid-cols-8 gap-4">
+                                <div className="col-span-3 ...">
                                     <span className="text-s">Gross : </span>
                                     <span className="text-s">
                                         {elm.taxableGross.toFixed(2)}
@@ -53,19 +53,39 @@ const Summary: React.FC<DialogProps> = ({ salData }) => {
                                         {elm.emp_contribution.toFixed(2)}
                                     </span>
                                 </div>
+
+                                <div className="col-span-2 ...">
+                                    <span className="text-s">ETF : </span>
+                                    <span className="text-s">
+                                        {elm.etf.toFixed(2)}
+                                    </span>
+                                </div>
                             </div>
 
-                            <div className="grid grid-cols-5 gap-4">
-                                <div className="col-span-2 ...">
+                            <div className="grid grid-cols-8 gap-4">
+                                <div className="col-span-3 ...">
                                     <span className="text-s">Tax : </span>
                                     <span className="text-s">
                                         {elm.tax.toFixed(2)}
                                     </span>
                                 </div>
                                 <div className="col-span-3 ...">
-                                    <span className="text-s">ETF : </span>
                                     <span className="text-s">
-                                        {elm.etf.toFixed(2)}
+                                        ETF Contribution (Company) :{' '}
+                                    </span>
+                                    <span className="text-s">
+                                        {elm.comp_contribution.toFixed(2)}
+                                    </span>
+                                </div>
+
+                                <div className="col-span-2 ...">
+                                    <span className="text-s">
+                                        Unrecovered :{' '}
+                                    </span>
+                                    <span className="text-s">
+                                        {elm.unRecoveredTotal
+                                            ? elm.unRecoveredTotal.toFixed(2)
+                                            : '0.0'}
                                     </span>
                                 </div>
                             </div>

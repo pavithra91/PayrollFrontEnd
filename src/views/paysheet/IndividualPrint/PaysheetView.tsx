@@ -156,7 +156,6 @@ const PaysheetView = (props: FormProps) => {
                         }
                     }
                 }) => {
-                    // console.log(element.payCode)
                     doc.text(element.payCode.toString(), x, y, {
                         align: 'left',
                     })

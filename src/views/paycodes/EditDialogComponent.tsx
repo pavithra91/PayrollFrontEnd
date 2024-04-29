@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC } from 'react'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import type { CommonProps } from '@/@types/common'
@@ -17,7 +17,6 @@ import type { PayCodeSchema, CompanyIdSelectOption } from '@/@types/paycode'
 import { FormContainer, FormItem } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Alert from '@/components/ui/Alert'
-import Select from '@/components/ui/Select'
 import * as Yup from 'yup'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
@@ -139,10 +138,12 @@ const EditDialog: React.FC<DialogProps> = ({
             lastUpdateBy,
         })
 
-        console.log(result?.status)
-
         if (result?.status === 'failed') {
             setMessage(result.message)
+            openNotification(
+                'danger',
+                'Error Occurred While Updating Data : ' + result.message
+            )
         } else {
             setMessage('Successfully Saved')
             openNotification('success', 'Calculation Saved Successfully')

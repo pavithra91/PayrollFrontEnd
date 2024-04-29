@@ -9,7 +9,8 @@ export type AppConfig = {
 }
 
 const appConfig: AppConfig = {
-    baseURL: 'https://localhost:44360',
+    // baseURL: 'https://localhost:44360',
+    baseURL: 'http://13.234.120.62',
     apiPrefix: '/api',
     authenticatedEntryPath: '/home',
     unAuthenticatedEntryPath: '/sign-in',

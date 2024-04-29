@@ -160,17 +160,12 @@ const TransferDataView = (props: FormProps) => {
     const handlePDFDownload = () => {
         if (printData != null) {
             Object.entries(data).forEach((key) => {
-                console.log(key)
-
-                console.log(data[key].status)
                 if (data[key].status === true) {
                     data[key].status = 'Matched'
                 } else {
                     data[key].status = 'Un Matched'
                 }
             })
-
-            //console.log(data)
 
             const doc = new jsPDF()
 

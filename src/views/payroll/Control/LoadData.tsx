@@ -187,18 +187,7 @@ const DialogComponent: React.FC<DialogProps> = ({
                         )}
                     </Formik>
                 </div>
-                <div className="text-right mt-6">
-                    {/* <Button
-                        className="ltr:mr-2 rtl:ml-2"
-                        variant="plain"
-                        onClick={onClose}
-                    >
-                        Cancel
-                    </Button> */}
-                    {/* <Button variant="solid" onClick={onDialogOk}>
-                    Okay
-                        </Button> */}
-                </div>
+                <div className="text-right mt-6"></div>
             </Dialog>
         </>
     )
