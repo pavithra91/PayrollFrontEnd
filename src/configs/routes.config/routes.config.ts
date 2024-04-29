@@ -31,8 +31,14 @@ export const protectedRoutes = [
     },
     /** Example purpose only, please remove */
     {
-        key: 'paycodes',
-        path: '/paycodes',
+        key: 'Settings',
+        path: '/Settings',
+        component: lazy(() => import('@/views/users/Account/Settings')),
+        authority: [],
+    },
+    {
+        key: 'Paycodes',
+        path: '/Paycodes',
         component: lazy(() => import('@/views/paycodes/Paycodes')),
         authority: ['Admin'],
     },
@@ -92,12 +98,7 @@ export const protectedRoutes = [
         ),
         authority: [],
     },
-    {
-        key: 'Settings',
-        path: '/Settings',
-        component: lazy(() => import('@/views/users/Account/Settings')),
-        authority: [],
-    },
+
     {
         key: 'ViewUsers',
         path: '/ViewUsers',
