@@ -11,7 +11,7 @@ export type AppConfig = {
 const appConfig: AppConfig = {
     //baseURL: 'https://localhost:44360',
     //baseURL: 'http://13.234.120.62',
-    baseURL: 'http://10.0.2.57:80',
+    baseURL: 'http://cpstl-poc-alb-347507899.ap-southeast-1.elb.amazonaws.com',
     apiPrefix: '/api',
     authenticatedEntryPath: '/home',
     unAuthenticatedEntryPath: '/sign-in',

@@ -7,8 +7,6 @@ const Home = () => {
     const month = today.toLocaleDateString('en-US', { month: 'long' })
     const year = today.getFullYear()
 
-    console.log(today.getMonth() + 1)
-
     return (
         <>
             <div className="w-full">
