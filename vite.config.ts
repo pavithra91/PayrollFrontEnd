@@ -14,7 +14,7 @@ export default defineConfig({
             '/api': {
                 // config the target url based on your backend server
                 //target: 'https://localhost:44360/',
-                target: 'http://10.0.2.57:80/',
+                target: 'http://cpstl-poc-alb-347507899.ap-southeast-1.elb.amazonaws.com/',
                 changeOrigin: true,
                 secure: false,
             },
