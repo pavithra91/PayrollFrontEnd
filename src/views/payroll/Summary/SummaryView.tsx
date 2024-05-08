@@ -89,19 +89,20 @@ const SummaryView = () => {
                         setPayrollData(listItems)
                     })
                 } else {
-                    openNotification('danger', 'No Data Available')
+                    openNotification('Error', 'danger', 'No Data Available')
                 }
             })
         }
     }, [dataFromChild])
 
     const openNotification = (
+        title: string,
         type: 'success' | 'warning' | 'danger' | 'info',
         message: string
     ) => {
         toast.push(
             <Notification
-                title={type.charAt(0).toUpperCase() + type.slice(1)}
+                title={title.charAt(0).toUpperCase() + title.slice(1)}
                 type={type}
             >
                 {message}

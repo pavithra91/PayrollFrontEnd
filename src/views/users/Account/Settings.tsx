@@ -6,6 +6,7 @@ import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import Tabs from '@/components/ui/Tabs'
 import Password from './Password'
+import Develeopment from './Develeopment'
 import { useEffect, useState } from 'react'
 
 const Settings = () => {
@@ -35,6 +36,7 @@ const Settings = () => {
                     <TabList>
                         <TabNav value="tab1">Profile</TabNav>
                         <TabNav value="tab2">Password</TabNav>
+                        <TabNav value="tab3">Develeopment</TabNav>
                     </TabList>
                     <div className="p-4">
                         <TabContent value="tab1">
@@ -42,6 +44,9 @@ const Settings = () => {
                         </TabContent>
                         <TabContent value="tab2">
                             <Password />
+                        </TabContent>
+                        <TabContent value="tab3">
+                            <Develeopment />
                         </TabContent>
                     </div>
                 </Tabs>

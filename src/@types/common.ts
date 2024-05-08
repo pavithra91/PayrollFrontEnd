@@ -26,3 +26,10 @@ export interface RoleSelectOption {
     label: string
     value: string
 }
+
+export type ResetOptions = {
+    companyCode: number
+    period: number
+    resetData?: boolean
+    resetTempData?: boolean
+}

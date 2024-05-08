@@ -1,7 +1,6 @@
+import { ResetOptions } from '@/@types/common'
 import { PayrollDataSchema } from '@/@types/payroll'
-import {
-    apiGetOTHours,
-} from '@/services/CommonService'
+import { apiGetOTHours, apiResetData } from '@/services/CommonService'
 
 type Status = 'success' | 'failed'
 
@@ -23,8 +22,27 @@ function useCommon() {
             }
         }
     }
+
+    const deleteData = async (values: ResetOptions) => {
+        try {
+            const resp = await apiResetData(values)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
     return {
         getOTHours,
+        deleteData,
     }
 }
 
