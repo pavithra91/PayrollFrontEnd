@@ -61,7 +61,7 @@ const Develeopment = () => {
 
         setisSubmitting(true)
 
-        if (resetData != false && resetTempData != false) {
+        if (resetData != false) {
             const result = await deleteData(values)
 
             if (result?.status === 'failed') {
@@ -224,7 +224,6 @@ const Develeopment = () => {
                 </div>
             </Card>
             <div className="mb-4"></div>
-            <Card></Card>
         </>
     )
 }
