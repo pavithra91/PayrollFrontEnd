@@ -12,6 +12,7 @@ import {
     HiOutlineDeviceTablet,
 } from 'react-icons/hi'
 import * as Yup from 'yup'
+import PasswordInput from '@/components/shared/PasswordInput'
 
 type LoginHistory = {
     type: string
@@ -111,7 +112,7 @@ const Password = ({ data }: { data?: LoginHistory[] }) => {
                                         autoComplete="off"
                                         name="newPassword"
                                         placeholder="New Password"
-                                        component={Input}
+                                        component={PasswordInput}
                                     />
                                 </FormRow>
                                 <FormRow
@@ -124,7 +125,7 @@ const Password = ({ data }: { data?: LoginHistory[] }) => {
                                         autoComplete="off"
                                         name="confirmNewPassword"
                                         placeholder="Confirm Password"
-                                        component={Input}
+                                        component={PasswordInput}
                                     />
                                 </FormRow>
                                 <div className="mt-4 ltr:text-right">

@@ -158,7 +158,7 @@ const TransferDataView = (props: FormProps) => {
     }, [dataFromChild])
 
     const handlePDFDownload = () => {
-        if (printData != null) {
+        if (printData != null && dataFromChild != null) {
             Object.entries(data).forEach((key) => {
                 if (data[key].status === true) {
                     data[key].status = 'Matched'
