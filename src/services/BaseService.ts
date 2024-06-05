@@ -7,9 +7,14 @@ import store, { signOutSuccess } from '../store'
 
 const unauthorizedCode = [401]
 
+const headers = {
+    'X-Api-Key': appConfig.apiKey,
+}
+
 const BaseService = axios.create({
     timeout: 60000,
     baseURL: appConfig.baseURL + appConfig.apiPrefix,
+    headers: headers,
 })
 
 BaseService.interceptors.request.use(

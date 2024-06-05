@@ -1,4 +1,4 @@
-import { apiSignIn, apiSignOut, apiSignUp } from '@/services/AuthService'
+import { apiSignIn, apiSignUp } from '@/services/AuthService'
 import {
     setUser,
     signInSuccess,
@@ -35,12 +35,7 @@ function useAuth() {
         try {
             const resp = await apiSignIn(values)
             if (resp.data) {
-                console.log(resp.data._userDetails)
-
                 const { jwtToken } = resp.data
-
-                console.log(jwtToken)
-
                 dispatch(signInSuccess(jwtToken))
                 // if (resp.data.user) {
 
@@ -132,7 +127,6 @@ function useAuth() {
     }
 
     const signOut = async () => {
-        // await apiSignOut()
         handleSignOut()
     }
 

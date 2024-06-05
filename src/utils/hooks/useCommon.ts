@@ -40,9 +40,16 @@ function useCommon() {
             }
         }
     }
+
+    const getUserIDFromLocalStorage = () => {
+        const user = JSON.parse(localStorage.getItem('admin') ?? '')
+        const userID = JSON.parse(user.auth).user.userID
+        return userID
+    }
     return {
         getOTHours,
         deleteData,
+        getUserIDFromLocalStorage,
     }
 }
 

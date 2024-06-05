@@ -29,6 +29,7 @@ export interface CalculationSchema {
 }
 
 export interface TaxCalculationSchema {
+    companyCode: number
     range: number
     calFormula: string
     description: string
@@ -38,6 +39,7 @@ export interface TaxCalculationSchema {
 
 export type TaxCalculationData = {
     id?: number
+    companyCode: number
     range: number
     calFormula: string
     description: string
@@ -58,6 +60,7 @@ export interface ContributorSelectOption {
 
 export type TaxData = {
     id: number
+    companyCode: number
     range: number
     calFormula: string
     description: string

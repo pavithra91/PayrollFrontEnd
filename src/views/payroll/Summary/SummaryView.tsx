@@ -20,6 +20,7 @@ import Notification from '@/components/ui/Notification'
 import PayrollSummary from '../Process/PayrollSummary'
 import jsPDF from 'jspdf'
 import autoTable, { RowInput } from 'jspdf-autotable'
+import useCommon from '@/utils/hooks/useCommon'
 
 interface RenderProps<V = any> {
     field: FieldInputProps<V>
@@ -77,16 +78,33 @@ const SummaryView = () => {
     useEffect(() => {
         if (dataFromChild != null) {
             const payRunResults = getPayrunByPeriod(dataFromChild)
+
             payRunResults.then((res) => {
                 const listItems = JSON.parse(res?.data?.data ?? '')
                 if (listItems.length > 0) {
+                    if (listItems[0].payrunStatus != 'Unrec File Created') {
+                        openNotification(
+                            'Error',
+                            'danger',
+                            'Please Create Unrecovered File to Download Payroll Summary'
+                        )
+                    }
                     setIsProcessPayrollBloacked(true)
 
                     const result = getPayrollSummary(dataFromChild)
-                    result.then((res) => {
-                        const listItems = JSON.parse(res?.data?.data ?? '')
 
-                        setPayrollData(listItems)
+                    result.then((res) => {
+                        if (res != undefined) {
+                            const listItems = JSON.parse(res?.data?.data ?? '')
+
+                            setPayrollData(listItems)
+                        } else {
+                            openNotification(
+                                'Error',
+                                'danger',
+                                'No Data Available'
+                            )
+                        }
                     })
                 } else {
                     openNotification('Error', 'danger', 'No Data Available')
@@ -110,14 +128,10 @@ const SummaryView = () => {
         )
     }
 
-    const getUserIDFromLocalStorage = () => {
-        const user = JSON.parse(localStorage.getItem('admin') ?? '')
-        const userID = JSON.parse(user.auth).user.userID
-        return userID
-    }
+    const { getUserIDFromLocalStorage } = useCommon()
 
     const printReport = () => {
-        if (payrollData != null) {
+        if (payrollData.length != 0 && dataFromChild != null) {
             let companyName = ''
             if (dataFromChild?.companyCode == 3000) {
                 companyName =

@@ -48,6 +48,14 @@ const ViewCalculations = (props: FormProps) => {
         })
     }, [])
 
+    const handleRefresh = async () => {
+        const result = getTaxCalculations()
+        result.then((res) => {
+            const listItems = JSON.parse(res?.data?.data ?? '')
+            setData(listItems)
+        })
+    }
+
     const { Tr, Th, Td, THead, TBody } = Table
 
     const openDialog = () => {
@@ -61,8 +69,14 @@ const ViewCalculations = (props: FormProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [isEditOpen, setEditIsOpen] = useState(false)
 
-    const closeDialog = () => setIsOpen(false)
-    const closeEditDialog = () => setEditIsOpen(false)
+    const closeDialog = () => {
+        setIsOpen(false)
+        handleRefresh()
+    }
+    const closeEditDialog = () => {
+        setEditIsOpen(false)
+        handleRefresh()
+    }
 
     const headerExtraContent = (
         <span className="flex items-center">
@@ -99,6 +113,10 @@ const ViewCalculations = (props: FormProps) => {
             {
                 header: 'Id',
                 accessorKey: 'id',
+            },
+            {
+                header: 'Company Cide',
+                accessorKey: 'companyCode',
             },
             {
                 header: 'Range',
@@ -162,7 +180,12 @@ const ViewCalculations = (props: FormProps) => {
     const table = useReactTable({
         data,
         columns,
-
+        initialState: {
+            columnVisibility: {
+                companyCode: true, //hide this column by default
+            },
+            //...
+        },
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),

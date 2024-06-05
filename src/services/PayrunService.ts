@@ -1,3 +1,4 @@
+import { AxiosHeaders } from 'axios'
 import ApiService from './ApiService'
 import type {
     ConfirmDataTransfer,
@@ -54,6 +55,13 @@ export async function apiGetPayrunByPeriod(values: PayrollDataSchema) {
             values.companyCode +
             '&period=' +
             values.period,
+        method: 'get',
+    })
+}
+
+export async function apiGetPayrunDetails() {
+    return ApiService.fetchData<Response>({
+        url: '/Payroll/get-payrun',
         method: 'get',
     })
 }

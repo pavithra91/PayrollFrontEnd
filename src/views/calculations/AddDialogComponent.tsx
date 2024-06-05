@@ -25,6 +25,7 @@ import type {
     CompanyIdSelectOption,
     ContributorSelectOption,
 } from '@/@types/calculation'
+import useCommon from '@/utils/hooks/useCommon'
 
 interface DialogProps {
     isOpen: boolean // Type for the 'isOpen' prop
@@ -63,11 +64,7 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     return render({ field, meta, helpers })
 }
 
-const getUserIDFromLocalStorage = () => {
-    const user = JSON.parse(localStorage.getItem('admin') ?? '')
-    const userID = JSON.parse(user.auth).user.userID
-    return userID
-}
+const { getUserIDFromLocalStorage } = useCommon()
 
 const initValues: CalculationSchema = {
     id: 0,

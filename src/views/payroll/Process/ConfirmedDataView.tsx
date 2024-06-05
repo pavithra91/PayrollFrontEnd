@@ -19,6 +19,7 @@ import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import DataSummary from './DataSummary'
 import PayrollSummary from './PayrollSummary'
+import useCommon from '@/utils/hooks/useCommon'
 
 interface FormProps extends CommonProps {
     disableSubmit?: boolean
@@ -122,7 +123,6 @@ const ConfirmedDataView = (props: FormProps) => {
             payRunResults.then((res) => {
                 const listItems = JSON.parse(res?.data?.data ?? '')
                 if (listItems.length > 0) {
-                    console.log(listItems[0])
                     if (listItems[0].payrunStatus == 'EPF/TAX Calculated') {
                         setIsUnrecoveredActive(true)
                         setIsProcessPayrollBloacked(true)
@@ -142,11 +142,7 @@ const ConfirmedDataView = (props: FormProps) => {
         }
     }, [dataFromChild])
 
-    const getUsernameFromLocalStorage = () => {
-        const user = JSON.parse(localStorage.getItem('admin') ?? '')
-        const userID = JSON.parse(user.auth).user.userID
-        return userID
-    }
+    const { getUserIDFromLocalStorage } = useCommon()
 
     const processPayrollData = async () => {
         setisSubmitting(true)
@@ -154,15 +150,13 @@ const ConfirmedDataView = (props: FormProps) => {
         if (isDataLoad && dataFromChild != null) {
             const companyCode = dataFromChild.companyCode
             const period = dataFromChild.period
-            const approvedBy = getUsernameFromLocalStorage()
+            const approvedBy = getUserIDFromLocalStorage()
 
             const result = await processPayroll({
                 companyCode,
                 period,
                 approvedBy,
             })
-
-            console.log(result)
 
             if (result?.status === 'failed') {
                 setMessage(result.message)
@@ -182,7 +176,7 @@ const ConfirmedDataView = (props: FormProps) => {
         if (isDataLoad && dataFromChild != null) {
             const companyCode = dataFromChild.companyCode
             const period = dataFromChild.period
-            const approvedBy = getUsernameFromLocalStorage()
+            const approvedBy = getUserIDFromLocalStorage()
 
             const result = await createUnRecovered({
                 companyCode,
@@ -202,8 +196,6 @@ const ConfirmedDataView = (props: FormProps) => {
                     'Unrecovered File Created Successfully'
                 )
             }
-
-            console.log(setisUnRecoveredSubmitting)
 
             setisUnRecoveredSubmitting(false)
         }

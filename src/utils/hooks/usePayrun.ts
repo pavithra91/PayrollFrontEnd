@@ -8,6 +8,7 @@ import {
     apiGetPayrollSummary,
     apiGetPaysheetByEPF,
     apiPrintPaysheets,
+    apiGetPayrunDetails,
 } from '@/services/PayrunService'
 import type {
     PayrollDataSchema,
@@ -108,6 +109,24 @@ function usePayrun() {
         }
     }
 
+    const getPayrunDetails = async () => {
+        try {
+            const resp = await apiGetPayrunDetails()
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
+
     const createUnRecovered = async (values: ConfirmDataTransfer) => {
         try {
             const resp = await apiCreateUnRecovered(values)
@@ -190,6 +209,7 @@ function usePayrun() {
         getPayrollSummary,
         getPaysheetByEPF,
         printPaysheets,
+        getPayrunDetails,
     }
 }
 

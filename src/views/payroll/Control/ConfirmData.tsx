@@ -6,6 +6,7 @@ import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import { useState } from 'react'
+import useCommon from '@/utils/hooks/useCommon'
 
 interface DialogProps {
     isConfirmOpen: boolean // Type for the 'isOpen' prop
@@ -18,11 +19,7 @@ interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
 
-const getUserIDFromLocalStorage = () => {
-    const user = JSON.parse(localStorage.getItem('admin') ?? '')
-    const userID = JSON.parse(user.auth).user.userID
-    return userID
-}
+const { getUserIDFromLocalStorage } = useCommon()
 
 const DialogComponent: React.FC<DialogProps> = ({
     onClose,

@@ -127,6 +127,16 @@ const navigationConfig: NavigationTree[] = [
                 authority: ['Admin'],
                 subMenu: [],
             },
+            {
+                key: 'collapseMenu.payrunSummary',
+                path: '/PayrunSummary',
+                title: 'Payrun Summary',
+                translateKey: 'nav.collapseMenu.payrunSummary',
+                icon: '',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: ['Admin'],
+                subMenu: [],
+            },
         ],
     },
     {

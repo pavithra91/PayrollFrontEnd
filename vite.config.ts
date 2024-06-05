@@ -15,7 +15,7 @@ export default defineConfig({
                 // config the target url based on your backend server
                 //target: 'https://localhost:44360/',
                 //target: 'http://13.234.120.62/',
-                target: 'http://cpstl-poc-alb-347507899.ap-southeast-1.elb.amazonaws.com/',
+                target: 'http://internal-cpstl-poc-internal-alb-1716520389.ap-southeast-1.elb.amazonaws.com/',
                 changeOrigin: true,
                 secure: false,
             },

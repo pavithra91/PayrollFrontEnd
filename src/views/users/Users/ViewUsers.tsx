@@ -49,6 +49,14 @@ const ViewUsers = (props: FormProps) => {
         })
     }, [])
 
+    const handleRefresh = async () => {
+        const result = getUsers()
+        result.then((res) => {
+            const listItems = JSON.parse(res?.data?.data ?? '')
+            setData(listItems)
+        })
+    }
+
     const { Tr, Th, Td, THead, TBody } = Table
 
     const openDialog = () => {
@@ -63,8 +71,14 @@ const ViewUsers = (props: FormProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [isEditOpen, setEditIsOpen] = useState(false)
 
-    const closeDialog = () => setIsOpen(false)
-    const closeEditDialog = () => setEditIsOpen(false)
+    const closeDialog = () => {
+        setIsOpen(false)
+        handleRefresh
+    }
+    const closeEditDialog = () => {
+        setEditIsOpen(false)
+        handleRefresh()
+    }
 
     const headerExtraContent = (
         <span className="flex items-center">

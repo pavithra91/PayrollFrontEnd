@@ -6,6 +6,7 @@ import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import { useState } from 'react'
+import useCommon from '@/utils/hooks/useCommon'
 
 interface DialogProps {
     isRejectOpen: boolean // Type for the 'isOpen' prop
@@ -18,12 +19,6 @@ interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
 
-const getUsernameFromLocalStorage = () => {
-    const user = JSON.parse(localStorage.getItem('admin') ?? '')
-    const userID = JSON.parse(user.auth).user.userID
-    return userID
-}
-
 const DialogComponent: React.FC<DialogProps> = ({
     onClose,
     isRejectOpen,
@@ -33,6 +28,7 @@ const DialogComponent: React.FC<DialogProps> = ({
     const { rollbackDataTransfer } = usePayrun()
     const [message, setMessage] = useTimeOutMessage()
     const [isSubmitting, setSubmitting] = useState(false)
+    const { getUserIDFromLocalStorage } = useCommon()
 
     const openNotification = (
         type: 'success' | 'warning' | 'danger' | 'info',
@@ -51,7 +47,7 @@ const DialogComponent: React.FC<DialogProps> = ({
     const RejectDataTransfer = {
         companyCode: data.companyCode,
         period: data.period,
-        approvedBy: getUsernameFromLocalStorage(),
+        approvedBy: getUserIDFromLocalStorage(),
     }
     const rejectData = async () => {
         setSubmitting(true)

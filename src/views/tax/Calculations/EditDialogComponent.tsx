@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import type { CommonProps } from '@/@types/common'
@@ -18,10 +18,12 @@ import {
     FormikProps,
     useField,
 } from 'formik'
+
 import Checkbox from '@/components/ui/Checkbox'
 import useCalculations from '@/utils/hooks/useCalculation'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
+import useCommon from '@/utils/hooks/useCommon'
 
 interface DialogProps {
     isEditOpen: boolean
@@ -45,19 +47,38 @@ interface FieldWrapperProps<V = any> {
     render: (formikProps: RenderProps<V>) => React.ReactElement
 }
 
+interface FormProps extends CommonProps {
+    disableSubmit?: boolean
+}
+
+interface RenderProps<V = any> {
+    field: FieldInputProps<V>
+    meta: FieldMetaProps<V>
+    helpers: FieldHelperProps<V>
+}
+
+const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
+    const [field, meta, helpers] = useField(name)
+
+    return render({ field, meta, helpers })
+}
+
+interface FieldWrapperProps<V = any> {
+    name: string
+    render: (formikProps: RenderProps<V>) => React.ReactElement
+}
+
 const EditDialog: React.FC<DialogProps> = ({
     onClose,
     isEditOpen,
     props,
     item,
 }) => {
-    const getUserIDFromLocalStorage = () => {
-        const user = JSON.parse(localStorage.getItem('admin') ?? '')
-        const userID = JSON.parse(user.auth).user.userID
-        return userID
-    }
+    const { getUserIDFromLocalStorage } = useCommon()
+
     const initValues: TaxData = {
         id: item.getValue('id'),
+        companyCode: item.getValue('companyCode'),
         range: item.getValue('range'),
         description: item.getValue('description'),
         calFormula: item.getValue('calFormula'),
@@ -97,6 +118,7 @@ const EditDialog: React.FC<DialogProps> = ({
     ) => {
         const {
             id,
+            companyCode,
             range,
             description,
             calFormula,
@@ -108,6 +130,7 @@ const EditDialog: React.FC<DialogProps> = ({
 
         const result = await updateTaxCalculations({
             id,
+            companyCode,
             range,
             calFormula,
             description,
@@ -146,11 +169,6 @@ const EditDialog: React.FC<DialogProps> = ({
                         validationSchema={validationSchema}
                         onSubmit={(values, { setSubmitting }) => {
                             if (!disableSubmit) {
-                                // const selectedRole = Array.from(
-                                //     Object.values(values.role)
-                                // )
-
-                                // values.role = selectedRole[0]
                                 onSubmit(values, setSubmitting)
                             } else {
                                 setSubmitting(false)
@@ -165,23 +183,51 @@ const EditDialog: React.FC<DialogProps> = ({
                             <Form>
                                 <FormContainer>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <FormItem
-                                            label="Range"
-                                            invalid={
-                                                (errors.range &&
-                                                    touched.range) as boolean
-                                            }
-                                            errorMessage={errors.range}
-                                        >
-                                            <Field
-                                                type="text"
-                                                autoComplete="off"
-                                                name="range"
-                                                placeholder="Range"
-                                                component={Input}
-                                                value={item.getValue('range')}
-                                            />
-                                        </FormItem>
+                                        <FieldWrapper
+                                            name="companyCode"
+                                            render={({
+                                                field,
+                                                meta,
+                                                helpers,
+                                            }) => (
+                                                <FormItem
+                                                    label="Company Code"
+                                                    invalid={
+                                                        !!meta.error &&
+                                                        meta.touched
+                                                    }
+                                                    errorMessage={meta.error}
+                                                >
+                                                    <Field
+                                                        disabled
+                                                        type="text"
+                                                        autoComplete="off"
+                                                        name="companyCode"
+                                                        placeholder="Company Code"
+                                                        component={Input}
+                                                    />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <FormItem
+                                                label="Range"
+                                                invalid={
+                                                    (errors.range &&
+                                                        touched.range) as boolean
+                                                }
+                                                errorMessage={errors.range}
+                                            >
+                                                <Field
+                                                    type="text"
+                                                    autoComplete="off"
+                                                    name="range"
+                                                    placeholder="Range"
+                                                    component={Input}
+                                                />
+                                            </FormItem>
+                                        </div>
                                     </div>
 
                                     <FormItem
@@ -198,7 +244,6 @@ const EditDialog: React.FC<DialogProps> = ({
                                             name="calFormula"
                                             placeholder="Calculation Formula"
                                             component={Input}
-                                            value={item.getValue('calFormula')}
                                         />
                                     </FormItem>
 

@@ -44,12 +44,17 @@ const ViewCalculation = (props: FormProps) => {
         const result = getCalculations()
         result.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
-
             setData(listItems)
-
-            console.log('data load')
         })
     }, [])
+
+    const handleRefresh = async () => {
+        const result = getCalculations()
+        result.then((res) => {
+            const listItems = JSON.parse(res?.data?.data ?? '')
+            setData(listItems)
+        })
+    }
 
     const { Tr, Th, Td, THead, TBody } = Table
 
@@ -74,8 +79,14 @@ const ViewCalculation = (props: FormProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [isEditOpen, setEditIsOpen] = useState(false)
 
-    const closeDialog = () => setIsOpen(false)
-    const closeEditDialog = () => setEditIsOpen(false)
+    const closeDialog = () => {
+        setIsOpen(false)
+        handleRefresh()
+    }
+    const closeEditDialog = () => {
+        setEditIsOpen(false)
+        handleRefresh()
+    }
 
     const headerExtraContent = (
         <span className="flex items-center">

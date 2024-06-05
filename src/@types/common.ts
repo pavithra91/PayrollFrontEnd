@@ -33,3 +33,8 @@ export type ResetOptions = {
     resetData?: boolean
     resetTempData?: boolean
 }
+
+export type Token_Data = {
+    jwtToken: string
+    refreshToken: string
+}

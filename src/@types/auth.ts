@@ -3,6 +3,10 @@ export type SignInCredential = {
     password: string
 }
 
+export type SignOutCredential = {
+    userID: string
+}
+
 export type SignInResponse = {
     jwtToken: string
     user: {
@@ -30,4 +34,8 @@ export type ForgotPassword = {
 
 export type ResetPassword = {
     password: string
+}
+
+type Response = {
+    data: string
 }

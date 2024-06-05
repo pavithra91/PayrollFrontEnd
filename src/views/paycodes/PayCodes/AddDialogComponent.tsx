@@ -22,6 +22,7 @@ import { useState } from 'react'
 import type { PayCodeSchema, CompanyIdSelectOption } from '@/@types/paycode'
 import usePayCodes from '@/utils/hooks/usePayCodes'
 import Checkbox from '@/components/ui/Checkbox'
+import useCommon from '@/utils/hooks/useCommon'
 
 interface DialogProps {
     isOpen: boolean // Type for the 'isOpen' prop
@@ -55,11 +56,7 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     return render({ field, meta, helpers })
 }
 
-const getUserIDFromLocalStorage = () => {
-    const user = JSON.parse(localStorage.getItem('admin') ?? '')
-    const userID = JSON.parse(user.auth).user.userID
-    return userID
-}
+const { getUserIDFromLocalStorage } = useCommon()
 
 const initValues: PayCodeSchema = {
     companyCode: companyOptions[0].value, // This will be the default one

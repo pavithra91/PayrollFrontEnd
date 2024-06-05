@@ -1,7 +1,6 @@
-import { AccountData } from '@/@types/Account'
 import ApiService from './ApiService'
 import { PayrollDataSchema } from '@/@types/payroll'
-import { ResetOptions } from '@/@types/common'
+import { ResetOptions, Token_Data } from '@/@types/common'
 
 type Response = {
     data: string
@@ -22,6 +21,15 @@ export async function apiResetData(data: ResetOptions) {
     console.log(data)
     return ApiService.fetchData<Response>({
         url: '/Admin/reset-data',
+        method: 'post',
+        data,
+    })
+}
+
+export async function apiGetRefreshToken(data: Token_Data) {
+    console.log(data)
+    return ApiService.fetchData<Response>({
+        url: '/User/refresh',
         method: 'post',
         data,
     })

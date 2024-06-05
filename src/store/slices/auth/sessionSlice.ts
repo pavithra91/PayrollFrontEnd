@@ -1,9 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { SLICE_BASE_NAME } from './constants'
+import { apiSignOut } from '@/services/AuthService'
+import { SignOutCredential } from '@/@types/auth'
+import useCommon from '@/utils/hooks/useCommon'
 
 export interface SessionState {
     signedIn: boolean
     token: string | null
+}
+
+const common = useCommon()
+
+const userData: SignOutCredential = {
+    userID: common.getUserIDFromLocalStorage(),
 }
 
 const initialState: SessionState = {
@@ -22,6 +31,9 @@ const sessionSlice = createSlice({
         signOutSuccess(state) {
             state.signedIn = false
             state.token = null
+
+            userData.userID = common.getUserIDFromLocalStorage()
+            apiSignOut(userData)
         },
     },
 })

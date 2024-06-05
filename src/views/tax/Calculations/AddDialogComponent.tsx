@@ -5,16 +5,23 @@ import { Field, Form, Formik, FormikProps } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Alert from '@/components/ui/Alert'
-import type { CommonProps } from '@/@types/common'
-import type { MouseEvent } from 'react'
+import type { CommonProps, CompanyIdSelectOption } from '@/@types/common'
+import type { FC, MouseEvent } from 'react'
 import * as Yup from 'yup'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import useCalculations from '@/utils/hooks/useCalculation'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import { useState } from 'react'
-import type { PayCodeSchema } from '@/@types/paycode'
-import usePayCodes from '@/utils/hooks/usePayCodes'
+import { TaxCalculationSchema } from '@/@types/Calculation'
+import useCommon from '@/utils/hooks/useCommon'
+import {
+    FieldHelperProps,
+    FieldInputProps,
+    FieldMetaProps,
+    useField,
+} from 'formik'
+import Select from '@/components/ui/Select'
 
 interface DialogProps {
     isOpen: boolean // Type for the 'isOpen' prop
@@ -26,18 +33,37 @@ interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
 
-const getUsernameFromLocalStorage = () => {
-    const user = JSON.parse(localStorage.getItem('admin') ?? '')
-    const userName = JSON.parse(user.auth).user.userName
-    return userName
+interface RenderProps<V = any> {
+    field: FieldInputProps<V>
+    meta: FieldMetaProps<V>
+    helpers: FieldHelperProps<V>
 }
 
-const initValues: PayCodeSchema = {
+interface FieldWrapperProps<V = any> {
+    name: string
+    render: (formikProps: RenderProps<V>) => React.ReactElement
+}
+
+const companyOptions: CompanyIdSelectOption[] = [
+    { value: 2000, label: '2000' },
+    { value: 3000, label: '3000' },
+]
+
+const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
+    const [field, meta, helpers] = useField(name)
+
+    return render({ field, meta, helpers })
+}
+
+const { getUserIDFromLocalStorage } = useCommon()
+
+const initValues: TaxCalculationSchema = {
+    companyCode: 3000,
     range: 0,
     calFormula: '',
     description: '',
     status: true,
-    createdBy: getUsernameFromLocalStorage(),
+    createdBy: getUserIDFromLocalStorage(),
 }
 
 const validationSchema = Yup.object().shape({
@@ -50,30 +76,28 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
 
     const { disableSubmit = false, className } = props
 
-    const { addPayCodes } = usePayCodes()
+    const { addTaxCalculations } = useCalculations()
 
     const onSubmit = async (
-        values: PayCodeSchema,
+        values: TaxCalculationSchema,
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
         const {
             companyCode,
-            payCode,
-            calCode,
+            range,
+            calFormula,
             description,
-            payCategory,
-            rate,
+            status,
             createdBy,
         } = values
         setSubmitting(true)
 
-        const result = await addPayCodes({
+        const result = await addTaxCalculations({
             companyCode,
-            payCode,
-            calCode,
+            range,
+            calFormula,
             description,
-            payCategory,
-            rate,
+            status,
             createdBy,
         })
 
@@ -141,12 +165,18 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                             <>{message}</>
                         </Alert>
                     )}
-                    <Formik<PayCodeSchema>
+                    <Formik<TaxCalculationSchema>
                         initialValues={initValues}
                         validationSchema={validationSchema}
                         onSubmit={(values, { setSubmitting }) => {
                             if (!disableSubmit) {
                                 console.log(values)
+
+                                const selectedCompanyCode = Array.from(
+                                    Object.values(values.companyCode)
+                                )
+
+                                values.companyCode = selectedCompanyCode[0]
 
                                 onSubmit(values, setSubmitting)
                             } else {
@@ -158,10 +188,41 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                             touched,
                             errors,
                             isSubmitting,
-                        }: FormikProps<PayCodeSchema>) => (
+                        }: FormikProps<TaxCalculationSchema>) => (
                             <Form>
                                 <FormContainer>
                                     <div className="grid grid-cols-2 gap-4">
+                                        <FieldWrapper
+                                            name="companyCode"
+                                            render={({
+                                                field,
+                                                meta,
+                                                helpers,
+                                            }) => (
+                                                <FormItem
+                                                    label="Company Code"
+                                                    invalid={
+                                                        !!meta.error &&
+                                                        meta.touched
+                                                    }
+                                                    errorMessage={meta.error}
+                                                >
+                                                    <Select
+                                                        name="companyCode"
+                                                        id="companyCode"
+                                                        value={field.value}
+                                                        onChange={(value) => {
+                                                            helpers.setValue(
+                                                                value
+                                                            )
+                                                        }}
+                                                        placeholder="Please Select"
+                                                        options={companyOptions}
+                                                    ></Select>
+                                                </FormItem>
+                                            )}
+                                        />
+
                                         <div className="grid grid-cols-1 gap-4">
                                             <FormItem
                                                 label="Range"
@@ -180,6 +241,10 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                                 />
                                             </FormItem>
                                         </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 gap-4"></div>
                                     </div>
                                     <FormItem
                                         label="Calculation Formula"

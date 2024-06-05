@@ -50,10 +50,12 @@ const SignInForm = (props: SignInFormProps) => {
 
         const result = await signIn({ userId, password })
 
-        console.log(result)
-
         if (result?.status === 'failed') {
-            setMessage(result.message)
+            if (result.message == 'AxiosError: Network Error') {
+                setMessage('Ops! Network Error')
+            } else {
+                setMessage('Wrong Username or Password')
+            }
         }
 
         setSubmitting(false)

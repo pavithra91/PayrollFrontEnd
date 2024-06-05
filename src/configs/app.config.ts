@@ -6,18 +6,20 @@ export type AppConfig = {
     tourPath: string
     locale: string
     enableMock: boolean
+    apiKey: string
 }
 
 const appConfig: AppConfig = {
     //baseURL: 'https://localhost:44360',
     //baseURL: 'http://13.234.120.62',
-    baseURL: 'http://cpstl-poc-alb-347507899.ap-southeast-1.elb.amazonaws.com',
+    baseURL: 'http://internal-cpstl-poc-internal-alb-1716520389.ap-southeast-1.elb.amazonaws.com',
     apiPrefix: '/api',
     authenticatedEntryPath: '/home',
     unAuthenticatedEntryPath: '/sign-in',
     tourPath: '/',
     locale: 'en',
     enableMock: false,
+    apiKey: '806EA306F09943AA868C35CF772AC37F',
 }
 
 export default appConfig

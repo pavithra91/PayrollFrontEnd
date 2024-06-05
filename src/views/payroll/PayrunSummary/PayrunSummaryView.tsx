@@ -2,10 +2,7 @@ import Table from '@/components/ui/Table'
 import { useState, useEffect, useMemo, SetStateAction } from 'react'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import AddDialogComponent from './AddDialogComponent'
 import type { CommonProps } from '@/@types/common'
-import EditDialog from './EditDialogComponent'
-import usePayCodes from '@/utils/hooks/usePayCodes'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 
@@ -17,7 +14,9 @@ import {
     flexRender,
     ColumnDef,
 } from '@tanstack/react-table'
-import { PayCodeData } from '@/@types/paycode'
+import usePayrun from '@/utils/hooks/usePayrun'
+import { PayrunData } from '@/@types/Payrun'
+import { Cell } from 'jspdf-autotable'
 
 type Option = {
     value: number
@@ -28,83 +27,22 @@ interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
 
-const ViewPayCodes = (props: FormProps) => {
-    const { getPayCodes } = usePayCodes()
+const PayrunSummaryView = (props: FormProps) => {
+    const { getPayrunDetails } = usePayrun()
 
     const [selectedPayCode, setSelectedPayCode] = useState({})
 
     const [data, setData] = useState([])
 
     useEffect(() => {
-        const result = getPayCodes()
+        const result = getPayrunDetails()
         result.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
             setData(listItems)
         })
     }, [])
 
-    const handleRefresh = async () => {
-        const result = getPayCodes()
-        result.then((res) => {
-            const listItems = JSON.parse(res?.data?.data ?? '')
-            setData(listItems)
-        })
-    }
-
     const { Tr, Th, Td, THead, TBody } = Table
-
-    const openDialog = () => {
-        setIsOpen(true)
-    }
-    const openEditDialog = (id: any) => {
-        setSelectedPayCode(id)
-        setEditIsOpen(true)
-    }
-
-    const onDialogClose = (e: MouseEvent) => {
-        console.log('onDialogClose', e)
-        setIsOpen(false)
-    }
-
-    const onDialogOk = (e: MouseEvent) => {
-        console.log('onDialogOk', e)
-        setIsOpen(false)
-    }
-
-    const [isOpen, setIsOpen] = useState(false)
-
-    const [isEditOpen, setEditIsOpen] = useState(false)
-
-    const closeDialog = () => {
-        setIsOpen(false)
-        handleRefresh()
-    }
-    const closeEditDialog = () => {
-        setEditIsOpen(false)
-        handleRefresh()
-    }
-
-    const headerExtraContent = (
-        <span className="flex items-center">
-            <span className="mr-1 font-semibold">
-                <Button variant="solid" onClick={openDialog}>
-                    Add
-                </Button>
-                {isOpen && (
-                    <AddDialogComponent
-                        onClose={closeDialog}
-                        isOpen={isOpen}
-                        props={props}
-                    />
-                )}
-            </span>
-            <span className="text-emerald-500 text-xl"></span>
-        </span>
-    )
-
-    const handleShowEditModal = (id: any) => {
-        openEditDialog(id)
-    }
 
     const pageSizeOption = [
         { value: 10, label: '10 / page' },
@@ -114,7 +52,7 @@ const ViewPayCodes = (props: FormProps) => {
         { value: 50, label: '50 / page' },
     ]
 
-    const columns = useMemo<ColumnDef<PayCodeData>[]>(
+    const columns = useMemo<ColumnDef<PayrunData>[]>(
         () => [
             {
                 header: 'Id',
@@ -125,45 +63,68 @@ const ViewPayCodes = (props: FormProps) => {
                 accessorKey: 'companyCode',
             },
             {
-                header: 'Pay Code',
-                accessorKey: 'payCode',
+                header: 'Period',
+                accessorKey: 'period',
             },
             {
-                header: 'Cal Code',
-                accessorKey: 'calCode',
+                header: 'Status',
+                accessorKey: 'payrunStatus',
             },
             {
-                header: 'dDescription',
-                accessorKey: 'description',
+                header: '# Employees',
+                accessorKey: 'noOfEmployees',
             },
             {
-                header: 'Category',
-                accessorKey: 'payCategory',
+                header: '# Records',
+                accessorKey: 'noOfRecords',
             },
             {
-                header: 'Rate',
-                accessorKey: 'rate',
+                header: 'Data Transfered By',
+                accessorKey: 'dataTransferedBy',
             },
             {
-                header: 'Is Taxable Gross',
-                accessorKey: 'isTaxableGross',
-                show: false,
+                header: 'Data Transfered Date',
+                accessorKey: 'dataTransferredDate',
+                cell: (cell) => cell.getValue().substring(0, 10),
             },
             {
-                header: 'Created By',
-                accessorKey: 'createdBy',
+                header: 'Data Transfered Time',
+                accessorKey: 'dataTransferredTime',
+                cell: (cell) => cell.getValue().substring(11, 20),
             },
             {
-                header: 'Action',
-                accessorKey: 'action',
-                cell: (cell) => (
-                    <Button
-                        variant="solid"
-                        onClick={() => handleShowEditModal(cell.row)}
-                    >
-                        Edit
-                    </Button>
-                ),
+                header: 'Approved By',
+                accessorKey: 'approvedBy',
+            },
+            {
+                header: 'Approved Date',
+                accessorKey: 'approvedDate',
+                cell: (cell) => cell.getValue().substring(0, 10),
+            },
+            {
+                header: 'Approved Time',
+                accessorKey: 'approvedTime',
+                cell: (cell) => cell.getValue().substring(11, 20),
+            },
+            {
+                header: 'Payrun By',
+                accessorKey: 'payrunBy',
+            },
+            {
+                header: 'Payrun Date',
+                accessorKey: 'payrunDate',
+                cell: (cell) =>
+                    cell.getValue() == null
+                        ? ''
+                        : cell.getValue().substring(0, 10),
+            },
+            {
+                header: 'Payrun Time',
+                accessorKey: 'payrunTime',
+                cell: (cell) =>
+                    cell.getValue() == null
+                        ? ''
+                        : cell.getValue().substring(11, 20),
             },
         ],
         []
@@ -196,15 +157,7 @@ const ViewPayCodes = (props: FormProps) => {
     }
 
     return (
-        <Card header="Pay Codes" headerExtra={headerExtraContent}>
-            {isEditOpen && (
-                <EditDialog
-                    onClose={closeEditDialog}
-                    isEditOpen={isEditOpen}
-                    props={props}
-                    item={selectedPayCode}
-                />
-            )}
+        <Card header="Payrun Summary View">
             <Table>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -270,4 +223,4 @@ const ViewPayCodes = (props: FormProps) => {
     )
 }
 
-export default ViewPayCodes
+export default PayrunSummaryView

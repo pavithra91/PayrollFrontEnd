@@ -12,6 +12,7 @@ import ReactHtmlParser from 'html-react-parser'
 import * as Yup from 'yup'
 import type { FieldProps } from 'formik'
 import useKnowledgeBase from '@/utils/hooks/useKnowledgeBase'
+import useCommon from '@/utils/hooks/useCommon'
 
 type FormModel = {
     title: string
@@ -19,7 +20,6 @@ type FormModel = {
     category: string
     categoryID: number
     createdBy: string
-
 }
 
 const validationSchema = Yup.object().shape({
@@ -28,13 +28,7 @@ const validationSchema = Yup.object().shape({
     content: Yup.string().required('Content required'),
 })
 
-
-const getUserIDFromLocalStorage = () => {
-    const user = JSON.parse(localStorage.getItem('admin') ?? '')
-    const userID = JSON.parse(user.auth).user.userID
-    return userID
-}
-
+const { getUserIDFromLocalStorage } = useCommon()
 
 const demoText =
     '<p>&lt;img src="/img/logo/logo-light-full.png" alt="CPSTL Payroll System logo"&gt;</p>'
@@ -72,7 +66,7 @@ const CreateArticle = ({ mode }: { mode: string }) => {
                     placement: 'top-center',
                 }
             )
-       }
+        }
 
         setSubmitting(false)
     }

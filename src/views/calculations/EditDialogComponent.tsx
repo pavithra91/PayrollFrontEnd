@@ -28,6 +28,7 @@ import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import useCalculations from '@/utils/hooks/useCalculation'
 import { escape } from 'lodash'
+import useCommon from '@/utils/hooks/useCommon'
 
 interface DialogProps {
     isEditOpen: boolean
@@ -66,12 +67,6 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     return render({ field, meta, helpers })
 }
 
-const getUserIDFromLocalStorage = () => {
-    const user = JSON.parse(localStorage.getItem('admin') ?? '')
-    const userID = JSON.parse(user.auth).user.userID
-    return userID
-}
-
 const EditDialog: React.FC<DialogProps> = ({
     onClose,
     isEditOpen,
@@ -85,6 +80,8 @@ const EditDialog: React.FC<DialogProps> = ({
     const foundItem = contributorOptions.find(
         (option) => option.value === selectedContributor[0]
     )
+
+    const { getUserIDFromLocalStorage } = useCommon()
 
     const initValues: CalculationSchema = {
         id: item.getValue('id'),
