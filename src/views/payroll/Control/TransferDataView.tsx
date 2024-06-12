@@ -22,6 +22,8 @@ import RejectData from './RejectData'
 import { Tag } from '@/components/ui/Tag'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import toast from '@/components/ui/toast'
+import Notification from '@/components/ui/Notification'
 
 type Option = {
     value: number
@@ -33,7 +35,7 @@ interface FormProps extends CommonProps {
 }
 
 const TransferDataView = (props: FormProps) => {
-    const { getDataTransferStatistics } = usePayrun()
+    const { getDataTransferStatistics, getPayrunByPeriod } = usePayrun()
 
     const openDialog = () => {
         setIsOpen(true)
@@ -63,18 +65,9 @@ const TransferDataView = (props: FormProps) => {
         setIsRejectOpen(false)
     }
 
-    const [data, setData] = useState([])
-
-    const [isOpen, setIsOpen] = useState(false)
-    const [isDataLoad, setisDataLoad] = useState(false)
-    const [isConfirmOpen, setIsConfirmOpen] = useState(false)
-    const [isRejectOpen, setIsRejectOpen] = useState(false)
-
-    const [dataFromChild, setDataFromChild] = useState(null)
-    const [printData, setPrintData] = useState<PostData[]>()
-
-    const handleChildData = (data: any) => {
-        setDataFromChild(data)
+    type dataFromChild = {
+        companyCode: number
+        period: number
     }
 
     interface PostData {
@@ -95,13 +88,64 @@ const TransferDataView = (props: FormProps) => {
         nonSapAmount: number
         nonSapLineCount: number
         status: boolean
+        reportStatus: string
+    }
+
+    type payrun = {
+        companyCode: number
+        period: number
+        noOfEmployees: number
+        noOfRecords: number
+        payrunStatus: string
+        approvedBy?: string
+        dataTransferredBy: string
     }
 
     const arr: dataGrid[] = []
 
+    const [data, setData] = useState<dataGrid[]>([])
+
+    const [isOpen, setIsOpen] = useState(false)
+    const [isDataLoad, setisDataLoad] = useState(false)
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false)
+    const [isRejectOpen, setIsRejectOpen] = useState(false)
+
+    const [dataFromChild, setDataFromChild] = useState<dataFromChild>()
+    const [printData, setPrintData] = useState<PostData[]>()
+    const [payrunStatus, setPayrunStatus] = useState<payrun[]>([])
+
+    const handleChildData = (data: any) => {
+        setDataFromChild(data)
+    }
+
+    const openNotification = (
+        type: 'success' | 'warning' | 'danger' | 'info',
+        message: string
+    ) => {
+        toast.push(
+            <Notification
+                title={type.charAt(0).toUpperCase() + type.slice(1)}
+                type={type}
+            >
+                {message}
+            </Notification>
+        )
+    }
+
     useEffect(() => {
         if (dataFromChild != null) {
             const result = getDataTransferStatistics(dataFromChild)
+
+            const payrunStatus = getPayrunByPeriod(dataFromChild)
+
+            payrunStatus.then((res) => {
+                const result = JSON.parse(res?.data?.data ?? '')
+
+                if (result.length > 0) {
+                    setPayrunStatus(result)
+                }
+            })
+
             result.then((res) => {
                 const listItems = JSON.parse(res?.data?.data ?? '')
 
@@ -125,10 +169,6 @@ const TransferDataView = (props: FormProps) => {
                             matched = true
                         }
 
-                        if (item.PayCode === 867) {
-                            console.log(listItems[0].nonSAPPayData)
-                        }
-
                         arr.push({
                             sapPayCode: item.PayCode,
                             sapAmount: item.Amount.toLocaleString('en-US', {
@@ -148,6 +188,7 @@ const TransferDataView = (props: FormProps) => {
                                 listItems[0].nonSAPPayData[index]
                                     .Line_Item_Count,
                             status: matched,
+                            reportStatus: '',
                         })
                     }
                 )
@@ -159,19 +200,31 @@ const TransferDataView = (props: FormProps) => {
 
     const handlePDFDownload = () => {
         if (printData != null && dataFromChild != null) {
-            Object.entries(data).forEach((key) => {
-                if (data[key].status === true) {
-                    data[key].status = 'Matched'
+            const items = data.map((item, index) => {
+                if (Object.entries(item)[6][1] == true) {
+                    item.reportStatus = 'Matched'
                 } else {
-                    data[key].status = 'Un Matched'
+                    item.reportStatus = 'Un Matched'
                 }
             })
-
             const doc = new jsPDF()
 
             doc.text('Data Transfer Report', 100, 10, { align: 'center' })
 
+            doc.setFontSize(10)
+            doc.text(
+                'No of Employees : ' + payrunStatus[0].noOfEmployees,
+                15,
+                15,
+                { align: 'left' }
+            )
+
+            doc.text('No of Records : ' + payrunStatus[0].noOfRecords, 15, 20, {
+                align: 'left',
+            })
+
             autoTable(doc, {
+                startY: 28,
                 columnStyles: { europe: { halign: 'center' } },
                 body: data,
                 columns: [
@@ -184,11 +237,92 @@ const TransferDataView = (props: FormProps) => {
                         header: 'Non SAP Item Count',
                         dataKey: 'nonSapLineCount',
                     },
-                    { header: 'Status', dataKey: 'status' },
+                    { header: 'Status', dataKey: 'reportStatus' },
                 ],
             })
 
-            doc.save('my_table_report.pdf')
+            const pageCount = (doc as any).internal.getNumberOfPages()
+
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setFontSize(10)
+                // Go to page i
+                doc.setPage(i)
+                var pageSize = doc.internal.pageSize
+                var pageHeight = pageSize.height
+                    ? pageSize.height
+                    : pageSize.getHeight()
+                doc.text(
+                    'Page ' + String(i) + ' of ' + String(pageCount),
+                    doc.internal.pageSize.getWidth() / 2,
+                    pageHeight - 8,
+                    { align: 'center' }
+                )
+            }
+
+            doc.setPage(pageCount)
+
+            var pageSize = doc.internal.pageSize
+            var pageHeight = pageSize.height
+                ? pageSize.height
+                : pageSize.getHeight()
+
+            if (payrunStatus[0].payrunStatus == 'Transfer Complete') {
+                doc.text(
+                    'Checked By',
+                    doc.internal.pageSize.getWidth() / 8 + 8,
+                    pageHeight - 15,
+                    { align: 'left' }
+                )
+                doc.text(
+                    '....................................',
+                    doc.internal.pageSize.getWidth() / 8,
+                    pageHeight - 20,
+                    { align: 'left' }
+                )
+
+                doc.text(
+                    'Approved By',
+                    doc.internal.pageSize.getWidth() - 20,
+                    pageHeight - 15,
+                    { align: 'right' }
+                )
+                doc.text(
+                    '....................................',
+                    doc.internal.pageSize.getWidth() - 12,
+                    pageHeight - 20,
+                    { align: 'right' }
+                )
+            } else {
+                doc.text(
+                    'Approved By',
+                    doc.internal.pageSize.getWidth() / 8 + 8,
+                    pageHeight - 15,
+                    { align: 'left' }
+                )
+
+                doc.text(
+                    '....................................',
+                    doc.internal.pageSize.getWidth() / 8,
+                    pageHeight - 20,
+                    { align: 'left' }
+                )
+
+                doc.text(
+                    payrunStatus[0].approvedBy + '',
+                    doc.internal.pageSize.getWidth() / 8 + 10,
+                    pageHeight - 22,
+                    { align: 'left' }
+                )
+            }
+
+            doc.save(
+                dataFromChild.companyCode +
+                    '_' +
+                    dataFromChild.period +
+                    ' Data Transfer Control.pdf'
+            )
+        } else {
+            openNotification('warning', 'Please Load Data Before Print Report')
         }
     }
 
@@ -202,7 +336,7 @@ const TransferDataView = (props: FormProps) => {
         { value: 50, label: '50 / page' },
     ]
 
-    const columns = useMemo<ColumnDef<typeof arr>[]>(
+    const columns = useMemo<ColumnDef<dataGrid>[]>(
         () => [
             {
                 header: 'SAP',

@@ -85,12 +85,12 @@ const PayrunSummaryView = (props: FormProps) => {
             {
                 header: 'Data Transfered Date',
                 accessorKey: 'dataTransferredDate',
-                cell: (cell) => cell.getValue().substring(0, 10),
+                cell: (cell) => typeof String(cell.getValue()).substring(0, 10),
             },
             {
                 header: 'Data Transfered Time',
                 accessorKey: 'dataTransferredTime',
-                cell: (cell) => cell.getValue().substring(11, 20),
+                cell: (cell) => (cell.getValue() + '').substring(0, 10),
             },
             {
                 header: 'Approved By',
@@ -99,12 +99,12 @@ const PayrunSummaryView = (props: FormProps) => {
             {
                 header: 'Approved Date',
                 accessorKey: 'approvedDate',
-                cell: (cell) => cell.getValue().substring(0, 10),
+                cell: (cell) => (cell.getValue() + '').substring(0, 10),
             },
             {
                 header: 'Approved Time',
                 accessorKey: 'approvedTime',
-                cell: (cell) => cell.getValue().substring(11, 20),
+                cell: (cell) => (cell.getValue() + '').substring(11, 20),
             },
             {
                 header: 'Payrun By',
@@ -116,7 +116,7 @@ const PayrunSummaryView = (props: FormProps) => {
                 cell: (cell) =>
                     cell.getValue() == null
                         ? ''
-                        : cell.getValue().substring(0, 10),
+                        : (cell.getValue() + '').substring(0, 10),
             },
             {
                 header: 'Payrun Time',
@@ -124,7 +124,7 @@ const PayrunSummaryView = (props: FormProps) => {
                 cell: (cell) =>
                     cell.getValue() == null
                         ? ''
-                        : cell.getValue().substring(11, 20),
+                        : (cell.getValue() + '').substring(11, 20),
             },
         ],
         []

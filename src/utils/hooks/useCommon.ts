@@ -42,9 +42,14 @@ function useCommon() {
     }
 
     const getUserIDFromLocalStorage = () => {
-        const user = JSON.parse(localStorage.getItem('admin') ?? '')
-        const userID = JSON.parse(user.auth).user.userID
-        return userID
+        if (localStorage.getItem('admin') == null) {
+            return null
+        } else {
+            const user = JSON.parse(localStorage.getItem('admin') ?? '')
+            console.log(user)
+            const userID = JSON.parse(user.auth).user.userID
+            return userID
+        }
     }
     return {
         getOTHours,
