@@ -108,3 +108,15 @@ export async function apiPrintPaysheets(values: PayrollDataSchema) {
         timeout: 320000,
     })
 }
+
+export async function apiPayCodeCheck(values: PayrollDataSchema) {
+    return ApiService.fetchData<Response>({
+        url:
+            '/DataTransfer/paycode-check?companyCode=' +
+            values.companyCode +
+            '&period=' +
+            values.period,
+        method: 'get',
+        timeout: 240000,
+    })
+}

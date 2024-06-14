@@ -52,18 +52,35 @@ const DialogComponent: React.FC<DialogProps> = ({
     }
 
     const confirmData = async () => {
-        setSubmitting(true)
-        const result = await confirmDataTransfer(ConfirmDataTransfer)
-
-        if (result?.status === 'failed') {
-            setMessage('Error')
-            openNotification('danger', result.message)
+        if (data.unmatchedData) {
+            setMessage('Warning')
+            openNotification(
+                'warning',
+                'There are unmached Data. Please check Again!'
+            )
+            setSubmitting(false)
+        } else if (data.paycodeMacthed.length > 0) {
+            setMessage('Warning')
+            openNotification(
+                'warning',
+                'Paycodes missing. Please check and map paycode : ' +
+                    data.paycodeMacthed
+            )
             setSubmitting(false)
         } else {
-            setMessage('Successfully Saved')
-            openNotification('success', 'Data Transfer Confirmed')
-            setSubmitting(false)
-            onClose()
+            setSubmitting(true)
+            const result = await confirmDataTransfer(ConfirmDataTransfer)
+
+            if (result?.status === 'failed') {
+                setMessage('Error')
+                openNotification('danger', result.message)
+                setSubmitting(false)
+            } else {
+                setMessage('Successfully Saved')
+                openNotification('success', 'Data Transfer Confirmed')
+                setSubmitting(false)
+                onClose()
+            }
         }
     }
 

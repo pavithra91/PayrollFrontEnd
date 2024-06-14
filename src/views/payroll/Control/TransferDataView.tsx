@@ -35,7 +35,8 @@ interface FormProps extends CommonProps {
 }
 
 const TransferDataView = (props: FormProps) => {
-    const { getDataTransferStatistics, getPayrunByPeriod } = usePayrun()
+    const { getDataTransferStatistics, getPayrunByPeriod, payCodeCheck } =
+        usePayrun()
 
     const openDialog = () => {
         setIsOpen(true)
@@ -101,6 +102,20 @@ const TransferDataView = (props: FormProps) => {
         dataTransferredBy: string
     }
 
+    interface ConfirmDialogData {
+        companyCode?: number
+        period?: number
+        unmatchedData: boolean
+        paycodeMacthed: []
+    }
+
+    let _confirmData: ConfirmDialogData = {
+        companyCode: 0,
+        period: 0,
+        unmatchedData: false,
+        paycodeMacthed: [],
+    }
+
     const arr: dataGrid[] = []
 
     const [data, setData] = useState<dataGrid[]>([])
@@ -112,6 +127,8 @@ const TransferDataView = (props: FormProps) => {
 
     const [dataFromChild, setDataFromChild] = useState<dataFromChild>()
     const [printData, setPrintData] = useState<PostData[]>()
+    const [unmatchedData, setUnmatchedData] = useState(false)
+    const [paycodeMacthed, setPaycodeMacthed] = useState<[]>([])
     const [payrunStatus, setPayrunStatus] = useState<payrun[]>([])
 
     const handleChildData = (data: any) => {
@@ -120,23 +137,37 @@ const TransferDataView = (props: FormProps) => {
 
     const openNotification = (
         type: 'success' | 'warning' | 'danger' | 'info',
+        title: string,
         message: string
     ) => {
         toast.push(
-            <Notification
-                title={type.charAt(0).toUpperCase() + type.slice(1)}
-                type={type}
-            >
+            <Notification title={title} type={type}>
                 {message}
             </Notification>
         )
     }
 
     useEffect(() => {
+        setUnmatchedData(false)
         if (dataFromChild != null) {
             const result = getDataTransferStatistics(dataFromChild)
-
             const payrunStatus = getPayrunByPeriod(dataFromChild)
+
+            const payCodeStatus = payCodeCheck(dataFromChild)
+
+            payCodeStatus.then((res) => {
+                const result = JSON.parse(res?.data?.data ?? '')
+                if (result.length > 0) {
+                    openNotification(
+                        'danger',
+                        'Error',
+                        'PayCode Missing : ' + result
+                    )
+                    setPaycodeMacthed(result)
+                } else {
+                    setPaycodeMacthed([])
+                }
+            })
 
             payrunStatus.then((res) => {
                 const result = JSON.parse(res?.data?.data ?? '')
@@ -190,6 +221,10 @@ const TransferDataView = (props: FormProps) => {
                             status: matched,
                             reportStatus: '',
                         })
+
+                        if (!matched) {
+                            setUnmatchedData(true)
+                        }
                     }
                 )
                 setData(arr)
@@ -198,7 +233,20 @@ const TransferDataView = (props: FormProps) => {
         }
     }, [dataFromChild])
 
+    _confirmData.companyCode = dataFromChild?.companyCode
+    _confirmData.period = dataFromChild?.period
+    _confirmData.unmatchedData = unmatchedData
+    _confirmData.paycodeMacthed = paycodeMacthed
+
     const handlePDFDownload = () => {
+        if (paycodeMacthed.length > 0) {
+            openNotification(
+                'danger',
+                'Error',
+                'PayCode Missing : ' + paycodeMacthed
+            )
+            return
+        }
         if (printData != null && dataFromChild != null) {
             const items = data.map((item, index) => {
                 if (Object.entries(item)[6][1] == true) {
@@ -322,7 +370,11 @@ const TransferDataView = (props: FormProps) => {
                     ' Data Transfer Control.pdf'
             )
         } else {
-            openNotification('warning', 'Please Load Data Before Print Report')
+            openNotification(
+                'warning',
+                'Warning',
+                'Please Load Data Before Print Report'
+            )
         }
     }
 
@@ -458,7 +510,7 @@ const TransferDataView = (props: FormProps) => {
                         onClose={closeConfirmDialog}
                         isConfirmOpen={isConfirmOpen}
                         props={props}
-                        data={dataFromChild}
+                        data={_confirmData}
                     />
                 )}
             </span>

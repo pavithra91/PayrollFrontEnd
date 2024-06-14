@@ -115,7 +115,6 @@ const ConfirmedDataView = (props: FormProps) => {
                     }
                 )
                 setData(arr)
-                //console.log(arr)
                 setisDataLoad(true)
             })
 
@@ -183,8 +182,6 @@ const ConfirmedDataView = (props: FormProps) => {
                 period,
                 approvedBy,
             })
-
-            console.log(result)
 
             if (result?.status === 'failed') {
                 setMessage(result.message)
@@ -290,21 +287,23 @@ const ConfirmedDataView = (props: FormProps) => {
                         <div className="col-span-1..."></div>
                     )}
 
-                    <div className="col-span-1...">
-                        <span className="mr-1 font-semibold">
-                            <Button
-                                disabled={isProcessPayrollBloacked}
-                                variant="solid"
-                                color="blue-600"
-                                onClick={processPayrollData}
-                                loading={isSubmitting}
-                            >
-                                {isSubmitting
-                                    ? 'Processing...'
-                                    : 'Process Payroll'}
-                            </Button>
-                        </span>
-                    </div>
+                    {isDataLoad && (
+                        <div className="col-span-1...">
+                            <span className="mr-1 font-semibold">
+                                <Button
+                                    disabled={isProcessPayrollBloacked}
+                                    variant="solid"
+                                    color="blue-600"
+                                    onClick={processPayrollData}
+                                    loading={isSubmitting}
+                                >
+                                    {isSubmitting
+                                        ? 'Processing...'
+                                        : 'Process Payroll'}
+                                </Button>
+                            </span>
+                        </div>
+                    )}
 
                     {isUnrecoveredActive && (
                         <div className="col-span-1...">
