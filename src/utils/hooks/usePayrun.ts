@@ -2,6 +2,7 @@ import {
     apiGetDataTransferStatistics,
     apiConfirmDataTransfer,
     apiRollBackDataTransfer,
+    apiSimulatePayroll,
     apiProcessPayroll,
     apiGetPayrunByPeriod,
     apiCreateUnRecovered,
@@ -59,6 +60,24 @@ function usePayrun() {
     const rollbackDataTransfer = async (values: ConfirmDataTransfer) => {
         try {
             const resp = await apiRollBackDataTransfer(values)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
+
+    const simulatePayroll = async (values: ConfirmDataTransfer) => {
+        try {
+            const resp = await apiSimulatePayroll(values)
             if (resp.data) {
                 return {
                     status: 'success',
@@ -222,6 +241,7 @@ function usePayrun() {
         getDataTransferStatistics,
         confirmDataTransfer,
         rollbackDataTransfer,
+        simulatePayroll,
         processPayroll,
         getPayrunByPeriod,
         createUnRecovered,

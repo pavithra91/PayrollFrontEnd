@@ -17,6 +17,28 @@ export async function apiGetOTHours(values: PayrollDataSchema) {
     })
 }
 
+export async function apiGetUnrecoveredList(values: PayrollDataSchema) {
+    return ApiService.fetchData<Response>({
+        url:
+            '/Admin/get-unrecovered-details?companyCode=' +
+            values.companyCode +
+            '&period=' +
+            values.period,
+        method: 'get',
+    })
+}
+
+export async function apiGetLumpsumTaxList(values: PayrollDataSchema) {
+    return ApiService.fetchData<Response>({
+        url:
+            '/Admin/get-lumpsumtax-details?companyCode=' +
+            values.companyCode +
+            '&period=' +
+            values.period,
+        method: 'get',
+    })
+}
+
 export async function apiResetData(data: ResetOptions) {
     console.log(data)
     return ApiService.fetchData<Response>({

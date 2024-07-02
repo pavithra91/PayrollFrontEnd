@@ -5,23 +5,23 @@ import { Field, Form, Formik, FormikProps } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Alert from '@/components/ui/Alert'
+import Select from '@/components/ui/Select'
 import type { CommonProps, SelectOption, TaxOption } from '@/@types/common'
 import type { FC, MouseEvent } from 'react'
-import * as Yup from 'yup'
-import toast from '@/components/ui/toast'
-import Notification from '@/components/ui/Notification'
-import useCalculations from '@/utils/hooks/useCalculation'
-import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
-import { useState } from 'react'
-import { TaxCalculationSchema } from '@/@types/Calculation'
-import useCommon from '@/utils/hooks/useCommon'
 import {
     FieldHelperProps,
     FieldInputProps,
     FieldMetaProps,
     useField,
 } from 'formik'
-import Select from '@/components/ui/Select'
+import * as Yup from 'yup'
+import toast from '@/components/ui/toast'
+import Notification from '@/components/ui/Notification'
+import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
+import { useState } from 'react'
+import useCommon from '@/utils/hooks/useCommon'
+import { SystemVariableSchema } from '@/@types/System'
+import useSettings from '@/utils/hooks/useSettings'
 
 interface DialogProps {
     isOpen: boolean // Type for the 'isOpen' prop
@@ -50,8 +50,8 @@ const companyOptions: SelectOption[] = [
 ]
 
 const categoryOptions: TaxOption[] = [
-    { value: 'IT', label: 'Income Tax' },
-    { value: 'LT', label: 'Lump-Sum Tax' },
+    { value: 'System_Variable', label: 'System Variable' },
+    { value: 'Calculation_Variable', label: 'Calculation Variable' },
 ]
 
 const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
@@ -62,20 +62,19 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
 
 const { getUserIDFromLocalStorage } = useCommon()
 
-const initValues: TaxCalculationSchema = {
-    companyCode: 3000,
-    range: 0,
-    calFormula: '',
-    description: '',
-    taxCategory: 'IT',
-    status: true,
+const initValues: SystemVariableSchema = {
+    id: 0,
+    companyCode: companyOptions[0].value,
+    category_name: categoryOptions[0].value,
+    variable_name: '',
+    variable_value: '',
     createdBy: getUserIDFromLocalStorage(),
 }
 
 const validationSchema = Yup.object().shape({
-    companyCode: Yup.object().required('Company Code Required'),
-    range: Yup.string().required('Range is Required'),
-    calFormula: Yup.string().required('Please enter Calculation Formula'),
+    companyCode: Yup.object().required('Please select Company Code'),
+    variable_name: Yup.string().required('Please enter Calculation Sequence'),
+    variable_value: Yup.string().required('Please enter Pay Code'),
 })
 
 const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
@@ -83,40 +82,40 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
 
     const { disableSubmit = false, className } = props
 
-    const { addTaxCalculations } = useCalculations()
+    const { addSystemVariable } = useSettings()
 
     const onSubmit = async (
-        values: TaxCalculationSchema,
+        values: SystemVariableSchema,
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
         const {
+            id,
             companyCode,
-            range,
-            calFormula,
-            description,
-            taxCategory,
-            status,
+            category_name,
+            variable_name,
+            variable_value,
             createdBy,
         } = values
         setSubmitting(true)
 
-        const result = await addTaxCalculations({
+        const result = await addSystemVariable({
+            id,
             companyCode,
-            range,
-            calFormula,
-            description,
-            taxCategory,
-            status,
+            category_name,
+            variable_name,
+            variable_value,
             createdBy,
         })
 
-        console.log(result?.status)
-
         if (result?.status === 'failed') {
             setMessage(result.message)
+            openNotification(
+                'danger',
+                'Error Occurred While Saving Data : ' + result.message
+            )
         } else {
             setMessage('Successfully Saved')
-            openNotification('success', 'Calculation Saved Successfully')
+            openNotification('success', 'System Variable Saved Successfully')
             onClose()
         }
 
@@ -166,7 +165,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
     return (
         <>
             <Dialog isOpen={isOpen} onClose={onClose} onRequestClose={onClose}>
-                <h5 className="mb-4">Add Tax Calculations</h5>
+                <h5 className="mb-4">Add System Variable</h5>
 
                 <div className={className}>
                     {message && (
@@ -174,7 +173,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                             <>{message}</>
                         </Alert>
                     )}
-                    <Formik<TaxCalculationSchema>
+                    <Formik<SystemVariableSchema>
                         initialValues={initValues}
                         validationSchema={validationSchema}
                         onSubmit={(values, { setSubmitting }) => {
@@ -183,13 +182,13 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                     Object.values(values.companyCode)
                                 )
 
-                                values.companyCode = selectedCompanyCode[0]
-
-                                const selectedCategory = Array.from(
-                                    Object.values(values.taxCategory)
+                                const selectedCategoryOptions = Array.from(
+                                    Object.values(values.category_name)
                                 )
 
-                                values.taxCategory = selectedCategory[0]
+                                values.companyCode = selectedCompanyCode[0]
+                                values.category_name =
+                                    selectedCategoryOptions[0]
 
                                 onSubmit(values, setSubmitting)
                             } else {
@@ -201,7 +200,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                             touched,
                             errors,
                             isSubmitting,
-                        }: FormikProps<TaxCalculationSchema>) => (
+                        }: FormikProps<SystemVariableSchema>) => (
                             <Form>
                                 <FormContainer>
                                     <div className="grid grid-cols-2 gap-4">
@@ -237,29 +236,8 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                         />
 
                                         <div className="grid grid-cols-1 gap-4">
-                                            <FormItem
-                                                label="Range"
-                                                invalid={
-                                                    (errors.range &&
-                                                        touched.range) as boolean
-                                                }
-                                                errorMessage={errors.range}
-                                            >
-                                                <Field
-                                                    type="text"
-                                                    autoComplete="off"
-                                                    name="range"
-                                                    placeholder="Range"
-                                                    component={Input}
-                                                />
-                                            </FormItem>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="grid grid-cols-1 gap-4">
                                             <FieldWrapper
-                                                name="taxCategory"
+                                                name="payCategory"
                                                 render={({
                                                     field,
                                                     meta,
@@ -276,8 +254,8 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                                         }
                                                     >
                                                         <Select
-                                                            name="taxCategory"
-                                                            id="taxCategory"
+                                                            name="category_name"
+                                                            id="category_name"
                                                             value={field.value}
                                                             onChange={(
                                                                 value
@@ -296,39 +274,49 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                             />
                                         </div>
                                     </div>
-                                    <FormItem
-                                        label="Calculation Formula"
-                                        invalid={
-                                            (errors.calFormula &&
-                                                touched.calFormula) as boolean
-                                        }
-                                        errorMessage={errors.calFormula}
-                                    >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="calFormula"
-                                            placeholder="Calculation Formula"
-                                            component={Input}
-                                        />
-                                    </FormItem>
 
-                                    <FormItem
-                                        label="Calculation Description"
-                                        invalid={
-                                            (errors.description &&
-                                                touched.description) as boolean
-                                        }
-                                        errorMessage={errors.description}
-                                    >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="description"
-                                            placeholder="Calculation Description"
-                                            component={Input}
-                                        />
-                                    </FormItem>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <FormItem
+                                            label="Variable Name"
+                                            invalid={
+                                                (errors.variable_name &&
+                                                    touched.variable_name) as boolean
+                                            }
+                                            errorMessage={errors.variable_name}
+                                        >
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="variable_name"
+                                                placeholder="Variable Name"
+                                                component={Input}
+                                            />
+                                        </FormItem>
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <FormItem
+                                                label="Variable Value"
+                                                invalid={
+                                                    (errors.variable_value &&
+                                                        touched.variable_value) as boolean
+                                                }
+                                                errorMessage={
+                                                    errors.variable_value
+                                                }
+                                            >
+                                                <Field
+                                                    type="text"
+                                                    autoComplete="off"
+                                                    name="variable_value"
+                                                    placeholder="Variable Value"
+                                                    component={Input}
+                                                />
+                                            </FormItem>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 gap-4"></div>
+                                    </div>
 
                                     <div className="text-right mt-6"></div>
 

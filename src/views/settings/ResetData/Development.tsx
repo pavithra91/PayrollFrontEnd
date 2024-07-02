@@ -48,7 +48,7 @@ const validationSchema = Yup.object().shape({
     period: Yup.number().required('Please enter Period'),
 })
 
-const Develeopment = () => {
+const Development = () => {
     const { deleteData } = useCommon()
 
     const [layout, setLayout] = useState<FormLayout>('inline')
@@ -227,4 +227,4 @@ const Develeopment = () => {
         </>
     )
 }
-export default Develeopment
+export default Development

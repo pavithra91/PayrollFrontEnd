@@ -1,4 +1,4 @@
-import type { CommonProps, CompanyIdSelectOption } from '@/@types/common'
+import type { CommonProps, SelectOption } from '@/@types/common'
 import { FC, useEffect, useState } from 'react'
 import Button from '@/components/ui/Button'
 import { Formik, Field, Form } from 'formik'
@@ -17,10 +17,14 @@ import { PayrollDataSchema } from '@/@types/payroll'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
-import PayrollSummary from '../Process/PayrollSummary'
+import PayrollSummary from '../../payroll/Process/PayrollSummary'
 import jsPDF from 'jspdf'
 import autoTable, { RowInput } from 'jspdf-autotable'
 import useCommon from '@/utils/hooks/useCommon'
+import { FaFilePdf, FaRegFileExcel } from 'react-icons/fa'
+import Avatar from '@/components/ui/Avatar/Avatar'
+import { downloadExcel } from 'react-export-table-to-excel'
+import Tooltip from '@/components/ui/Tooltip/Tooltip'
 
 interface RenderProps<V = any> {
     field: FieldInputProps<V>
@@ -33,7 +37,7 @@ interface FieldWrapperProps<V = any> {
     render: (formikProps: RenderProps<V>) => React.ReactElement
 }
 
-const companyOptions: CompanyIdSelectOption[] = [
+const companyOptions: SelectOption[] = [
     { value: 2000, label: '2000' },
     { value: 3000, label: '3000' },
 ]
@@ -49,9 +53,6 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
 const SummaryView = () => {
     const { getPayrunByPeriod, getPayrollSummary } = usePayrun()
 
-    const [isProcessPayrollBloacked, setIsProcessPayrollBloacked] =
-        useState(false)
-
     const [layout, setLayout] = useState<FormLayout>('inline')
     const [message, setMessage] = useTimeOutMessage()
 
@@ -62,8 +63,6 @@ const SummaryView = () => {
         useState<PayrollDataSchema | null>(null)
 
     const onSubmit = async (values: PayrollDataSchema) => {
-        const { companyCode, period } = values
-
         if (values != null) {
             setDataFromChild(values)
         }
@@ -80,42 +79,46 @@ const SummaryView = () => {
             const payRunResults = getPayrunByPeriod(dataFromChild)
 
             payRunResults.then((res) => {
-                const listItems = JSON.parse(res?.data?.data ?? '')
-                if (listItems.length > 0) {
-                    if (listItems[0].payrunStatus != 'Unrec File Created') {
-                        openNotification(
-                            'Error',
-                            'danger',
-                            'Please Create Unrecovered File to Download Payroll Summary'
-                        )
-                    }
-                    setIsProcessPayrollBloacked(true)
-
-                    const result = getPayrollSummary(dataFromChild)
-
-                    result.then((res) => {
-                        if (res != undefined) {
-                            const listItems = JSON.parse(res?.data?.data ?? '')
-
-                            setPayrollData(listItems)
-                        } else {
+                if (res?.status == 'success') {
+                    const listItems = JSON.parse(res?.data?.data ?? '')
+                    if (listItems.length > 0) {
+                        if (listItems[0].payrunStatus != 'Unrec File Created') {
                             openNotification(
-                                'Error',
                                 'danger',
-                                'No Data Available'
+                                'Error',
+                                'Please Create Unrecovered File to Download Payroll Summary'
                             )
                         }
-                    })
+
+                        const result = getPayrollSummary(dataFromChild)
+
+                        result.then((res) => {
+                            if (res?.status == 'success') {
+                                const listItems = JSON.parse(
+                                    res?.data?.data ?? ''
+                                )
+
+                                setPayrollData(listItems)
+                            } else {
+                                setPayrollData([])
+                            }
+                        })
+                    } else {
+                    }
                 } else {
-                    openNotification('Error', 'danger', 'No Data Available')
+                    openNotification(
+                        'danger',
+                        'Error',
+                        'No Data for Period : ' + dataFromChild.period
+                    )
                 }
             })
         }
     }, [dataFromChild])
 
     const openNotification = (
-        title: string,
         type: 'success' | 'warning' | 'danger' | 'info',
+        title: string,
         message: string
     ) => {
         toast.push(
@@ -231,6 +234,42 @@ const SummaryView = () => {
         }
     }
 
+    const header = [
+        'Company Code',
+        'Location',
+        'Period',
+        'EPF',
+        'Name',
+        'Grade',
+        'EPF Employee Contribution',
+        'EPF Company Contribution',
+        'ETF',
+        'Taxable Gross',
+        'EPF Gross',
+        'Tax',
+        'Lump Sum Tax',
+    ]
+
+    function handleDownloadExcel() {
+        if (payrollData.length == 0) {
+            openNotification(
+                'danger',
+                'No Data Found',
+                'Please load data to download'
+            )
+            return
+        }
+        downloadExcel({
+            fileName: 'payroll_summary_report - ' + dataFromChild?.period,
+            sheet: dataFromChild?.period + '',
+            tablePayload: {
+                header,
+                // accept two different data structures
+                body: payrollData,
+            },
+        })
+    }
+
     return (
         <>
             <Card header="Payroll Summary">
@@ -306,16 +345,34 @@ const SummaryView = () => {
                     <div className="col-span-1..."></div>
 
                     <div className="col-span-1...">
-                        <span className="mr-1 font-semibold">
-                            <Button
-                                variant="solid"
-                                color="blue-600"
-                                onClick={printReport}
-                                loading={isSubmitting}
-                            >
-                                {isSubmitting ? 'Processing...' : 'Print'}
-                            </Button>
-                        </span>
+                        <div className="grid grid-cols-12 gap-4">
+                            <div className="col-span-3 ...">
+                                <Tooltip
+                                    title="Download to Excel File"
+                                    placement="top"
+                                >
+                                    <Avatar
+                                        className="mr-4 bg-emerald-500"
+                                        icon={<FaRegFileExcel />}
+                                        onClick={handleDownloadExcel}
+                                    />
+                                </Tooltip>
+                            </div>
+                            <div className="...">
+                                <Tooltip
+                                    title="Download to PDF File"
+                                    placement="top"
+                                >
+                                    <Avatar
+                                        className="mr-4 bg-red-500"
+                                        icon={<FaFilePdf />}
+                                        onClick={printReport}
+                                    />
+                                </Tooltip>
+                            </div>
+
+                            <div className="..."></div>
+                        </div>
                     </div>
                 </div>
             </Card>

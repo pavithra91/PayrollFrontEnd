@@ -6,7 +6,7 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Alert from '@/components/ui/Alert'
 import Select from '@/components/ui/Select'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps, SelectOption } from '@/@types/common'
 import type { FC, MouseEvent } from 'react'
 import {
     FieldHelperProps,
@@ -19,7 +19,7 @@ import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import { useState } from 'react'
-import type { CompanyIdSelectOption, RoleSelectOption } from '@/@types/common'
+import type { RoleSelectOption } from '@/@types/common'
 import Checkbox from '@/components/ui/Checkbox'
 import { AccountSchema } from '@/@types/Account'
 import useAccount from '@/utils/hooks/useAccount'
@@ -45,7 +45,7 @@ interface FieldWrapperProps<V = any> {
     render: (formikProps: RenderProps<V>) => React.ReactElement
 }
 
-const companyOptions: CompanyIdSelectOption[] = [
+const companyOptions: SelectOption[] = [
     { value: 2000, label: '2000' },
     { value: 3000, label: '3000' },
 ]

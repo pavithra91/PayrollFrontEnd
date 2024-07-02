@@ -31,9 +31,15 @@ export const protectedRoutes = [
     },
     /** Example purpose only, please remove */
     {
-        key: 'Settings',
-        path: '/Settings',
-        component: lazy(() => import('@/views/users/Account/Settings')),
+        key: 'ViewSettings',
+        path: '/ViewSettings',
+        component: lazy(() => import('@/views/settings/Settings/ViewSettings')),
+        authority: [],
+    },
+    {
+        key: 'Development',
+        path: '/settings/ResetData/Development',
+        component: lazy(() => import('@/views/settings/ResetData/Development')),
         authority: [],
     },
     {
@@ -71,7 +77,7 @@ export const protectedRoutes = [
     {
         key: 'PayrollSummary',
         path: '/PayrollSummary',
-        component: lazy(() => import('@/views/payroll/Summary/PayrollSummary')),
+        component: lazy(() => import('@/views/reports/Summary/PayrollSummary')),
         authority: ['Admin'],
     },
     {
@@ -113,6 +119,24 @@ export const protectedRoutes = [
         component: lazy(() => import('@/views/users/Users/ViewUsers')),
         authority: [],
     },
+
+    {
+        key: 'UnrecoveredList',
+        path: '/UnrecoveredList',
+        component: lazy(
+            () => import('@/views/reports/UnRecoveredReport/Unrecovered')
+        ),
+        authority: ['Admin'],
+    },
+    {
+        key: 'LumpSumTaxReport',
+        path: '/LumpSumTaxReport',
+        component: lazy(
+            () => import('@/views/reports/LumpSumTaxReport/LumpSumTaxReport')
+        ),
+        authority: ['Admin'],
+    },
+
     {
         key: 'knowledgebase',
         path: '/knowledgebase',

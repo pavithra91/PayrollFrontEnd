@@ -33,6 +33,7 @@ export interface TaxCalculationSchema {
     range: number
     calFormula: string
     description: string
+    taxCategory: string
     status: boolean
     createdBy: string
 }
@@ -43,14 +44,10 @@ export type TaxCalculationData = {
     range: number
     calFormula: string
     description: string
+    taxCategory: string
     status: boolean
     createdBy: string
     lastUpdateBy?: string
-}
-
-export interface CompanyIdSelectOption {
-    label: string
-    value: number
 }
 
 export interface ContributorSelectOption {
@@ -64,6 +61,7 @@ export type TaxData = {
     range: number
     calFormula: string
     description: string
+    taxCategory: string
     status: boolean
     createdBy: string
     createdDate: string

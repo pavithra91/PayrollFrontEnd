@@ -6,7 +6,7 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Alert from '@/components/ui/Alert'
 import Select from '@/components/ui/Select'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps, SelectOption } from '@/@types/common'
 import type { FC, MouseEvent } from 'react'
 import {
     FieldHelperProps,
@@ -22,7 +22,6 @@ import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import { useState } from 'react'
 import type {
     CalculationSchema,
-    CompanyIdSelectOption,
     ContributorSelectOption,
 } from '@/@types/calculation'
 import useCommon from '@/utils/hooks/useCommon'
@@ -48,7 +47,7 @@ interface FieldWrapperProps<V = any> {
     render: (formikProps: RenderProps<V>) => React.ReactElement
 }
 
-const companyOptions: CompanyIdSelectOption[] = [
+const companyOptions: SelectOption[] = [
     { value: 2000, label: '2000' },
     { value: 3000, label: '3000' },
 ]
@@ -56,6 +55,11 @@ const companyOptions: CompanyIdSelectOption[] = [
 const contributorOptions: ContributorSelectOption[] = [
     { value: 'E', label: 'Employee' },
     { value: 'C', label: 'Company' },
+]
+
+const categoryOptions: SelectOption[] = [
+    { value: 0, label: 'Earning' },
+    { value: 1, label: 'Deduction' },
 ]
 
 const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
@@ -74,7 +78,7 @@ const initValues: CalculationSchema = {
     calCode: '',
     calFormula: '',
     calDescription: '',
-    payCategory: '',
+    payCategory: categoryOptions[0].value.toString(),
     contributor: contributorOptions[0].value,
     status: true,
     createdBy: getUserIDFromLocalStorage(),
@@ -86,7 +90,7 @@ const validationSchema = Yup.object().shape({
     payCode: Yup.string().required('Please enter Pay Code'),
     calCode: Yup.string().required('Please enter Calculation Code'),
     calFormula: Yup.string().required('Please enter Calculation Formula'),
-    payCategory: Yup.string().required('Please enter Calculation Type'),
+    payCategory: Yup.object().required('Please enter Pay Category'),
     contributor: Yup.object().required('Please enter Contributor'),
 })
 
@@ -209,8 +213,13 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                     Object.values(values.contributor)
                                 )
 
+                                const selectedCategoryOptions = Array.from(
+                                    Object.values(values.payCategory)
+                                )
+
                                 values.companyCode = selectedCompanyCode[0]
                                 values.contributor = selectedContributor[0]
+                                values.payCategory = selectedCategoryOptions[0]
 
                                 onSubmit(values, setSubmitting)
                             } else {
@@ -348,22 +357,38 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                     </FormItem>
 
                                     <div className="grid grid-cols-2 gap-4">
-                                        <FormItem
-                                            label="Category"
-                                            invalid={
-                                                (errors.payCategory &&
-                                                    touched.payCategory) as boolean
-                                            }
-                                            errorMessage={errors.payCategory}
-                                        >
-                                            <Field
-                                                type="text"
-                                                autoComplete="off"
-                                                name="payCategory"
-                                                placeholder="Category"
-                                                component={Input}
-                                            />
-                                        </FormItem>
+                                        <FieldWrapper
+                                            name="payCategory"
+                                            render={({
+                                                field,
+                                                meta,
+                                                helpers,
+                                            }) => (
+                                                <FormItem
+                                                    label="Category"
+                                                    invalid={
+                                                        !!meta.error &&
+                                                        meta.touched
+                                                    }
+                                                    errorMessage={meta.error}
+                                                >
+                                                    <Select
+                                                        name="payCategory"
+                                                        id="payCategory"
+                                                        value={field.value}
+                                                        onChange={(value) => {
+                                                            helpers.setValue(
+                                                                value
+                                                            )
+                                                        }}
+                                                        placeholder="Please Select Category"
+                                                        options={
+                                                            categoryOptions
+                                                        }
+                                                    ></Select>
+                                                </FormItem>
+                                            )}
+                                        />
                                         <div className="grid grid-cols-1 gap-4">
                                             <FieldWrapper
                                                 name="contributor"

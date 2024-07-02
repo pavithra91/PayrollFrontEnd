@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps, SelectOption } from '@/@types/common'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import {
     Field,
@@ -15,7 +15,6 @@ import {
 } from 'formik'
 import {
     CalculationSchema,
-    CompanyIdSelectOption,
     ContributorSelectOption,
 } from '@/@types/Calculation'
 import { FormContainer, FormItem } from '@/components/ui/Form'
@@ -37,7 +36,7 @@ interface DialogProps {
     item: any
 }
 
-const companyOptions: CompanyIdSelectOption[] = [
+const companyOptions: SelectOption[] = [
     { value: 2000, label: '2000' },
     { value: 3000, label: '3000' },
 ]
@@ -45,6 +44,11 @@ const companyOptions: CompanyIdSelectOption[] = [
 const contributorOptions: ContributorSelectOption[] = [
     { value: 'E', label: 'Employee' },
     { value: 'C', label: 'Company' },
+]
+
+const categoryOptions: SelectOption[] = [
+    { value: 0, label: 'Earning' },
+    { value: 1, label: 'Deduction' },
 ]
 
 interface RenderProps<V = any> {
@@ -73,14 +77,6 @@ const EditDialog: React.FC<DialogProps> = ({
     props,
     item,
 }) => {
-    console.log(item)
-    const selectedContributor = Array.from(
-        Object.values(item.getValue('contributor'))
-    )
-    const foundItem = contributorOptions.find(
-        (option) => option.value === selectedContributor[0]
-    )
-
     const { getUserIDFromLocalStorage } = useCommon()
 
     const initValues: CalculationSchema = {
@@ -103,9 +99,20 @@ const EditDialog: React.FC<DialogProps> = ({
         payCode: Yup.string().required('Please enter Pay Code'),
         calCode: Yup.string().required('Please enter Calculation Code'),
         calFormula: Yup.string().required('Please enter Calculation Formula'),
-        payCategory: Yup.string().required('Please enter Calculation Type'),
-        contributor: Yup.object().required('Please enter Contributor'),
     })
+
+    const selectedContributor = Array.from(
+        Object.values(item.getValue('contributor'))
+    )
+    const foundItem = contributorOptions.find(
+        (option) => option.value === selectedContributor[0]
+    )
+
+    const selectedCategory = item.getValue('payCategory')
+
+    const CategoryItem = categoryOptions.find(
+        (option) => option.value === parseInt(selectedCategory)
+    )
 
     const { disableSubmit = false, className } = props
     const [message, setMessage] = useTimeOutMessage()
@@ -223,11 +230,18 @@ const EditDialog: React.FC<DialogProps> = ({
                         validationSchema={validationSchema}
                         onSubmit={(values, { setSubmitting }) => {
                             if (!disableSubmit) {
+                                console.log(values)
                                 const selectedContributor = Array.from(
                                     Object.values(values.contributor)
                                 )
 
                                 values.contributor = selectedContributor[0]
+
+                                const selectedCategoryType = Array.from(
+                                    Object.values(values.payCategory)
+                                )
+                                values.payCategory =
+                                    selectedCategoryType[0].toString()
 
                                 onSubmit(values, setSubmitting)
                             } else {
@@ -376,25 +390,40 @@ const EditDialog: React.FC<DialogProps> = ({
                                     </FormItem>
 
                                     <div className="grid grid-cols-2 gap-4">
-                                        <FormItem
-                                            label="Category"
-                                            invalid={
-                                                (errors.payCategory &&
-                                                    touched.payCategory) as boolean
-                                            }
-                                            errorMessage={errors.payCategory}
-                                        >
-                                            <Field
-                                                type="text"
-                                                autoComplete="off"
-                                                name="payCategory"
-                                                placeholder="Category"
-                                                component={Input}
-                                                defaultValue={item.getValue(
-                                                    'payCategory'
-                                                )}
-                                            />
-                                        </FormItem>
+                                        <FieldWrapper
+                                            name="payCategory"
+                                            render={({
+                                                field,
+                                                meta,
+                                                helpers,
+                                            }) => (
+                                                <FormItem
+                                                    label="Category"
+                                                    invalid={
+                                                        !!meta.error &&
+                                                        meta.touched
+                                                    }
+                                                    errorMessage={meta.error}
+                                                >
+                                                    <Select
+                                                        name="payCategory"
+                                                        id="payCategory"
+                                                        defaultValue={
+                                                            CategoryItem
+                                                        }
+                                                        onChange={(value) => {
+                                                            helpers.setValue(
+                                                                value
+                                                            )
+                                                        }}
+                                                        placeholder="Category"
+                                                        options={
+                                                            categoryOptions
+                                                        }
+                                                    ></Select>
+                                                </FormItem>
+                                            )}
+                                        />
                                         <div className="grid grid-cols-1 gap-4">
                                             <FieldWrapper
                                                 name="contributor"

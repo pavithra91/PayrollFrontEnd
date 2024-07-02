@@ -1,5 +1,3 @@
-import type { CommonProps } from '@/@types/common'
-
 import ViewCalculation from './ViewCalculation'
 
 const CalculationsPage = () => {

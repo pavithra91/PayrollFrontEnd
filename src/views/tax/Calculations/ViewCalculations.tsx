@@ -18,6 +18,7 @@ import {
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import { TaxData } from '@/@types/Calculation'
+import Tag from '@/components/ui/Tag/Tag'
 
 type Option = {
     value: number
@@ -131,12 +132,32 @@ const ViewCalculations = (props: FormProps) => {
                 accessorKey: 'description',
             },
             {
+                header: 'Category',
+                accessorKey: 'taxCategory',
+                cell: (cell) => (
+                    <div className="flex items-center">
+                        <span className="ml-2 rtl:mr-2 capitalize">
+                            {cell.getValue() == 'IT' ? (
+                                <Tag className="bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-100 rounded border-0">
+                                    Income Tax
+                                </Tag>
+                            ) : (
+                                <Tag className="text-rose-600 bg-rose-100 dark:text-rose-100 dark:bg-rose-500/20 rounded border-0">
+                                    Lump-Sum Tax
+                                </Tag>
+                            )}
+                        </span>
+                    </div>
+                ),
+            },
+            {
                 header: 'Created By',
                 accessorKey: 'createdBy',
             },
             {
                 header: 'Created Date',
                 accessorKey: 'createdDate',
+                cell: (cell) => (cell.getValue() + '').substring(0, 10),
             },
             {
                 header: 'Status',

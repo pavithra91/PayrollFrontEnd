@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps, TaxOption } from '@/@types/common'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import { TaxCalculationSchema, TaxData } from '@/@types/Calculation'
 import { FormContainer, FormItem } from '@/components/ui/Form'
@@ -24,6 +24,7 @@ import useCalculations from '@/utils/hooks/useCalculation'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import useCommon from '@/utils/hooks/useCommon'
+import Select from '@/components/ui/Select/Select'
 
 interface DialogProps {
     isEditOpen: boolean
@@ -57,6 +58,11 @@ interface RenderProps<V = any> {
     helpers: FieldHelperProps<V>
 }
 
+const categoryOptions: TaxOption[] = [
+    { value: 'IT', label: 'Income Tax' },
+    { value: 'LT', label: 'Lump-Sum Tax' },
+]
+
 const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     const [field, meta, helpers] = useField(name)
 
@@ -81,6 +87,7 @@ const EditDialog: React.FC<DialogProps> = ({
         companyCode: item.getValue('companyCode'),
         range: item.getValue('range'),
         description: item.getValue('description'),
+        taxCategory: item.getValue('taxCategory'),
         calFormula: item.getValue('calFormula'),
         status: item.getValue('status'),
         createdBy: item.getValue('createdBy'),
@@ -92,6 +99,12 @@ const EditDialog: React.FC<DialogProps> = ({
         range: Yup.string().required('Please enter Calculation Sequence'),
         calFormula: Yup.string().required('Please enter Calculation Formula'),
     })
+
+    const selectedCategory = item.getValue('taxCategory')
+
+    const foundItem = categoryOptions.find(
+        (option) => option.value === selectedCategory
+    )
 
     const { disableSubmit = false, className } = props
     const [message, setMessage] = useTimeOutMessage()
@@ -121,6 +134,7 @@ const EditDialog: React.FC<DialogProps> = ({
             companyCode,
             range,
             description,
+            taxCategory,
             calFormula,
             status,
             lastUpdateBy,
@@ -134,6 +148,7 @@ const EditDialog: React.FC<DialogProps> = ({
             range,
             calFormula,
             description,
+            taxCategory,
             status,
             lastUpdateBy,
             createdBy,
@@ -169,6 +184,8 @@ const EditDialog: React.FC<DialogProps> = ({
                         validationSchema={validationSchema}
                         onSubmit={(values, { setSubmitting }) => {
                             if (!disableSubmit) {
+                                console.log(values)
+
                                 onSubmit(values, setSubmitting)
                             } else {
                                 setSubmitting(false)
@@ -230,6 +247,49 @@ const EditDialog: React.FC<DialogProps> = ({
                                         </div>
                                     </div>
 
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <FieldWrapper
+                                                name="taxCategory"
+                                                render={({
+                                                    field,
+                                                    meta,
+                                                    helpers,
+                                                }) => (
+                                                    <FormItem
+                                                        label="Category"
+                                                        invalid={
+                                                            !!meta.error &&
+                                                            meta.touched
+                                                        }
+                                                        errorMessage={
+                                                            meta.error
+                                                        }
+                                                    >
+                                                        <Select
+                                                            name="taxCategory"
+                                                            id="taxCategory"
+                                                            defaultValue={
+                                                                foundItem
+                                                            }
+                                                            onChange={(
+                                                                value
+                                                            ) => {
+                                                                helpers.setValue(
+                                                                    value
+                                                                )
+                                                            }}
+                                                            placeholder="Please Select Category"
+                                                            options={
+                                                                categoryOptions
+                                                            }
+                                                        ></Select>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+                                    </div>
+
                                     <FormItem
                                         label="Calculation Formula"
                                         invalid={
@@ -265,7 +325,6 @@ const EditDialog: React.FC<DialogProps> = ({
                                     </FormItem>
 
                                     <div className="grid grid-cols-3 gap-4">
-                                        <div className="grid grid-cols-1 gap-4"></div>
                                         <div className="grid grid-cols-1 gap-4">
                                             <Field
                                                 className="mb-0 mx-5"
@@ -275,7 +334,7 @@ const EditDialog: React.FC<DialogProps> = ({
                                                 Status
                                             </Field>
                                         </div>
-
+                                        <div className="grid grid-cols-1 gap-4"></div>
                                         <div className="grid grid-cols-1 gap-4"></div>
                                     </div>
 

@@ -17,9 +17,14 @@ export type TableQueries = {
     }
 }
 
-export interface CompanyIdSelectOption {
+export interface SelectOption {
     label: string
     value: number
+}
+
+export interface TaxOption {
+    label: string
+    value: string
 }
 
 export interface RoleSelectOption {

@@ -1,5 +1,5 @@
-import type { ResetOptions, SelectOption } from '@/@types/common'
-import { FC, useState } from 'react'
+import type { SelectOption } from '@/@types/common'
+import { FC, useEffect, useState } from 'react'
 import Button from '@/components/ui/Button'
 import { Formik, Field, Form } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
@@ -12,12 +12,15 @@ import {
     useField,
 } from 'formik'
 import Select from '@/components/ui/Select'
-import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
+import { PayrollDataSchema } from '@/@types/payroll'
+import useCommon from '@/utils/hooks/useCommon'
+import { FaFilePdf, FaRegFileExcel } from 'react-icons/fa'
+import Avatar from '@/components/ui/Avatar/Avatar'
+import { downloadExcel } from 'react-export-table-to-excel'
+import Tooltip from '@/components/ui/Tooltip/Tooltip'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
-import Checkbox from '@/components/ui/Checkbox/Checkbox'
-import useCommon from '@/utils/hooks/useCommon'
-import * as Yup from 'yup'
+import LumpSumTaxTableView from './LumpSumTaxTableView'
 
 interface RenderProps<V = any> {
     field: FieldInputProps<V>
@@ -37,92 +40,104 @@ const companyOptions: SelectOption[] = [
 
 type FormLayout = 'inline'
 
+const openNotification = (
+    type: 'success' | 'warning' | 'danger' | 'info',
+    title: string,
+    message: string
+) => {
+    toast.push(
+        <Notification title={title} type={type}>
+            {message}
+        </Notification>
+    )
+}
+
 const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     const [field, meta, helpers] = useField(name)
 
     return render({ field, meta, helpers })
 }
 
-const validationSchema = Yup.object().shape({
-    companyCode: Yup.object().required('Please select Company Code'),
-    period: Yup.number().required('Please enter Period'),
-})
-
-const Develeopment = () => {
-    const { deleteData } = useCommon()
+const LumpsumTaxView = () => {
+    const { getLumpsumTaxList } = useCommon()
 
     const [layout, setLayout] = useState<FormLayout>('inline')
-    const [message, setMessage] = useTimeOutMessage()
 
-    const [isSubmitting, setisSubmitting] = useState(false)
+    const [dataFromChild, setDataFromChild] =
+        useState<PayrollDataSchema | null>(null)
 
-    const onSubmit = async (values: ResetOptions) => {
-        const { companyCode, period, resetData, resetTempData } = values
+    const [LumsumTaxData, setLumsumTaxData] = useState<LumpSumTaxData[]>([])
 
-        setisSubmitting(true)
+    type LumpSumTaxData = {
+        epf: number
+        empName: string
+        empGrade: string
+        location: string
+        lumpSumTaxGross: number
+        lumpSumTaxAmount: number
+    }
 
-        if (resetData != false) {
-            const result = await deleteData(values)
+    const onSubmit = async (values: PayrollDataSchema) => {
+        const { companyCode, period } = values
 
-            if (result?.status === 'failed') {
-                setMessage(result.message)
-                openNotification(
-                    'Error',
-                    'danger',
-                    'Error Occurred While Deleting Data : ' + result.message
-                )
-            } else {
-                setMessage('Successfully Deleted')
-                openNotification(
-                    'Success',
-                    'success',
-                    'Data Deleted Successfully'
-                )
-            }
-        } else {
-            openNotification(
-                'Error',
-                'danger',
-                'Please Select at least one Option!'
-            )
+        if (values != null) {
+            setDataFromChild(values)
         }
-
-        setisSubmitting(false)
     }
 
-    const openNotification = (
-        title: string,
-        type: 'success' | 'warning' | 'danger' | 'info',
-        message: string
-    ) => {
-        toast.push(
-            <Notification
-                title={title.charAt(0).toUpperCase() + title.slice(1)}
-                type={type}
-            >
-                {message}
-            </Notification>
-        )
-    }
+    useEffect(() => {
+        if (dataFromChild != null) {
+            const unrecoveredResults = getLumpsumTaxList(dataFromChild)
 
-    const getUserIDFromLocalStorage = () => {
-        const user = JSON.parse(localStorage.getItem('admin') ?? '')
-        const userID = JSON.parse(user.auth).user.userID
-        return userID
+            unrecoveredResults.then((res) => {
+                if (res?.status == 'success') {
+                    const listItems = JSON.parse(res?.data?.data ?? '')
+                    setLumsumTaxData(listItems)
+                } else {
+                    setLumsumTaxData([])
+                }
+            })
+        }
+    }, [dataFromChild])
+
+    const header = [
+        'EPF',
+        'Employee Name',
+        'Grade',
+        'Location',
+        'Lump-Sum Gross Amount',
+        'Lump-Sum Tax Amount',
+    ]
+
+    function handleDownloadExcel() {
+        if (LumsumTaxData.length == 0) {
+            openNotification(
+                'danger',
+                'No Data Found',
+                'Please load data to download'
+            )
+            return
+        }
+        downloadExcel({
+            fileName: 'LuumpSumTax_report - ' + dataFromChild?.period,
+            sheet: dataFromChild?.period + '',
+            tablePayload: {
+                header,
+                // accept two different data structures
+                body: LumsumTaxData,
+            },
+        })
     }
 
     return (
         <>
-            <Card header="Reset Data">
+            <Card header="Lump-Sum Tax Report">
                 <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-10 ...">
-                        <Formik<ResetOptions>
-                            validationSchema={validationSchema}
+                        <Formik
                             initialValues={{
-                                companyCode: 3000,
+                                companyCode: 0,
                                 period: 202312,
-                                resetData: true,
-                                resetTempData: false,
                             }}
                             onSubmit={(values) => {
                                 //    if (!disableSubmit) {
@@ -178,42 +193,8 @@ const Develeopment = () => {
                                             component={Input}
                                         />
                                     </FormItem>
-                                </FormContainer>
-
-                                <FormContainer>
                                     <FormItem>
-                                        <Field
-                                            color="green-500"
-                                            className="mb-0"
-                                            name="resetData"
-                                            component={Checkbox}
-                                        >
-                                            Reset Data
-                                        </Field>
-                                    </FormItem>
-
-                                    <FormItem>
-                                        <Field
-                                            color="green-500"
-                                            className="mb-0"
-                                            name="resetTempData"
-                                            component={Checkbox}
-                                        >
-                                            Delete Temp Data
-                                        </Field>
-                                    </FormItem>
-
-                                    <FormItem>
-                                        <Button
-                                            type="submit"
-                                            color="red-500"
-                                            variant="solid"
-                                            loading={isSubmitting}
-                                        >
-                                            {isSubmitting
-                                                ? 'Deleting'
-                                                : 'Delete Data'}
-                                        </Button>
+                                        <Button type="submit">Load</Button>
                                     </FormItem>
                                 </FormContainer>
                             </Form>
@@ -221,10 +202,45 @@ const Develeopment = () => {
                     </div>
 
                     <div className="col-span-1..."></div>
+
+                    <div className="col-span-1...">
+                        <div className="grid grid-cols-12 gap-4">
+                            <div className="col-span-3 ...">
+                                <Tooltip
+                                    title="Download to Excel File"
+                                    placement="top"
+                                >
+                                    <Avatar
+                                        className="mr-4 bg-emerald-500"
+                                        icon={<FaRegFileExcel />}
+                                        onClick={handleDownloadExcel}
+                                    />
+                                </Tooltip>
+                            </div>
+                            <div className="col-span-3 ...">
+                                <Tooltip
+                                    title="Download to PDF File"
+                                    placement="top"
+                                >
+                                    <Avatar
+                                        className="mr-4 bg-red-500"
+                                        icon={<FaFilePdf />}
+                                        onClick={handleDownloadExcel}
+                                    />
+                                </Tooltip>
+                            </div>
+
+                            <div className="col-span-6 ..."></div>
+                        </div>
+                    </div>
                 </div>
             </Card>
             <div className="mb-4"></div>
+            <Card>
+                <LumpSumTaxTableView data={LumsumTaxData} />
+            </Card>
         </>
     )
 }
-export default Develeopment
+
+export default LumpsumTaxView

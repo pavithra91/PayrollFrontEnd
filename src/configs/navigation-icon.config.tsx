@@ -3,29 +3,50 @@ import {
     HiOutlineDesktopComputer,
     HiOutlineTemplate,
     HiOutlineViewGridAdd,
-    HiOutlineHome,
     HiOutlineCash,
     HiOutlineCalculator,
     HiOutlineScale,
     HiOutlineBookOpen,
     HiOutlinePrinter,
-    HiOutlineUserGroup,
 } from 'react-icons/hi'
+
+import {
+    FcAbout,
+    FcHome,
+    FcSettings,
+    FcBullish,
+    FcWikipedia,
+    FcConferenceCall,
+    FcPrint,
+    FcWorkflow,
+} from 'react-icons/fc'
+
+import { FaRegFilePdf, FaFileCsv, FaRegFileExcel } from 'react-icons/fa'
 
 export type NavigationIcons = Record<string, JSX.Element>
 
 const navigationIcon: NavigationIcons = {
-    home: <HiOutlineHome />,
+    about: <FcAbout />,
+    home: <FcHome />,
+    settings: <FcSettings />,
+    reports: <FcBullish />,
+    helpcenter: <FcWikipedia />,
+    print: <FcPrint />,
+    process: <FcWorkflow />,
     cash: <HiOutlineCash />,
     calculator: <HiOutlineCalculator />,
     openbook: <HiOutlineBookOpen />,
     printer: <HiOutlinePrinter />,
-    users: <HiOutlineUserGroup />,
+    users: <FcConferenceCall />,
     outlineScale: <HiOutlineScale />,
     singleMenu: <HiOutlineViewGridAdd />,
     collapseMenu: <HiOutlineTemplate />,
     groupSingleMenu: <HiOutlineDesktopComputer />,
     groupCollapseMenu: <HiOutlineColorSwatch />,
+
+    filetopdf: <FaRegFilePdf />,
+    filetocsv: <FaFileCsv />,
+    filetoexcel: <FaRegFileExcel />,
 }
 
 export default navigationIcon

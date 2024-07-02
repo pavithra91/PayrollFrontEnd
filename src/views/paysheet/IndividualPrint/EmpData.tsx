@@ -3,6 +3,7 @@ import EarningsData from './EarningsData'
 import DeductionsData from './DeductionsData'
 import Summary from './Summary'
 import SummaryCharts from './SummaryCharts'
+import LoanData from './LoanData'
 
 type empData = {
     epf: number
@@ -27,6 +28,7 @@ interface DialogProps {
     deductionsData: string | ''
     salData: string | ''
     unRecoveredData: string | ''
+    loanData: string | ''
 }
 
 const EmpData: React.FC<DialogProps> = ({
@@ -35,8 +37,11 @@ const EmpData: React.FC<DialogProps> = ({
     deductionsData,
     salData,
     unRecoveredData,
+    loanData,
 }) => {
     let employeeData = null
+
+    console.log(loanData)
 
     if (empData != '') {
         employeeData = JSON.parse(empData ? empData : '')
@@ -84,6 +89,10 @@ const EmpData: React.FC<DialogProps> = ({
                         salData={salData}
                         unRecoveredData={unRecoveredData}
                     />
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                    <LoanData loanData={loanData} salData={salData} />
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">

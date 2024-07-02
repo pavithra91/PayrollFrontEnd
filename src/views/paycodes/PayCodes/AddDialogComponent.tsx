@@ -6,7 +6,7 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Alert from '@/components/ui/Alert'
 import Select from '@/components/ui/Select'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps, SelectOption, TaxOption } from '@/@types/common'
 import type { FC, MouseEvent } from 'react'
 import {
     FieldHelperProps,
@@ -19,7 +19,7 @@ import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import { useState } from 'react'
-import type { PayCodeSchema, CompanyIdSelectOption } from '@/@types/paycode'
+import type { PayCodeSchema } from '@/@types/paycode'
 import usePayCodes from '@/utils/hooks/usePayCodes'
 import Checkbox from '@/components/ui/Checkbox'
 import useCommon from '@/utils/hooks/useCommon'
@@ -45,9 +45,20 @@ interface FieldWrapperProps<V = any> {
     render: (formikProps: RenderProps<V>) => React.ReactElement
 }
 
-const companyOptions: CompanyIdSelectOption[] = [
+const companyOptions: SelectOption[] = [
     { value: 2000, label: '2000' },
     { value: 3000, label: '3000' },
+]
+
+const categoryOptions: SelectOption[] = [
+    { value: 0, label: 'Earning' },
+    { value: 1, label: 'Deduction' },
+]
+
+const taxationTypeOptions: TaxOption[] = [
+    { value: 'IT', label: 'Income Tax' },
+    { value: 'LT', label: 'Lump Sum Tax' },
+    { value: 'NA', label: 'None' },
 ]
 
 const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
@@ -63,18 +74,19 @@ const initValues: PayCodeSchema = {
     payCode: '',
     calCode: '',
     description: '',
-    payCategory: '',
+    payCategory: categoryOptions[0].value.toString(),
     rate: 0,
     createdBy: getUserIDFromLocalStorage(),
     id: 0,
-    isTaxableGross: false,
+    taxationType: 'NA',
 }
 
 const validationSchema = Yup.object().shape({
     companyCode: Yup.object().required('Please select Company Code'),
     payCode: Yup.string().required('Please enter Pay Code'),
     calCode: Yup.string().required('Please enter Calculation Code'),
-    payCategory: Yup.string().required('Please enter Calculation Type'),
+    payCategory: Yup.object().required('Please enter Pay Category'),
+    taxationType: Yup.object().required('Please select Taxation Type'),
     rate: Yup.number().required('Please enter Calculation Type'),
 })
 
@@ -123,7 +135,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
             rate,
             createdBy,
             id: 0,
-            isTaxableGross: false,
+            taxationType: 'NA',
         })
 
         if (result?.status === 'failed') {
@@ -176,7 +188,12 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                     Object.values(values.companyCode)
                                 )
 
+                                const selectedCategoryOptions = Array.from(
+                                    Object.values(values.payCategory)
+                                )
+
                                 values.companyCode = selectedCompanyCode[0]
+                                values.payCategory = selectedCategoryOptions[0]
 
                                 onSubmit(values, setSubmitting)
                             } else {
@@ -223,24 +240,42 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                             )}
                                         />
                                         <div className="grid grid-cols-1 gap-4">
-                                            <FormItem
-                                                label="Category"
-                                                invalid={
-                                                    (errors.payCategory &&
-                                                        touched.payCategory) as boolean
-                                                }
-                                                errorMessage={
-                                                    errors.payCategory
-                                                }
-                                            >
-                                                <Field
-                                                    type="text"
-                                                    autoComplete="off"
-                                                    name="payCategory"
-                                                    placeholder="Category"
-                                                    component={Input}
-                                                />
-                                            </FormItem>
+                                            <FieldWrapper
+                                                name="payCategory"
+                                                render={({
+                                                    field,
+                                                    meta,
+                                                    helpers,
+                                                }) => (
+                                                    <FormItem
+                                                        label="Category"
+                                                        invalid={
+                                                            !!meta.error &&
+                                                            meta.touched
+                                                        }
+                                                        errorMessage={
+                                                            meta.error
+                                                        }
+                                                    >
+                                                        <Select
+                                                            name="payCategory"
+                                                            id="payCategory"
+                                                            value={field.value}
+                                                            onChange={(
+                                                                value
+                                                            ) => {
+                                                                helpers.setValue(
+                                                                    value
+                                                                )
+                                                            }}
+                                                            placeholder="Please Select Category"
+                                                            options={
+                                                                categoryOptions
+                                                            }
+                                                        ></Select>
+                                                    </FormItem>
+                                                )}
+                                            />
                                         </div>
                                     </div>
 
@@ -281,6 +316,65 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                         </div>
                                     </div>
 
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <FormItem
+                                                label="Rate"
+                                                invalid={
+                                                    (errors.rate &&
+                                                        touched.rate) as boolean
+                                                }
+                                                errorMessage={errors.rate}
+                                            >
+                                                <Field
+                                                    type="text"
+                                                    autoComplete="off"
+                                                    name="rate"
+                                                    placeholder="Rate"
+                                                    component={Input}
+                                                />
+                                            </FormItem>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <FieldWrapper
+                                                name="taxationType"
+                                                render={({
+                                                    field,
+                                                    meta,
+                                                    helpers,
+                                                }) => (
+                                                    <FormItem
+                                                        label="Taxation Type"
+                                                        invalid={
+                                                            !!meta.error &&
+                                                            meta.touched
+                                                        }
+                                                        errorMessage={
+                                                            meta.error
+                                                        }
+                                                    >
+                                                        <Select
+                                                            name="taxationType"
+                                                            id="taxationType"
+                                                            value={field.value}
+                                                            onChange={(
+                                                                value
+                                                            ) => {
+                                                                helpers.setValue(
+                                                                    value
+                                                                )
+                                                            }}
+                                                            placeholder="Taxation Type"
+                                                            options={
+                                                                taxationTypeOptions
+                                                            }
+                                                        ></Select>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+                                    </div>
+
                                     <FormItem
                                         label="Description"
                                         invalid={
@@ -298,16 +392,6 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                         />
                                     </FormItem>
 
-                                    <div className="grid grid-cols-1 gap-4">
-                                        <Field
-                                            className="mb-0 mx-2 my-10"
-                                            name="isTaxableGross"
-                                            component={Checkbox}
-                                        >
-                                            Is Taxable Gross
-                                        </Field>
-                                    </div>
-
                                     <div className="text-right mt-6"></div>
 
                                     <div className="grid grid-cols-1 gap-4">
@@ -319,7 +403,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                         >
                                             {isSubmitting
                                                 ? 'Saving...'
-                                                : 'Add Calculation'}
+                                                : 'Add Pay Code'}
                                         </Button>
                                     </div>
                                 </FormContainer>

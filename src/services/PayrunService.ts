@@ -39,6 +39,15 @@ export async function apiRollBackDataTransfer(data: ConfirmDataTransfer) {
     })
 }
 
+export async function apiSimulatePayroll(data: ConfirmDataTransfer) {
+    return ApiService.fetchData<Response>({
+        url: '/Payroll/simulate-payroll',
+        method: 'post',
+        timeout: 240000,
+        data,
+    })
+}
+
 export async function apiProcessPayroll(data: ConfirmDataTransfer) {
     return ApiService.fetchData<Response>({
         url: '/Payroll/process-payroll',

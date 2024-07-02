@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import type { CommonProps, SelectOption, TaxOption } from '@/@types/common'
@@ -13,17 +13,23 @@ import {
     FormikProps,
     useField,
 } from 'formik'
-import type { PayCodeSchema } from '@/@types/paycode'
+import {
+    CalculationSchema,
+    ContributorSelectOption,
+} from '@/@types/Calculation'
 import { FormContainer, FormItem } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Alert from '@/components/ui/Alert'
+import Select from '@/components/ui/Select'
 import * as Yup from 'yup'
+import Checkbox from '@/components/ui/Checkbox'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
-import usePayCodes from '@/utils/hooks/usePayCodes'
-import Checkbox from '@/components/ui/Checkbox'
+import useCalculations from '@/utils/hooks/useCalculation'
+import { escape } from 'lodash'
 import useCommon from '@/utils/hooks/useCommon'
-import Select from '@/components/ui/Select/Select'
+import useSettings from '@/utils/hooks/useSettings'
+import { SystemVariableSchema } from '@/@types/System'
 
 interface DialogProps {
     isEditOpen: boolean
@@ -32,9 +38,15 @@ interface DialogProps {
     item: any
 }
 
-interface FormProps extends CommonProps {
-    disableSubmit?: boolean
-}
+const companyOptions: SelectOption[] = [
+    { value: 2000, label: '2000' },
+    { value: 3000, label: '3000' },
+]
+
+const categoryOptions: TaxOption[] = [
+    { value: 'System_Variable', label: 'System Variable' },
+    { value: 'Calculation_Variable', label: 'Calculation Variable' },
+]
 
 interface RenderProps<V = any> {
     field: FieldInputProps<V>
@@ -47,24 +59,14 @@ interface FieldWrapperProps<V = any> {
     render: (formikProps: RenderProps<V>) => React.ReactElement
 }
 
-const taxationTypeOptions: TaxOption[] = [
-    { value: 'IT', label: 'Income Tax' },
-    { value: 'LT', label: 'Lump Sum Tax' },
-    { value: 'NA', label: 'None' },
-]
-
-const categoryOptions: SelectOption[] = [
-    { value: 0, label: 'Earning' },
-    { value: 1, label: 'Deduction' },
-]
-
+interface FormProps extends CommonProps {
+    disableSubmit?: boolean
+}
 const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     const [field, meta, helpers] = useField(name)
 
     return render({ field, meta, helpers })
 }
-
-const { getUserIDFromLocalStorage } = useCommon()
 
 const EditDialog: React.FC<DialogProps> = ({
     onClose,
@@ -72,39 +74,35 @@ const EditDialog: React.FC<DialogProps> = ({
     props,
     item,
 }) => {
-    const initValues: PayCodeSchema = {
+    const { getUserIDFromLocalStorage } = useCommon()
+
+    const initValues: SystemVariableSchema = {
         id: item.getValue('id'),
         companyCode: item.getValue('companyCode'), // This will be the default one
-        payCode: item.getValue('payCode'),
-        calCode: item.getValue('calCode'),
-        description: item.getValue('description'),
-        payCategory: item.getValue('payCategory'),
-        rate: item.getValue('rate'),
-        createdBy: item.getValue('createdBy'),
-        taxationType: item.getValue('taxationType'),
+        category_name: item.getValue('category_name'),
+        variable_name: item.getValue('variable_name'),
+        variable_value: item.getValue('variable_value'),
         lastUpdateBy: getUserIDFromLocalStorage(),
     }
 
     const validationSchema = Yup.object().shape({
-        payCode: Yup.string().required('Please enter Pay Code'),
-        calCode: Yup.string().required('Please enter Calculation Code'),
-        rate: Yup.string().required('Please enter Rate'),
+        category_name: Yup.object().required('Please enter Pay Code'),
+        variable_name: Yup.string().required('Please enter Calculation Code'),
+        variable_value: Yup.string().required(
+            'Please enter Calculation Formula'
+        ),
     })
 
-    const selectedTaxationType = item.getValue('taxationType')
-    const selectedCategory = item.getValue('payCategory')
+    const selectedCategory = item.getValue('category_name')
 
-    const TaxationTypeItem = taxationTypeOptions.find(
-        (option) => option.value === selectedTaxationType
-    )
     const CategoryItem = categoryOptions.find(
-        (option) => option.value === parseInt(selectedCategory)
+        (option) => option.value === selectedCategory
     )
 
     const { disableSubmit = false, className } = props
     const [message, setMessage] = useTimeOutMessage()
 
-    const { updatePayCodes } = usePayCodes()
+    const { updateSystemVariable } = useSettings()
 
     const openNotification = (
         type: 'success' | 'warning' | 'danger' | 'info',
@@ -121,33 +119,26 @@ const EditDialog: React.FC<DialogProps> = ({
     }
 
     const onSubmit = async (
-        values: PayCodeSchema,
+        values: SystemVariableSchema,
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
         const {
             id,
             companyCode,
-            payCode,
-            calCode,
-            description,
-            payCategory,
-            rate,
-            createdBy,
-            taxationType,
+            category_name,
+            variable_name,
+            variable_value,
             lastUpdateBy,
         } = values
         setSubmitting(true)
 
-        const result = await updatePayCodes({
+        //     if (status) {
+        const result = await updateSystemVariable({
             id,
             companyCode,
-            payCode,
-            calCode,
-            description,
-            payCategory,
-            rate,
-            createdBy,
-            taxationType,
+            category_name,
+            variable_name,
+            variable_value,
             lastUpdateBy,
         })
 
@@ -159,11 +150,38 @@ const EditDialog: React.FC<DialogProps> = ({
             )
         } else {
             setMessage('Successfully Saved')
-            openNotification('success', 'Pay Code Saved Successfully')
+            openNotification('success', 'System Variable Updated Successfully')
             onClose()
         }
 
         setSubmitting(false)
+        // } else {
+        // const result = await deleteCalculations({
+        //     id,
+        //     companyCode,
+        //     sequence,
+        //     payCode,
+        //     calCode,
+        //     calFormula,
+        //     calDescription,
+        //     payCategory,
+        //     contributor,
+        //     status,
+        //     lastUpdateBy,
+        // })
+        // if (result?.status === 'failed') {
+        //     setMessage(result.message)
+        //     openNotification(
+        //         'danger',
+        //         'Error Occurred While Deleting Data : ' + result.message
+        //     )
+        // } else {
+        //     setMessage('Successfully Saved')
+        //     openNotification('success', 'Calculation Deleted Successfully')
+        //     onClose()
+        // }
+        // setSubmitting(false)
+        // }
     }
     return (
         <>
@@ -172,7 +190,7 @@ const EditDialog: React.FC<DialogProps> = ({
                 onClose={onClose}
                 onRequestClose={onClose}
             >
-                <h5 className="mb-4">Edit Pay Code Mapping</h5>
+                <h5 className="mb-4">Edit Calculations {item.calCode}</h5>
 
                 <div className={className}>
                     {message && (
@@ -180,18 +198,15 @@ const EditDialog: React.FC<DialogProps> = ({
                             <>{message}</>
                         </Alert>
                     )}
-                    <Formik<PayCodeSchema>
+                    <Formik<SystemVariableSchema>
                         initialValues={initValues}
                         validationSchema={validationSchema}
                         onSubmit={(values, { setSubmitting }) => {
                             if (!disableSubmit) {
-                                const selectedTaxationType = values.taxationType
-                                values.taxationType = selectedTaxationType
-
                                 const selectedCategoryType = Array.from(
-                                    Object.values(values.payCategory)
+                                    Object.values(values.category_name)
                                 )
-                                values.payCategory =
+                                values.category_name =
                                     selectedCategoryType[0].toString()
 
                                 onSubmit(values, setSubmitting)
@@ -204,13 +219,17 @@ const EditDialog: React.FC<DialogProps> = ({
                             touched,
                             errors,
                             isSubmitting,
-                        }: FormikProps<PayCodeSchema>) => (
+                        }: FormikProps<SystemVariableSchema>) => (
                             <Form>
                                 <FormContainer>
                                     <div className="grid grid-cols-2 gap-4">
                                         <FieldWrapper
                                             name="companyCode"
-                                            render={({ meta }) => (
+                                            render={({
+                                                field,
+                                                meta,
+                                                helpers,
+                                            }) => (
                                                 <FormItem
                                                     label="Company Code"
                                                     invalid={
@@ -226,16 +245,14 @@ const EditDialog: React.FC<DialogProps> = ({
                                                         name="companyCode"
                                                         placeholder="Company Code"
                                                         component={Input}
-                                                        value={item.getValue(
-                                                            'companyCode'
-                                                        )}
                                                     />
                                                 </FormItem>
                                             )}
                                         />
+
                                         <div className="grid grid-cols-1 gap-4">
                                             <FieldWrapper
-                                                name="payCategory"
+                                                name="category_name"
                                                 render={({
                                                     field,
                                                     meta,
@@ -252,11 +269,9 @@ const EditDialog: React.FC<DialogProps> = ({
                                                         }
                                                     >
                                                         <Select
-                                                            name="payCategory"
-                                                            id="payCategory"
-                                                            defaultValue={
-                                                                CategoryItem
-                                                            }
+                                                            name="category_name"
+                                                            id="category_name"
+                                                            value={field.value}
                                                             onChange={(
                                                                 value
                                                             ) => {
@@ -264,7 +279,7 @@ const EditDialog: React.FC<DialogProps> = ({
                                                                     value
                                                                 )
                                                             }}
-                                                            placeholder="Category"
+                                                            placeholder="Please Select Category"
                                                             options={
                                                                 categoryOptions
                                                             }
@@ -277,131 +292,44 @@ const EditDialog: React.FC<DialogProps> = ({
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <FormItem
-                                            label="Pay Code"
+                                            label="Variable Name"
                                             invalid={
-                                                (errors.payCode &&
-                                                    touched.payCode) as boolean
+                                                (errors.variable_name &&
+                                                    touched.variable_name) as boolean
                                             }
-                                            errorMessage={errors.payCode}
+                                            errorMessage={errors.variable_name}
                                         >
                                             <Field
-                                                disabled
                                                 type="text"
                                                 autoComplete="off"
-                                                name="payCode"
-                                                placeholder="Pay Code"
+                                                name="variable_name"
+                                                placeholder="Variable Name"
                                                 component={Input}
-                                                defaultValue={item.getValue(
-                                                    'payCode'
-                                                )}
                                             />
                                         </FormItem>
                                         <div className="grid grid-cols-1 gap-4">
                                             <FormItem
-                                                label="Calculation Code"
+                                                label="Variable Value"
                                                 invalid={
-                                                    (errors.calCode &&
-                                                        touched.calCode) as boolean
+                                                    (errors.variable_value &&
+                                                        touched.variable_value) as boolean
                                                 }
-                                                errorMessage={errors.calCode}
+                                                errorMessage={
+                                                    errors.variable_value
+                                                }
                                             >
                                                 <Field
                                                     type="text"
                                                     autoComplete="off"
-                                                    name="calCode"
-                                                    placeholder="Calculation Code"
+                                                    name="variable_value"
+                                                    placeholder="Variable Value"
                                                     component={Input}
-                                                    defaultValue={item.getValue(
-                                                        'calCode'
-                                                    )}
                                                 />
                                             </FormItem>
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <FormItem
-                                            label="Rate"
-                                            invalid={
-                                                (errors.rate &&
-                                                    touched.rate) as boolean
-                                            }
-                                            errorMessage={errors.rate}
-                                        >
-                                            <Field
-                                                type="text"
-                                                autoComplete="off"
-                                                name="rate"
-                                                placeholder="Rate"
-                                                component={Input}
-                                                defaultValue={item.getValue(
-                                                    'rate'
-                                                )}
-                                            />
-                                        </FormItem>
-                                        <div className="grid grid-cols-1 gap-4">
-                                            <FieldWrapper
-                                                name="taxationType"
-                                                render={({
-                                                    field,
-                                                    meta,
-                                                    helpers,
-                                                }) => (
-                                                    <FormItem
-                                                        label="Taxation Type"
-                                                        invalid={
-                                                            !!meta.error &&
-                                                            meta.touched
-                                                        }
-                                                        errorMessage={
-                                                            meta.error
-                                                        }
-                                                    >
-                                                        <Select
-                                                            name="taxationType"
-                                                            id="taxationType"
-                                                            defaultValue={
-                                                                TaxationTypeItem
-                                                            }
-                                                            onChange={(
-                                                                value
-                                                            ) => {
-                                                                helpers.setValue(
-                                                                    value
-                                                                )
-                                                            }}
-                                                            placeholder="Taxation Type"
-                                                            options={
-                                                                taxationTypeOptions
-                                                            }
-                                                        ></Select>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <FormItem
-                                        label="Description"
-                                        invalid={
-                                            (errors.description &&
-                                                touched.description) as boolean
-                                        }
-                                        errorMessage={errors.description}
-                                    >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="description"
-                                            placeholder="Description"
-                                            component={Input}
-                                            defaultValue={item.getValue(
-                                                'description'
-                                            )}
-                                        />
-                                    </FormItem>
-
-                                    <div className="text-right mt-4"></div>
+                                    <div className="text-right mt-6"></div>
 
                                     <div className="grid grid-cols-1 gap-4">
                                         <Button
@@ -412,7 +340,7 @@ const EditDialog: React.FC<DialogProps> = ({
                                         >
                                             {isSubmitting
                                                 ? 'Saving...'
-                                                : 'Edit Mapping'}
+                                                : 'Edit Calculation'}
                                         </Button>
                                     </div>
                                 </FormContainer>

@@ -1,14 +1,9 @@
-import Table from '@/components/ui/Table'
-import { useState, useEffect, useMemo, SetStateAction } from 'react'
+import useCalculations from '@/utils/hooks/useCalculation'
+import { useState, useEffect, useMemo } from 'react'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import AddDialogComponent from './AddDialogComponent'
 import type { CommonProps } from '@/@types/common'
-import EditDialog from './EditDialogComponent'
-import usePayCodes from '@/utils/hooks/usePayCodes'
-import Pagination from '@/components/ui/Pagination'
-import Select from '@/components/ui/Select'
-
+import Table from '@/components/ui/Table'
 import {
     useReactTable,
     getCoreRowModel,
@@ -17,8 +12,14 @@ import {
     flexRender,
     ColumnDef,
 } from '@tanstack/react-table'
-import { PayCodeData } from '@/@types/paycode'
+import { CalculationData } from '@/@types/Calculation'
+import Pagination from '@/components/ui/Pagination'
+import Select from '@/components/ui/Select'
+import Badge from '@/components/ui/Badge'
 import Tag from '@/components/ui/Tag/Tag'
+import useSettings from '@/utils/hooks/useSettings'
+import AddDialogComponent from './AddDialogComponent'
+import EditDialog from './EditDialogComponent'
 
 type Option = {
     value: number
@@ -29,15 +30,20 @@ interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
 
-const ViewPayCodes = (props: FormProps) => {
-    const { getPayCodes } = usePayCodes()
+const statusColor: Record<string, string> = {
+    active: 'bg-emerald-500',
+    blocked: 'bg-red-500',
+}
 
-    const [selectedPayCode, setSelectedPayCode] = useState({})
+const ViewSettings = (props: FormProps) => {
+    const { getSystemSettings } = useSettings()
+
+    const [SelectedSettinng, setSelectedSettinng] = useState({})
 
     const [data, setData] = useState([])
 
     useEffect(() => {
-        const result = getPayCodes()
+        const result = getSystemSettings()
         result.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
             setData(listItems)
@@ -45,7 +51,7 @@ const ViewPayCodes = (props: FormProps) => {
     }, [])
 
     const handleRefresh = async () => {
-        const result = getPayCodes()
+        const result = getSystemSettings()
         result.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
             setData(listItems)
@@ -58,7 +64,7 @@ const ViewPayCodes = (props: FormProps) => {
         setIsOpen(true)
     }
     const openEditDialog = (id: any) => {
-        setSelectedPayCode(id)
+        setSelectedSettinng(id)
         setEditIsOpen(true)
     }
 
@@ -73,7 +79,6 @@ const ViewPayCodes = (props: FormProps) => {
     }
 
     const [isOpen, setIsOpen] = useState(false)
-
     const [isEditOpen, setEditIsOpen] = useState(false)
 
     const closeDialog = () => {
@@ -104,6 +109,7 @@ const ViewPayCodes = (props: FormProps) => {
     )
 
     const handleShowEditModal = (id: any) => {
+        console.log(id)
         openEditDialog(id)
     }
 
@@ -115,7 +121,7 @@ const ViewPayCodes = (props: FormProps) => {
         { value: 50, label: '50 / page' },
     ]
 
-    const columns = useMemo<ColumnDef<PayCodeData>[]>(
+    const columns = useMemo<ColumnDef<CalculationData>[]>(
         () => [
             {
                 header: 'Id',
@@ -126,30 +132,18 @@ const ViewPayCodes = (props: FormProps) => {
                 accessorKey: 'companyCode',
             },
             {
-                header: 'Pay Code',
-                accessorKey: 'payCode',
-            },
-            {
-                header: 'Cal Code',
-                accessorKey: 'calCode',
-            },
-            {
-                header: 'Description',
-                accessorKey: 'description',
-            },
-            {
                 header: 'Category',
-                accessorKey: 'payCategory',
+                accessorKey: 'category_name',
                 cell: (cell) => (
                     <div className="flex items-center">
                         <span className="ml-2 rtl:mr-2 capitalize">
-                            {cell.getValue() == '0' ? (
+                            {cell.getValue() == 'System_Variable' ? (
                                 <Tag prefix prefixClass="bg-emerald-500">
-                                    Earning
+                                    System Variable
                                 </Tag>
                             ) : (
                                 <Tag suffix suffixClass="bg-rose-500">
-                                    Deduction
+                                    Calculation Variable
                                 </Tag>
                             )}
                         </span>
@@ -157,35 +151,21 @@ const ViewPayCodes = (props: FormProps) => {
                 ),
             },
             {
-                header: 'Rate',
-                accessorKey: 'rate',
+                header: 'Name',
+                accessorKey: 'variable_name',
             },
             {
-                header: 'Taxation Type',
-                accessorKey: 'taxationType',
-                cell: (cell) => (
-                    <div className="flex items-center">
-                        <span className="ml-2 rtl:mr-2 capitalize">
-                            {cell.getValue() == 'IT' ? (
-                                <Tag className="bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-100 rounded border-0">
-                                    Income Tax
-                                </Tag>
-                            ) : cell.getValue() == 'LT' ? (
-                                <Tag className="text-red-600 bg-red-100 dark:text-red-100 dark:bg-red-500/20 rounded border-0">
-                                    Lump Sum Tax
-                                </Tag>
-                            ) : (
-                                <Tag className="text-amber-600 bg-amber-100 dark:text-amber-100 dark:bg-amber-500/20 rounded border-0">
-                                    None
-                                </Tag>
-                            )}
-                        </span>
-                    </div>
-                ),
+                header: 'Value',
+                accessorKey: 'variable_value',
             },
             {
                 header: 'Created By',
                 accessorKey: 'createdBy',
+            },
+            {
+                header: 'Created Date',
+                accessorKey: 'createdDate',
+                cell: (cell) => (cell.getValue() + '').substring(0, 10),
             },
             {
                 header: 'Action',
@@ -202,13 +182,18 @@ const ViewPayCodes = (props: FormProps) => {
         ],
         []
     )
-    //  const [data] = useState(() => tableData())
 
     const totalData = data.length
 
     const table = useReactTable({
         data,
         columns,
+        initialState: {
+            columnVisibility: {
+                isTaxableGross: false, //hide this column by default
+            },
+            //...
+        },
         // Pipeline
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -224,13 +209,13 @@ const ViewPayCodes = (props: FormProps) => {
     }
 
     return (
-        <Card header="Pay Codes" headerExtra={headerExtraContent}>
+        <Card header="System Variables" headerExtra={headerExtraContent}>
             {isEditOpen && (
                 <EditDialog
                     onClose={closeEditDialog}
                     isEditOpen={isEditOpen}
                     props={props}
-                    item={selectedPayCode}
+                    item={SelectedSettinng}
                 />
             )}
             <Table>
@@ -298,4 +283,4 @@ const ViewPayCodes = (props: FormProps) => {
     )
 }
 
-export default ViewPayCodes
+export default ViewSettings

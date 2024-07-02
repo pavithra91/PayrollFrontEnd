@@ -1,4 +1,3 @@
-import type { CompanyIdSelectOption } from '@/@types/paycode'
 import type { PayrollDataSchema } from '@/@types/payroll'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import {
@@ -14,7 +13,7 @@ import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps, SelectOption } from '@/@types/common'
 import type { FC } from 'react'
 import Alert from '@/components/ui/Alert'
 
@@ -40,7 +39,7 @@ interface FieldWrapperProps<V = any> {
     render: (formikProps: RenderProps<V>) => React.ReactElement
 }
 
-const companyOptions: CompanyIdSelectOption[] = [
+const companyOptions: SelectOption[] = [
     { value: 2000, label: '2000' },
     { value: 3000, label: '3000' },
 ]

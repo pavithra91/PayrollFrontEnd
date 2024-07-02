@@ -19,8 +19,6 @@ const Settings = () => {
             const user = JSON.parse(localStorage.getItem('admin') ?? '')
             const userID = JSON.parse(user.auth).user
 
-            console.log(userID)
-
             setUser(userID)
             setIsData(true)
         }

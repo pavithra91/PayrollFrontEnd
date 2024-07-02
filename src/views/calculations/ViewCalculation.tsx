@@ -18,6 +18,7 @@ import { CalculationData } from '@/@types/Calculation'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Badge from '@/components/ui/Badge'
+import Tag from '@/components/ui/Tag/Tag'
 
 type Option = {
     value: number
@@ -152,6 +153,21 @@ const ViewCalculation = (props: FormProps) => {
             {
                 header: 'Category',
                 accessorKey: 'payCategory',
+                cell: (cell) => (
+                    <div className="flex items-center">
+                        <span className="ml-2 rtl:mr-2 capitalize">
+                            {cell.getValue() == '0' ? (
+                                <Tag prefix prefixClass="bg-emerald-500">
+                                    Earning
+                                </Tag>
+                            ) : (
+                                <Tag suffix suffixClass="bg-rose-500">
+                                    Deduction
+                                </Tag>
+                            )}
+                        </span>
+                    </div>
+                ),
             },
             {
                 header: 'Contributor',
@@ -159,7 +175,15 @@ const ViewCalculation = (props: FormProps) => {
                 cell: (cell) => (
                     <div className="flex items-center">
                         <span className="ml-2 rtl:mr-2 capitalize">
-                            {cell.getValue() == 'E' ? 'Employee' : 'Company'}
+                            {cell.getValue() == 'E' ? (
+                                <Tag className="bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-100 rounded border-0">
+                                    Employee
+                                </Tag>
+                            ) : (
+                                <Tag className="text-amber-600 bg-amber-100 dark:text-amber-100 dark:bg-amber-500/20 rounded border-0">
+                                    Company
+                                </Tag>
+                            )}
                         </span>
                     </div>
                 ),

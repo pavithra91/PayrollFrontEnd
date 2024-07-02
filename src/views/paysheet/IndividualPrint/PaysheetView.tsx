@@ -41,6 +41,7 @@ type payData = {
     earningData: string
     deductionData: string
     unRecoveredData: string
+    loanData: string
 }
 
 const PaysheetView = (props: FormProps) => {
@@ -67,11 +68,11 @@ const PaysheetView = (props: FormProps) => {
             const payRunResults = getPaysheetByEPF(dataFromChild)
             payRunResults.then((res) => {
                 const listItems = JSON.parse(res?.data?.data ?? '')
-                if (listItems.length > 0) {
+                if (listItems[0].empData.length > 2) {
                     setPayrollData(listItems[0])
                     setIsDataAvailable(true)
                 } else {
-                    openNotification('danger', 'No Data Available')
+                    openNotification('danger', 'Error', 'No Data Available')
                 }
             })
         }
@@ -79,11 +80,12 @@ const PaysheetView = (props: FormProps) => {
 
     const openNotification = (
         type: 'success' | 'warning' | 'danger' | 'info',
+        title: string,
         message: string
     ) => {
         toast.push(
             <Notification
-                title={type.charAt(0).toUpperCase() + type.slice(1)}
+                title={title.charAt(0).toUpperCase() + title.slice(1)}
                 type={type}
             >
                 {message}
@@ -107,6 +109,7 @@ const PaysheetView = (props: FormProps) => {
             let earnings = JSON.parse(payrollData.earningData)
             let deductions = JSON.parse(payrollData.deductionData)
             let summary = JSON.parse(payrollData.salData)
+            let loandData = JSON.parse(payrollData.loanData)
 
             doc.text(emp[0].epf.toString(), 175, 50, { align: 'left' })
             doc.text(emp[0].empName.toString(), 217, 50, { align: 'left' })
@@ -289,6 +292,7 @@ const PaysheetView = (props: FormProps) => {
                     deductionsData={payrollData?.deductionData ?? ''}
                     salData={payrollData?.salData ?? ''}
                     unRecoveredData={payrollData?.unRecoveredData ?? ''}
+                    loanData={payrollData?.loanData ?? ''}
                 />
             )}
         </>
