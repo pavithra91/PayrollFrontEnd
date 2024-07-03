@@ -190,6 +190,8 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                 values.category_name =
                                     selectedCategoryOptions[0]
 
+                                console.log(values)
+
                                 onSubmit(values, setSubmitting)
                             } else {
                                 setSubmitting(false)
@@ -237,7 +239,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
 
                                         <div className="grid grid-cols-1 gap-4">
                                             <FieldWrapper
-                                                name="payCategory"
+                                                name="category_name"
                                                 render={({
                                                     field,
                                                     meta,

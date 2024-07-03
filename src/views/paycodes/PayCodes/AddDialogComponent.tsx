@@ -122,9 +122,12 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
             description,
             payCategory,
             rate,
+            taxationType,
             createdBy,
         } = values
         setSubmitting(true)
+
+        console.log(values)
 
         const result = await addPayCodes({
             companyCode,
@@ -135,7 +138,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
             rate,
             createdBy,
             id: 0,
-            taxationType: 'NA',
+            taxationType,
         })
 
         if (result?.status === 'failed') {
@@ -192,8 +195,15 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                     Object.values(values.payCategory)
                                 )
 
+                                const selectedTaxationType = Array.from(
+                                    Object.values(values.taxationType)
+                                )
+
+                                values.taxationType = selectedTaxationType[0]
+
                                 values.companyCode = selectedCompanyCode[0]
-                                values.payCategory = selectedCategoryOptions[0]
+                                values.payCategory =
+                                    selectedCategoryOptions[0].toString()
 
                                 onSubmit(values, setSubmitting)
                             } else {
