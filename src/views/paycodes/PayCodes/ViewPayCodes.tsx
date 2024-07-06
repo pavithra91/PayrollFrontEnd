@@ -1,5 +1,11 @@
 import Table from '@/components/ui/Table'
-import { useState, useEffect, useMemo, SetStateAction } from 'react'
+import {
+    useState,
+    useEffect,
+    useMemo,
+    SetStateAction,
+    InputHTMLAttributes,
+} from 'react'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import AddDialogComponent from './AddDialogComponent'
@@ -10,15 +16,23 @@ import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 
 import {
+    ColumnDef,
+    ColumnSort,
     useReactTable,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
+    getSortedRowModel,
     flexRender,
-    ColumnDef,
+    getFacetedRowModel,
+    getFacetedMinMaxValues,
+    FilterFn,
+    ColumnFiltersState,
 } from '@tanstack/react-table'
 import { PayCodeData } from '@/@types/paycode'
 import Tag from '@/components/ui/Tag/Tag'
+import { rankItem } from '@tanstack/match-sorter-utils'
+import Input from '@/components/ui/Input/Input'
 
 type Option = {
     value: number
@@ -29,7 +43,50 @@ interface FormProps extends CommonProps {
     disableSubmit?: boolean
 }
 
+interface DebouncedInputProps
+    extends Omit<
+        InputHTMLAttributes<HTMLInputElement>,
+        'onChange' | 'size' | 'prefix'
+    > {
+    value: string | number
+    onChange: (value: string | number) => void
+    debounce?: number
+}
+
 const ViewPayCodes = (props: FormProps) => {
+    function DebouncedInput({
+        value: initialValue,
+        onChange,
+        debounce = 500,
+        ...props
+    }: DebouncedInputProps) {
+        const [value, setValue] = useState(initialValue)
+
+        useEffect(() => {
+            setValue(initialValue)
+        }, [initialValue])
+
+        useEffect(() => {
+            const timeout = setTimeout(() => {
+                onChange(value)
+            }, debounce)
+
+            return () => clearTimeout(timeout)
+        }, [value])
+
+        return (
+            <div className="flex justify-end">
+                <div className="flex items-center mb-4">
+                    <span className="mr-2">Search:</span>
+                    <Input
+                        {...props}
+                        value={value}
+                        onChange={(e) => setValue(e.target.value)}
+                    />
+                </div>
+            </div>
+        )
+    }
     const { getPayCodes } = usePayCodes()
 
     const [selectedPayCode, setSelectedPayCode] = useState({})
@@ -107,6 +164,19 @@ const ViewPayCodes = (props: FormProps) => {
         openEditDialog(id)
     }
 
+    const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+        // Rank the item
+        const itemRank = rankItem(row.getValue(columnId), value)
+
+        // Store the itemRank info
+        addMeta({
+            itemRank,
+        })
+
+        // Return if the item should be filtered in/out
+        return itemRank.passed
+    }
+
     const pageSizeOption = [
         { value: 10, label: '10 / page' },
         { value: 20, label: '20 / page' },
@@ -148,7 +218,7 @@ const ViewPayCodes = (props: FormProps) => {
                                     Earning
                                 </Tag>
                             ) : (
-                                <Tag suffix suffixClass="bg-rose-500">
+                                <Tag prefix prefixClass="bg-rose-500">
                                     Deduction
                                 </Tag>
                             )}
@@ -206,13 +276,34 @@ const ViewPayCodes = (props: FormProps) => {
 
     const totalData = data.length
 
+    const [sorting, setSorting] = useState<ColumnSort[]>([])
+
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    const [globalFilter, setGlobalFilter] = useState('')
+
     const table = useReactTable({
         data,
         columns,
-        // Pipeline
+        filterFns: {
+            fuzzy: fuzzyFilter,
+        },
+        state: {
+            columnFilters,
+            globalFilter,
+            sorting,
+        },
+        onColumnFiltersChange: setColumnFilters,
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn: fuzzyFilter,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        getFacetedRowModel: getFacetedRowModel(),
+        getFacetedMinMaxValues: getFacetedMinMaxValues(),
+        onSortingChange: setSorting,
+        debugHeaders: true,
+        debugColumns: false,
     })
 
     const onPaginationChange = (page: number) => {
@@ -233,6 +324,12 @@ const ViewPayCodes = (props: FormProps) => {
                     item={selectedPayCode}
                 />
             )}
+            <DebouncedInput
+                value={globalFilter ?? ''}
+                className="p-2 font-lg shadow border border-block"
+                placeholder="Search all columns..."
+                onChange={(value) => setGlobalFilter(String(value))}
+            />
             <Table>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (

@@ -142,7 +142,7 @@ const ViewSettings = (props: FormProps) => {
                                     System Variable
                                 </Tag>
                             ) : (
-                                <Tag suffix suffixClass="bg-rose-500">
+                                <Tag prefix prefixClass="bg-sky-500">
                                     Calculation Variable
                                 </Tag>
                             )}

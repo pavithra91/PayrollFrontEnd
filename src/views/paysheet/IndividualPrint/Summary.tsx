@@ -42,12 +42,12 @@ const Summary: React.FC<DialogProps> = ({ salData }) => {
                                 <div className="col-span-3 ...">
                                     <span className="text-s">Gross : </span>
                                     <span className="text-s">
-                                        {elm.taxableGross.toFixed(2)}
+                                        {elm.grossAmount.toFixed(2)}
                                     </span>
                                 </div>
                                 <div className="col-span-3 ...">
                                     <span className="text-s">
-                                        ETF Contribution (Employee) :{' '}
+                                        EPF Contribution (Employee) :{' '}
                                     </span>
                                     <span className="text-s">
                                         {elm.emp_contribution.toFixed(2)}
@@ -64,14 +64,16 @@ const Summary: React.FC<DialogProps> = ({ salData }) => {
 
                             <div className="grid grid-cols-8 gap-4">
                                 <div className="col-span-3 ...">
-                                    <span className="text-s">Tax : </span>
                                     <span className="text-s">
-                                        {elm.tax.toFixed(2)}
+                                        Net Amount :{' '}
+                                    </span>
+                                    <span className="text-s">
+                                        {elm.netAmount.toFixed(2)}
                                     </span>
                                 </div>
                                 <div className="col-span-3 ...">
                                     <span className="text-s">
-                                        ETF Contribution (Company) :{' '}
+                                        EPF Contribution (Company) :{' '}
                                     </span>
                                     <span className="text-s">
                                         {elm.comp_contribution.toFixed(2)}
@@ -86,6 +88,15 @@ const Summary: React.FC<DialogProps> = ({ salData }) => {
                                         {elm.unRecoveredTotal
                                             ? elm.unRecoveredTotal.toFixed(2)
                                             : '0.0'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-8 gap-4">
+                                <div className="col-span-3 ...">
+                                    <span className="text-s">Tax : </span>
+                                    <span className="text-s">
+                                        {(elm.tax + elm.lumpsumTax).toFixed(2)}
                                     </span>
                                 </div>
                             </div>

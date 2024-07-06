@@ -75,7 +75,7 @@ const EarningsData: React.FC<DialogProps> = ({ loanData, salData }) => {
                     <div className="grid grid-cols-3 gap-4 my-2">
                         <div className="col-span-2 ...">
                             <span className="text-s">
-                                <strong>GROSS PAY</strong>
+                                {/* <strong>GROSS PAY</strong> */}
                             </span>
                         </div>
                         <div className="...">

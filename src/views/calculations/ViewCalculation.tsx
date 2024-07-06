@@ -161,7 +161,7 @@ const ViewCalculation = (props: FormProps) => {
                                     Earning
                                 </Tag>
                             ) : (
-                                <Tag suffix suffixClass="bg-rose-500">
+                                <Tag prefix prefixClass="bg-rose-500">
                                     Deduction
                                 </Tag>
                             )}

@@ -68,7 +68,7 @@ const EarningsData: React.FC<DialogProps> = ({ earningsData, salData }) => {
                         <div className="...">
                             <span className="text-s">
                                 <strong>
-                                    {summary[0].taxableGross.toFixed(2)}
+                                    {summary[0].grossAmount.toFixed(2)}
                                 </strong>
                             </span>
                         </div>
