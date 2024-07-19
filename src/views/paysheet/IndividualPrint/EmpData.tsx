@@ -41,8 +41,6 @@ const EmpData: React.FC<DialogProps> = ({
 }) => {
     let employeeData = null
 
-    console.log(loanData)
-
     if (empData != '') {
         employeeData = JSON.parse(empData ? empData : '')
     }

@@ -1,4 +1,4 @@
-import type { CommonProps, CompanyIdSelectOption } from '@/@types/common'
+import type { CommonProps, SelectOption } from '@/@types/common'
 import { FC, useEffect, useState } from 'react'
 import {
     FieldHelperProps,
@@ -48,7 +48,7 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     return render({ field, meta, helpers })
 }
 
-const companyOptions: CompanyIdSelectOption[] = [
+const companyOptions: SelectOption[] = [
     { value: 2000, label: '2000' },
     { value: 3000, label: '3000' },
 ]
@@ -107,14 +107,19 @@ const PaysheetView = (props: FormProps) => {
             const doc = new jsPDF('p', 'mm', [330, 305])
 
             doc.setFontSize(14)
+            let PaySheetCount = 0
 
             payrollData.forEach((element) => {
                 let emp = JSON.parse(element.empData)
                 let earnings = JSON.parse(element.earningData)
                 let deductions = JSON.parse(element.deductionData)
                 let summary = JSON.parse(element.salData)
+                PaySheetCount += 1
 
                 doc.text(emp[0].epf.toString(), 175, 50, { align: 'left' })
+                doc.text(PaySheetCount.toString().padStart(2, '0'), 175, 50, {
+                    align: 'left',
+                })
                 doc.text(emp[0].empName.toString(), 217, 50, { align: 'left' })
                 doc.text(emp[0].empGrade.toString(), 308, 50, { align: 'left' })
 
@@ -191,7 +196,7 @@ const PaysheetView = (props: FormProps) => {
                 doc.addPage()
             })
 
-            doc.save('paysheet.pdf')
+            doc.output('dataurlnewwindow')
         }
     }
 

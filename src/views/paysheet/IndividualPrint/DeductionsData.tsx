@@ -40,8 +40,6 @@ const DeductionsData: React.FC<DialogProps> = ({
         unRecovered = JSON.parse(unRecoveredData ? unRecoveredData : '')
     }
 
-    console.log(unRecovered)
-
     const cardHeader = (
         <div className="flex items-center">
             <span>
