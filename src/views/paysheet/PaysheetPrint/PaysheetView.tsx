@@ -17,6 +17,7 @@ import Input from '@/components/ui/Input'
 import Card from '@/components/ui/Card'
 import Select from '@/components/ui/Select'
 import jsPDF from 'jspdf'
+import useCommon from '@/utils/hooks/useCommon'
 
 type payData = {
     empData: string
@@ -55,6 +56,7 @@ const companyOptions: SelectOption[] = [
 
 const PaysheetView = (props: FormProps) => {
     const { printPaysheets } = usePayrun()
+    const { formatDate } = useCommon()
 
     const [payrollData, setPayrollData] = useState<payData[]>([])
     const [isDataAvailable, setIsDataAvailable] = useState(false)
@@ -106,18 +108,28 @@ const PaysheetView = (props: FormProps) => {
         if (payrollData != null) {
             const doc = new jsPDF('p', 'mm', [330, 305])
 
-            doc.setFontSize(14)
+            doc.addFont('courier', 'Arial', 'helvetica', 'normal')
+
+            doc.setFont('courier')
+
+            doc.setFontSize(12)
             let PaySheetCount = 0
 
             payrollData.forEach((element) => {
+                console.log('test')
                 let emp = JSON.parse(element.empData)
                 let earnings = JSON.parse(element.earningData)
                 let deductions = JSON.parse(element.deductionData)
                 let summary = JSON.parse(element.salData)
                 PaySheetCount += 1
 
+                let period = formatDate(dataFromChild?.period + '')
+
+                doc.text(PaySheetCount.toString().padStart(4, '0'), 150, 50, {
+                    align: 'left',
+                })
                 doc.text(emp[0].epf.toString(), 175, 50, { align: 'left' })
-                doc.text(PaySheetCount.toString().padStart(2, '0'), 175, 50, {
+                doc.text(period ? period : '', 190, 50, {
                     align: 'left',
                 })
                 doc.text(emp[0].empName.toString(), 217, 50, { align: 'left' })
@@ -143,6 +155,11 @@ const PaysheetView = (props: FormProps) => {
                             align: 'right',
                         })
                         y = y + 5
+
+                        if (y > 255) {
+                            doc.addPage()
+                            y = 73
+                        }
                     }
                 )
 
@@ -156,17 +173,39 @@ const PaysheetView = (props: FormProps) => {
 
                 y = y + 6
 
+                if (y > 255) {
+                    doc.addPage()
+                    y = 73
+                }
+
                 deductions.forEach(
                     (element: {
                         payCode: { toString: () => string | string[] }
-                        amount: {
-                            toFixed: (arg0: number) => {
-                                (): any
-                                new (): any
-                                toString: { (): string | string[]; new (): any }
-                            }
-                        }
+                        balanceAmount: number
+                        amount: number
                     }) => {
+                        if (element.balanceAmount > 0) {
+                            doc.text(
+                                element.balanceAmount.toFixed(2).toString(),
+                                182,
+                                y,
+                                {
+                                    align: 'right',
+                                }
+                            )
+
+                            doc.text(
+                                (element.balanceAmount - element.amount)
+                                    .toFixed(2)
+                                    .toString(),
+                                262,
+                                y,
+                                {
+                                    align: 'right',
+                                }
+                            )
+                        }
+
                         doc.text(element.payCode.toString(), x, y, {
                             align: 'left',
                         })
@@ -174,6 +213,11 @@ const PaysheetView = (props: FormProps) => {
                             align: 'right',
                         })
                         y = y + 5
+
+                        if (y > 255) {
+                            doc.addPage()
+                            y = 73
+                        }
                     }
                 )
 
@@ -181,8 +225,17 @@ const PaysheetView = (props: FormProps) => {
 
                 doc.text('DEDUCTIONS', z, y, { align: 'left' })
 
+                doc.text(summary[0].deductionGross.toFixed(2), 232, y, {
+                    align: 'right',
+                })
+
                 y = 289
                 z = 247
+
+                doc.text(summary[0].netAmount.toFixed(2), 217, y, {
+                    align: 'left',
+                })
+
                 let tottalContribution =
                     parseFloat(summary[0].comp_contribution) +
                     parseFloat(summary[0].emp_contribution)
@@ -196,7 +249,7 @@ const PaysheetView = (props: FormProps) => {
                 doc.addPage()
             })
 
-            doc.output('dataurlnewwindow')
+            doc.save('output.pdf')
         }
     }
 

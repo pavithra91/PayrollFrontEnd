@@ -16,8 +16,9 @@ import { Formik, Field, Form } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Card from '@/components/ui/Card'
-import jsPDF from 'jspdf'
+import jsPDF, { GState } from 'jspdf'
 import EmpData from './EmpData'
+import useCommon from '@/utils/hooks/useCommon'
 
 type FormLayout = 'inline'
 
@@ -46,6 +47,7 @@ type payData = {
 
 const PaysheetView = (props: FormProps) => {
     const { getPaysheetByEPF } = usePayrun()
+    const { formatDate } = useCommon()
 
     const [payrollData, setPayrollData] = useState<payData | null>(null)
     const [isDataAvailable, setIsDataAvailable] = useState(false)
@@ -247,7 +249,20 @@ const PaysheetView = (props: FormProps) => {
 
     const printReportA4 = () => {
         if (payrollData != null) {
-            const doc = new jsPDF('p', 'mm', [297, 210])
+            // const doc = new jsPDF('p', 'mm', [297, 210])
+
+            let period = formatDate(dataFromChild?.period + '')
+
+            const doc = new jsPDF({
+                orientation: 'p',
+                unit: 'mm',
+                format: [297, 210],
+                encryption: {
+                    userPassword: 'user',
+                    ownerPassword: 'owner',
+                    userPermissions: ['print', 'modify', 'copy', 'annot-forms'],
+                },
+            })
 
             doc.addFont('courier', 'Arial', 'helvetica', 'normal')
 
@@ -255,7 +270,7 @@ const PaysheetView = (props: FormProps) => {
 
             doc.setFontSize(12)
 
-            doc.text('Employee Paysheet', 80, 10, { align: 'center' })
+            //doc.text('Employee Paysheet', 80, 10, { align: 'center' })
 
             doc.setFontSize(10)
 
@@ -267,6 +282,9 @@ const PaysheetView = (props: FormProps) => {
             let unRecoveredData = JSON.parse(payrollData.unRecoveredData)
 
             doc.text(emp[0].epf.toString(), 20, 30, { align: 'left' })
+            doc.text(period ? period : '', 40, 30, {
+                align: 'left',
+            })
             doc.text(emp[0].empName.toString(), 100, 30, { align: 'left' })
             doc.text(emp[0].empGrade.toString(), 190, 30, { align: 'left' })
 
@@ -385,6 +403,9 @@ const PaysheetView = (props: FormProps) => {
             y = y + 5
 
             doc.text('DEDUCTIONS', z, y, { align: 'left' })
+            doc.text(summary[0].deductionGross.toFixed(2), x + 35, y, {
+                align: 'right',
+            })
 
             y = 289
             z = 247
@@ -432,6 +453,16 @@ const PaysheetView = (props: FormProps) => {
             //   doc.text('....................................', doc.internal.pageSize.getWidth() / 8, pageHeight - 20, { align: 'left' })
             //    doc.text('Approved By', doc.internal.pageSize.getWidth()-20, pageHeight - 15, { align: 'right' })
             //    doc.text('....................................', doc.internal.pageSize.getWidth()-12, pageHeight - 20, { align: 'right' })
+
+            var img = new Image()
+            img.src = '/img/others/Confidential.png'
+
+            doc.saveGraphicsState()
+            doc.setGState(new GState({ opacity: 0.1 }))
+            doc.addImage(img, 'png', 30, 80, 160, 110)
+
+            doc.restoreGraphicsState()
+
             doc.output('dataurlnewwindow')
         }
     }

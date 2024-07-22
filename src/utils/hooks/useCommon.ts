@@ -112,6 +112,35 @@ function useCommon() {
             previousPeriod,
         }
     }
+
+    const formatDate = (dateString: string) => {
+        // Validate the input format (optional)
+        if (!/^\d{4}\d{2}$/.test(dateString)) {
+            console.error('Invalid date format. Expected YYYYMM.')
+            return null // Or handle the error gracefully
+        }
+
+        const year = parseInt(dateString.substring(0, 4))
+        const month = parseInt(dateString.substring(4)) - 1 // Adjust month for zero-based indexing
+        const monthNames = [
+            'JAN',
+            'FEB',
+            'MAR',
+            'APR',
+            'MAY',
+            'JUN',
+            'JUL',
+            'AUG',
+            'SEP',
+            'OCT',
+            'NOV',
+            'DEC',
+        ]
+
+        const formattedDate = monthNames[month] + ' ' + year
+        return formattedDate
+    }
+
     return {
         getOTHours,
         getUnrecoveredList,
@@ -119,6 +148,7 @@ function useCommon() {
         deleteData,
         getUserIDFromLocalStorage,
         getPreviousMonthAndYear,
+        formatDate,
     }
 }
 
