@@ -36,6 +36,7 @@ function useAuth() {
             const resp = await apiSignIn(values)
             if (resp.data) {
                 const { jwtToken } = resp.data
+
                 dispatch(signInSuccess(jwtToken))
                 // if (resp.data.user) {
 
@@ -46,7 +47,7 @@ function useAuth() {
                             userName: resp.data._userDetails.empName,
                             epf: resp.data._userDetails.epf,
                             userID: resp.data._userDetails.userID,
-                            authority: ['Admin'],
+                            authority: [resp.data._userDetails.role],
                             id: resp.data._userDetails.id,
                             costCenter: resp.data._userDetails.costCenter,
                         }

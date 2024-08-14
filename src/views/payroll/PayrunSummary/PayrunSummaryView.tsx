@@ -78,7 +78,7 @@ const PayrunSummaryView = (props: FormProps) => {
             },
             {
                 header: 'Data Transfered By',
-                accessorKey: 'dataTransferedBy',
+                accessorKey: 'dataTransferredBy',
             },
             {
                 header: 'Data Transfered Date',

@@ -56,3 +56,14 @@ export async function apiGetRefreshToken(data: Token_Data) {
         data,
     })
 }
+
+export async function apiGetPaycodeWiseDataList(values: PayrollDataSchema) {
+    return ApiService.fetchData<Response>({
+        url:
+            '/Admin/get-paycodewise-details?companyCode=' +
+            values.companyCode +
+            '&period=' +
+            values.period,
+        method: 'get',
+    })
+}

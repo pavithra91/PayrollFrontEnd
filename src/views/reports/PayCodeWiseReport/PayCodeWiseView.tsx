@@ -14,13 +14,13 @@ import {
 import Select from '@/components/ui/Select'
 import { PayrollDataSchema } from '@/@types/payroll'
 import useCommon from '@/utils/hooks/useCommon'
-import UnrecoveredTableView from './UnrecoveredTableView'
 import { FaFilePdf, FaRegFileExcel } from 'react-icons/fa'
 import Avatar from '@/components/ui/Avatar/Avatar'
 import { downloadExcel } from 'react-export-table-to-excel'
 import Tooltip from '@/components/ui/Tooltip/Tooltip'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
+import PayCodeWiseTableView from './PayCodeWiseTableView'
 
 interface RenderProps<V = any> {
     field: FieldInputProps<V>
@@ -57,24 +57,23 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
 
     return render({ field, meta, helpers })
 }
-const UnrecoveredView = () => {
-    const { getUnrecoveredList } = useCommon()
+
+const PayCodeWiseView = () => {
+    const { getPaycodeWiseDataList } = useCommon()
 
     const [layout, setLayout] = useState<FormLayout>('inline')
 
     const [dataFromChild, setDataFromChild] =
         useState<PayrollDataSchema | null>(null)
 
-    const [UnrecoveredData, setUnrecoveredData] = useState<UnRecoveredData[]>(
+    const [PaycodeWiseData, setPayCodeWiseData] = useState<PayCodeWiseData[]>(
         []
     )
 
-    type UnRecoveredData = {
+    const [headerData, setheaderData] = useState<[]>([])
+
+    type PayCodeWiseData = {
         epf: number
-        costCenter: string
-        location: string
-        payCode: number
-        amount: number
     }
 
     const onSubmit = async (values: PayrollDataSchema) => {
@@ -87,23 +86,39 @@ const UnrecoveredView = () => {
 
     useEffect(() => {
         if (dataFromChild != null) {
-            const unrecoveredResults = getUnrecoveredList(dataFromChild)
+            const unrecoveredResults = getPaycodeWiseDataList(dataFromChild)
 
             unrecoveredResults.then((res) => {
                 if (res?.status == 'success') {
                     const listItems = JSON.parse(res?.data?.data ?? '')
-                    setUnrecoveredData(listItems)
+
+                    const header: any = []
+                    const header1: any[] = []
+
+                    listItems.map((item: any) => {
+                        header1.push(Object.keys(item))
+                    })
+
+                    header1[0].map((item: any) => {
+                        //console.log(item)
+                        header.push(item)
+                    })
+
+                    //console.log(header)
+
+                    setheaderData(header)
+                    setPayCodeWiseData(listItems)
                 } else {
-                    setUnrecoveredData([])
+                    setPayCodeWiseData([])
                 }
             })
         }
     }, [dataFromChild])
 
-    const header = ['EPF', 'Cost Center', 'Location', 'Pay Code', 'Amount']
+    const header: never[] = headerData
 
     function handleDownloadExcel() {
-        if (UnrecoveredData.length == 0) {
+        if (PaycodeWiseData.length == 0) {
             openNotification(
                 'danger',
                 'No Data Found',
@@ -112,19 +127,19 @@ const UnrecoveredView = () => {
             return
         }
         downloadExcel({
-            fileName: 'Unrecovered_report - ' + dataFromChild?.period,
+            fileName: 'PayCode_Wise_Data_Report - ' + dataFromChild?.period,
             sheet: dataFromChild?.period + '',
             tablePayload: {
                 header,
                 // accept two different data structures
-                body: UnrecoveredData,
+                body: PaycodeWiseData,
             },
         })
     }
 
     return (
         <>
-            <Card header="Unrecovered List Report">
+            <Card header="Pay Code Wise Data Report">
                 <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-10 ...">
                         <Formik
@@ -230,10 +245,13 @@ const UnrecoveredView = () => {
             </Card>
             <div className="mb-4"></div>
             <Card>
-                <UnrecoveredTableView data={UnrecoveredData} />
+                <PayCodeWiseTableView
+                    data={PaycodeWiseData}
+                    column={headerData}
+                />
             </Card>
         </>
     )
 }
 
-export default UnrecoveredView
+export default PayCodeWiseView

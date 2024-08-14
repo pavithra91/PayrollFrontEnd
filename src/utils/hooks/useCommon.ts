@@ -5,6 +5,7 @@ import {
     apiResetData,
     apiGetUnrecoveredList,
     apiGetLumpsumTaxList,
+    apiGetPaycodeWiseDataList,
 } from '@/services/CommonService'
 
 type Status = 'success' | 'failed'
@@ -141,6 +142,24 @@ function useCommon() {
         return formattedDate
     }
 
+    const getPaycodeWiseDataList = async (values: PayrollDataSchema) => {
+        try {
+            const resp = await apiGetPaycodeWiseDataList(values)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
+
     return {
         getOTHours,
         getUnrecoveredList,
@@ -149,6 +168,7 @@ function useCommon() {
         getUserIDFromLocalStorage,
         getPreviousMonthAndYear,
         formatDate,
+        getPaycodeWiseDataList,
     }
 }
 

@@ -136,6 +136,14 @@ export const protectedRoutes = [
         ),
         authority: ['Admin'],
     },
+    {
+        key: 'PayCodeWiseReport',
+        path: '/PayCodeWiseReport',
+        component: lazy(
+            () => import('@/views/reports/PayCodeWiseReport/PayCodeWiseReport')
+        ),
+        authority: ['Admin'],
+    },
 
     {
         key: 'knowledgebase',

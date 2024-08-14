@@ -156,17 +156,20 @@ const TransferDataView = (props: FormProps) => {
             const payCodeStatus = payCodeCheck(dataFromChild)
 
             payCodeStatus.then((res) => {
-                const result = JSON.parse(res?.data?.data ?? '')
-                if (result.length > 0) {
-                    openNotification(
-                        'danger',
-                        'Error',
-                        'PayCode Missing : ' + result
-                    )
-                    setPaycodeMacthed(result)
-                } else {
-                    setPaycodeMacthed([])
-                }
+                // console.log(res)
+                // const result = JSON.parse(res?.data?.data ?? '')
+                // if (result.length > 0) {
+                //     openNotification(
+                //         'danger',
+                //         'Error',
+                //         'PayCode Missing : ' + result
+                //     )
+                //     setPaycodeMacthed(result)
+                // } else {
+                //     setPaycodeMacthed([])
+                // }
+
+                setPaycodeMacthed([])
             })
 
             payrunStatus.then((res) => {

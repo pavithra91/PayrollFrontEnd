@@ -19,6 +19,7 @@ import Card from '@/components/ui/Card'
 import jsPDF, { GState } from 'jspdf'
 import EmpData from './EmpData'
 import useCommon from '@/utils/hooks/useCommon'
+import { getSinhalaFont } from '@/assets/fonts'
 
 type FormLayout = 'inline'
 
@@ -247,6 +248,21 @@ const PaysheetView = (props: FormProps) => {
         }
     }
 
+    function demoUsingTTFFont() {
+        const AmiriRegular = getSinhalaFont()
+        const doc = new jsPDF({ filters: ['ASCIIHexEncode'] })
+
+        doc.addFileToVFS('FMAbhaya x-normal.ttf', AmiriRegular)
+        doc.addFont('FMAbhaya x-normal.ttf', 'FMAbhaya x', 'normal')
+
+        doc.setFont('FMAbhaya x') // set font
+        doc.setFontSize(20)
+
+        doc.text(',xld Lksc f;,a f;d. .nvd mrahka;h', 10, 10)
+
+        doc.save('test.pdf')
+    }
+
     const printReportA4 = () => {
         if (payrollData != null) {
             // const doc = new jsPDF('p', 'mm', [297, 210])
@@ -257,20 +273,36 @@ const PaysheetView = (props: FormProps) => {
                 orientation: 'p',
                 unit: 'mm',
                 format: [297, 210],
-                encryption: {
-                    userPassword: 'user',
-                    ownerPassword: 'owner',
-                    userPermissions: ['print', 'modify', 'copy', 'annot-forms'],
-                },
+                // encryption: {
+                //     userPassword: 'user',
+                //     ownerPassword: 'owner',
+                //     userPermissions: ['print', 'modify', 'copy', 'annot-forms'],
+                // },
             })
 
-            doc.addFont('courier', 'Arial', 'helvetica', 'normal')
+            doc.addFont('courier', 'ariel', 'helvetica', 'normal')
+
+            const AmiriRegular = getSinhalaFont()
+
+            doc.addFileToVFS('FMAbhaya x-normal.ttf', AmiriRegular)
+            doc.addFont('FMAbhaya x-normal.ttf', 'FMAbhaya x', 'normal')
+
+            doc.setFont('FMAbhaya x') // set font
+            doc.setFontSize(20)
+
+            doc.text(',xld Lksc f;,a f;d. .nvd mrahka;h', 50, 10)
+
+            doc.setFontSize(14)
+            doc.text('fiajl jegqma m;s%ldj', 80, 25)
 
             doc.setFont('courier')
+            doc.setFontSize(16)
+            doc.text('CEYLON PETROLEUM STORAGE TERMINALS LIMITED', 30, 17)
+
+            doc.setFontSize(14)
+            doc.text('Employee Pay Sheet', 75, 30)
 
             doc.setFontSize(12)
-
-            //doc.text('Employee Paysheet', 80, 10, { align: 'center' })
 
             doc.setFontSize(10)
 
@@ -281,12 +313,12 @@ const PaysheetView = (props: FormProps) => {
             let loandData = JSON.parse(payrollData.loanData)
             let unRecoveredData = JSON.parse(payrollData.unRecoveredData)
 
-            doc.text(emp[0].epf.toString(), 20, 30, { align: 'left' })
-            doc.text(period ? period : '', 40, 30, {
+            doc.text(emp[0].epf.toString(), 20, 40, { align: 'left' })
+            doc.text(period ? period : '', 40, 40, {
                 align: 'left',
             })
-            doc.text(emp[0].empName.toString(), 100, 30, { align: 'left' })
-            doc.text(emp[0].empGrade.toString(), 190, 30, { align: 'left' })
+            doc.text(emp[0].empName.toString(), 100, 40, { align: 'left' })
+            doc.text(emp[0].empGrade.toString(), 190, 40, { align: 'left' })
 
             let x = 60
             let y = 50
@@ -420,40 +452,6 @@ const PaysheetView = (props: FormProps) => {
 
             doc.text(tottalContribution.toFixed(2), z, y, { align: 'left' })
 
-            // autoTable(doc, {
-            //     columnStyles: { europe: { halign: 'center' } },
-            //     body: payrollData,
-            //     margin: {bottom: 20},
-            //     columns: [
-            //         { header: 'Location', dataKey: 'location' },
-            //         { header: 'EPF', dataKey: 'epf' },
-            //         { header: 'Name', dataKey: 'empName' },
-            //         { header: 'EPF Employee', dataKey: 'emp_contribution' },
-            //         { header: 'EPF Company', dataKey: 'comp_contribution' },
-            //         {
-            //             header: 'ETF',
-            //             dataKey: 'etf',
-            //         },
-            //         { header: 'TAX', dataKey: 'tax' },
-            //     ],
-            // })
-            // const pageCount = (doc as any).internal.getNumberOfPages()
-            // for (let i = 1; i <= pageCount; i++) {
-            //     doc.setFontSize(10);
-            //     // Go to page i
-            //     doc.setPage(i);
-            //     var pageSize = doc.internal.pageSize;
-            //     var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
-            //     doc.text('Page ' + String(i) + ' of ' + String(pageCount), doc.internal.pageSize.getWidth() / 2, pageHeight - 8, {align: 'center'}); //data.settings.margin.left if you want it on the left
-            //   }
-            //   doc.setPage(pageCount)
-            //   var pageSize = doc.internal.pageSize;
-            //   var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
-            //   doc.text('Checked By', (doc.internal.pageSize.getWidth() / 8)+8, pageHeight - 15, { align: 'left' })
-            //   doc.text('....................................', doc.internal.pageSize.getWidth() / 8, pageHeight - 20, { align: 'left' })
-            //    doc.text('Approved By', doc.internal.pageSize.getWidth()-20, pageHeight - 15, { align: 'right' })
-            //    doc.text('....................................', doc.internal.pageSize.getWidth()-12, pageHeight - 20, { align: 'right' })
-
             var img = new Image()
             img.src = '/img/others/Confidential.png'
 
@@ -462,6 +460,10 @@ const PaysheetView = (props: FormProps) => {
             doc.addImage(img, 'png', 30, 80, 160, 110)
 
             doc.restoreGraphicsState()
+
+            const result = doc.output('blob')
+
+            console.log(result)
 
             doc.output('dataurlnewwindow')
         }
@@ -474,8 +476,8 @@ const PaysheetView = (props: FormProps) => {
                     <div className="col-span-4 ...">
                         <Formik
                             initialValues={{
-                                epf: 0,
-                                period: 202312,
+                                epf: 17532,
+                                period: 202406,
                             }}
                             onSubmit={(values) => {
                                 //    if (!disableSubmit) {

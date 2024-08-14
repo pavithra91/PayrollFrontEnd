@@ -115,8 +115,9 @@ const PaysheetView = (props: FormProps) => {
             doc.setFontSize(12)
             let PaySheetCount = 0
 
+            let array: Blob[] = []
+
             payrollData.forEach((element) => {
-                console.log('test')
                 let emp = JSON.parse(element.empData)
                 let earnings = JSON.parse(element.earningData)
                 let deductions = JSON.parse(element.deductionData)
@@ -261,7 +262,7 @@ const PaysheetView = (props: FormProps) => {
                         <Formik
                             initialValues={{
                                 companyCode: 3000,
-                                period: 202312,
+                                period: 202406,
                             }}
                             onSubmit={(values) => {
                                 //    if (!disableSubmit) {
