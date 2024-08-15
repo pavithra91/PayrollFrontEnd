@@ -71,7 +71,8 @@ const PaysheetView = (props: FormProps) => {
             const payRunResults = getPaysheetByEPF(dataFromChild)
 
             payRunResults.then((res) => {
-                console.log('Res ' + res?.data)
+                console.log('Res ' + res?.message)
+                console.log('ListItem ' + JSON.parse(res))
                 const listItems = JSON.parse(res?.data?.data ?? '')
 
                 console.log('ListItem ' + listItems)
