@@ -103,6 +103,7 @@ export async function apiGetPaysheetByEPF(values: PaysheetDataSchema) {
             '&period=' +
             values.period,
         method: 'get',
+        timeout: 240000,
     })
 }
 

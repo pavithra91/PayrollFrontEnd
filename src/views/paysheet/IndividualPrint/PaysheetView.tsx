@@ -72,7 +72,6 @@ const PaysheetView = (props: FormProps) => {
 
             payRunResults.then((res) => {
                 console.log('Res ' + res?.message)
-                console.log('ListItem ' + JSON.parse(res))
                 const listItems = JSON.parse(res?.data?.data ?? '')
 
                 console.log('ListItem ' + listItems)
