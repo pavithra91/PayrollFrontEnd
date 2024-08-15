@@ -69,6 +69,7 @@ const PaysheetView = (props: FormProps) => {
     useEffect(() => {
         if (dataFromChild != null) {
             const payRunResults = getPaysheetByEPF(dataFromChild)
+            console.log(payRunResults)
             payRunResults.then((res) => {
                 const listItems = JSON.parse(res?.data?.data ?? '')
                 if (listItems[0].empData.length > 2) {
