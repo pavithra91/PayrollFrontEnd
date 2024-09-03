@@ -22,7 +22,6 @@ export async function apiGetDataTransferStatistics(values: PayrollDataSchema) {
 }
 
 export async function apiConfirmDataTransfer(data: ConfirmDataTransfer) {
-    console.log(data)
     return ApiService.fetchData<Response>({
         url: '/DataTransfer/confirm-data-transfer',
         method: 'post',
@@ -31,7 +30,6 @@ export async function apiConfirmDataTransfer(data: ConfirmDataTransfer) {
 }
 
 export async function apiRollBackDataTransfer(data: ConfirmDataTransfer) {
-    console.log(data)
     return ApiService.fetchData<Response>({
         url: '/DataTransfer/temp-data-rollback',
         method: 'post',
@@ -128,5 +126,14 @@ export async function apiPayCodeCheck(values: PayrollDataSchema) {
             values.period,
         method: 'get',
         timeout: 240000,
+    })
+}
+
+export async function apiCreateBankTransferFile(data: ConfirmDataTransfer) {
+    return ApiService.fetchData<Response>({
+        url: '/Payroll/create-bank-file',
+        method: 'post',
+        timeout: 480000,
+        data,
     })
 }

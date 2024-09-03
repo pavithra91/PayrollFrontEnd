@@ -71,15 +71,22 @@ const PaysheetView = (props: FormProps) => {
             const payRunResults = getPaysheetByEPF(dataFromChild)
 
             payRunResults.then((res) => {
-                console.log('Res ' + res?.message)
-                const listItems = JSON.parse(res?.data?.data ?? '')
-
-                console.log('ListItem ' + listItems)
-                if (listItems[0].empData.length > 2) {
-                    setPayrollData(listItems[0])
-                    setIsDataAvailable(true)
+                if (res?.status == 'failed') {
+                    openNotification(
+                        'danger',
+                        'Error',
+                        'No Employee Data Found'
+                    )
                 } else {
-                    openNotification('danger', 'Error', 'No Data Available')
+                    const listItems = JSON.parse(res?.data?.data ?? '')
+
+                    console.log('ListItem ' + listItems)
+                    if (listItems[0].empData.length > 2) {
+                        setPayrollData(listItems[0])
+                        setIsDataAvailable(true)
+                    } else {
+                        openNotification('danger', 'Error', 'No Data Available')
+                    }
                 }
             })
         }

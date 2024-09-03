@@ -91,6 +91,20 @@ const OTHours: React.FC<DialogProps> = ({ companyCode, period }) => {
                         xaxis: {
                             categories: summaryList ? summaryList[2] : [],
                         },
+                        yaxis: {
+                            axisBorder: {
+                                show: false,
+                            },
+                            axisTicks: {
+                                show: false,
+                            },
+                            labels: {
+                                show: true,
+                                formatter: function (val) {
+                                    return val.toLocaleString()
+                                },
+                            },
+                        },
                     }}
                     series={summaryData}
                     height={300}

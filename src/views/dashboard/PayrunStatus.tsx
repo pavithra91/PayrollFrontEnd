@@ -17,6 +17,7 @@ const PayrunStatus: React.FC<DialogProps> = ({ companyCode, period }) => {
     const [payrunTag, setPayrunTag] = useState('')
 
     const today = new Date()
+    const curmonth = today.toLocaleDateString('en-US', { month: '2-digit' })
     const month = today.toLocaleDateString('en-US', { month: 'long' })
     const year = today.getFullYear()
 
@@ -28,12 +29,17 @@ const PayrunStatus: React.FC<DialogProps> = ({ companyCode, period }) => {
         result.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
             if (listItems.length > 0) {
-                setPayrunStatus(listItems[0].payrunStatus)
+                if (listItems[0].period == year + '' + curmonth) {
+                    setPayrunStatus(listItems[0].payrunStatus)
+                } else {
+                    setPayrunStatus('Initiation pending')
+                }
+
                 setPayrunTag(
                     'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-100 rounded-md border-0 mx-2'
                 )
             } else {
-                setPayrunStatus('Not Started')
+                setPayrunStatus('Initiation pending')
                 setPayrunTag(
                     'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-100 rounded-md border-0 mx-2'
                 )

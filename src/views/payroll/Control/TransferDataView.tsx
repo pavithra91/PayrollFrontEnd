@@ -168,8 +168,7 @@ const TransferDataView = (props: FormProps) => {
                 // } else {
                 //     setPaycodeMacthed([])
                 // }
-
-                setPaycodeMacthed([])
+                //setPaycodeMacthed([])
             })
 
             payrunStatus.then((res) => {

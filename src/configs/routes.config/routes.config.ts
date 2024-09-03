@@ -75,6 +75,14 @@ export const protectedRoutes = [
         authority: ['Admin'],
     },
     {
+        key: 'BankTransfer',
+        path: '/BankTransfer',
+        component: lazy(
+            () => import('@/views/payroll/BankTransfer/BankTransfer')
+        ),
+        authority: ['Admin'],
+    },
+    {
         key: 'PayrollSummary',
         path: '/PayrollSummary',
         component: lazy(() => import('@/views/reports/Summary/PayrollSummary')),

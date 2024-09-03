@@ -6,8 +6,6 @@ import useCommon from '@/utils/hooks/useCommon'
 const Home = () => {
     const { getPreviousMonthAndYear } = useCommon()
 
-    console.log(getPreviousMonthAndYear().previousPeriod)
-
     return (
         <>
             <div className="w-full">

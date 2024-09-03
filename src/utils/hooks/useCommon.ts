@@ -88,7 +88,6 @@ function useCommon() {
             return null
         } else {
             const user = JSON.parse(localStorage.getItem('admin') ?? '')
-            console.log(user)
             const userID = JSON.parse(user.auth).user.userID
             return userID
         }
@@ -98,7 +97,6 @@ function useCommon() {
         const now = new Date()
 
         now.setDate(1)
-        console.log(now)
         const prevMonth = now.getMonth() - 1
 
         const prevYear =
@@ -142,6 +140,34 @@ function useCommon() {
         return formattedDate
     }
 
+    const formatDateFullMonth = (dateString: string) => {
+        // Validate the input format (optional)
+        if (!/^\d{4}\d{2}$/.test(dateString)) {
+            console.error('Invalid date format. Expected YYYYMM.')
+            return null // Or handle the error gracefully
+        }
+
+        const year = parseInt(dateString.substring(0, 4))
+        const month = parseInt(dateString.substring(4)) - 1 // Adjust month for zero-based indexing
+        const monthNames = [
+            'January',
+            'Febuary',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December',
+        ]
+
+        const formattedDate = monthNames[month] + ' ' + year
+        return formattedDate
+    }
+
     const getPaycodeWiseDataList = async (values: PayrollDataSchema) => {
         try {
             const resp = await apiGetPaycodeWiseDataList(values)
@@ -168,6 +194,7 @@ function useCommon() {
         getUserIDFromLocalStorage,
         getPreviousMonthAndYear,
         formatDate,
+        formatDateFullMonth,
         getPaycodeWiseDataList,
     }
 }

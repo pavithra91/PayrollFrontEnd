@@ -172,6 +172,16 @@ const navigationConfig: NavigationTree[] = [
                 subMenu: [],
             },
             {
+                key: 'collapseMenu.BankTransfer',
+                path: '/BankTransfer',
+                title: 'Bank Transfer',
+                translateKey: 'nav.collapseMenu.BankTransfer',
+                icon: '',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: ['Admin'],
+                subMenu: [],
+            },
+            {
                 key: 'collapseMenu.payrunSummary',
                 path: '/PayrunSummary',
                 title: 'Payrun Summary',
