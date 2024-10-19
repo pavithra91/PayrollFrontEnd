@@ -488,7 +488,7 @@ const PaysheetView = (props: FormProps) => {
                         <Formik
                             initialValues={{
                                 epf: 17532,
-                                period: 202406,
+                                period: 202409,
                             }}
                             onSubmit={(values) => {
                                 //    if (!disableSubmit) {

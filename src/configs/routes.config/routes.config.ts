@@ -169,6 +169,12 @@ export const protectedRoutes = [
         ),
         authority: [],
     },
+    {
+        key: 'Profile',
+        path: '/users/Account/Profile',
+        component: lazy(() => import('@/views/users/Account/Profile')),
+        authority: [],
+    },
     // {
     //     key: 'groupMenu.single',
     //     path: '/group-single-menu-item-view',

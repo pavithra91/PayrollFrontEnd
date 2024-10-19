@@ -1,10 +1,11 @@
 import classNames from 'classnames'
 import Drawer from '@/components/ui/Drawer'
-import { HiOutlineCog } from 'react-icons/hi'
+import { HiOutlineCog, HiOutlineDocumentReport } from 'react-icons/hi'
 import SidePanelContent, { SidePanelContentProps } from './SidePanelContent'
 import withHeaderItem from '@/utils/hoc/withHeaderItem'
 import { setPanelExpand, useAppSelector, useAppDispatch } from '@/store'
 import type { CommonProps } from '@/@types/common'
+import AuthorityCheck from '@/components/shared/AuthorityCheck'
 
 type SidePanelProps = SidePanelContentProps & CommonProps
 
@@ -21,6 +22,13 @@ const _SidePanel = (props: SidePanelProps) => {
         dispatch(setPanelExpand(true))
     }
 
+    const openHRMPanel = () => {
+        window.open(
+            'http://internal-cpstl-poc-internal-alb-1716520389.ap-southeast-1.elb.amazonaws.com/hrm/',
+            '_blank'
+        )
+    }
+
     const closePanel = () => {
         dispatch(setPanelExpand(false))
         const bodyClassList = document.body.classList
@@ -31,13 +39,26 @@ const _SidePanel = (props: SidePanelProps) => {
 
     return (
         <>
-            <div
-                className={classNames('text-2xl', className)}
-                onClick={openPanel}
-                {...rest}
-            >
-                <HiOutlineCog />
-            </div>
+            <AuthorityCheck authority={['Admin']} userAuthority={['Admin']}>
+                <div
+                    className={classNames('text-2xl', className)}
+                    onClick={openPanel}
+                    {...rest}
+                >
+                    <HiOutlineCog />
+                </div>
+            </AuthorityCheck>
+
+            <AuthorityCheck authority={['Admin']} userAuthority={['Admin']}>
+                <div
+                    className={classNames('text-2xl', className)}
+                    onClick={openHRMPanel}
+                    {...rest}
+                >
+                    <HiOutlineDocumentReport />
+                </div>
+            </AuthorityCheck>
+
             <Drawer
                 title="Side Panel"
                 isOpen={panelExpand}

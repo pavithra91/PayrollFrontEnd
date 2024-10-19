@@ -21,6 +21,9 @@ import PayrollSummary from './PayrollSummary'
 import useCommon from '@/utils/hooks/useCommon'
 import Statistic from './Statistics'
 import ConfirmDiaglog from '../Process/ConfirmDiaglog'
+import { Spinner } from '@/components/ui'
+import { ImSpinner9 } from 'react-icons/im'
+import Loading from '@/components/shared/Loading'
 
 interface FormProps extends CommonProps {
     disableSubmit?: boolean
@@ -72,6 +75,7 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
 
 const ConfirmedDataView = (props: FormProps) => {
     const [isUnrecoveredActive, setIsUnrecoveredActive] = useState(false)
+    const [isDataLoaded, setDataLoaded] = useState(false)
 
     const [isProcessPayrollBloacked, setIsProcessPayrollBloacked] =
         useState(false)
@@ -138,7 +142,7 @@ const ConfirmedDataView = (props: FormProps) => {
 
     const onSubmit = async (values: PayrollDataSchema) => {
         const { companyCode, period } = values
-
+        setisDataLoad(true)
         if (values != null) {
             setDataFromChild(values)
         }
@@ -146,6 +150,7 @@ const ConfirmedDataView = (props: FormProps) => {
 
     useEffect(() => {
         if (dataFromChild != null) {
+            setDataLoaded(true)
             const result = getDataTransferStatistics(dataFromChild)
             result.then((res) => {
                 const listItems = JSON.parse(res?.data?.data ?? '')
@@ -168,6 +173,7 @@ const ConfirmedDataView = (props: FormProps) => {
 
             const payRunResults = getPayrunByPeriod(dataFromChild)
             payRunResults.then((res) => {
+                setDataLoaded(true)
                 const listItems = JSON.parse(res?.data?.data ?? '')
                 if (listItems.length > 0) {
                     if (listItems[0].payrunStatus == 'Confirmed') {
@@ -193,8 +199,9 @@ const ConfirmedDataView = (props: FormProps) => {
                             })
 
                             setSimulateData(array)
+                            setDataLoaded(false)
 
-                            console.log(array)
+                            setisDataLoad(false)
 
                             setIsProcessPayrollBloacked(false)
                             setIsUnrecoveredActive(false)
@@ -212,6 +219,7 @@ const ConfirmedDataView = (props: FormProps) => {
                             const listItems = JSON.parse(res?.data?.data ?? '')
 
                             setPayrollData(listItems)
+                            setDataLoaded(false)
                         })
                     } else if (
                         listItems[0].payrunStatus == 'Unrec File Created'
@@ -226,9 +234,13 @@ const ConfirmedDataView = (props: FormProps) => {
 
                         setIsProcessPayrollBloacked(true)
                         setIsUnrecoveredActive(false)
+                        setDataLoaded(false)
+
+                        console.log(isDataLoad)
                     } else {
                         setIsProcessPayrollBloacked(false)
                         setIsUnrecoveredActive(false)
+                        setDataLoaded(false)
                     }
                 }
             })
@@ -285,7 +297,7 @@ const ConfirmedDataView = (props: FormProps) => {
                         <Formik
                             initialValues={{
                                 companyCode: 0,
-                                period: 202406,
+                                period: 202409,
                             }}
                             onSubmit={(values, { setSubmitting }) => {
                                 //    if (!disableSubmit) {
@@ -354,14 +366,16 @@ const ConfirmedDataView = (props: FormProps) => {
                     {isDataLoad && (
                         <div className="col-span-1...">
                             <span className="mr-1 font-semibold">
-                                <Button
-                                    disabled={fetchedContent}
-                                    variant="solid"
-                                    color="blue-600"
-                                    onClick={openConfirmDialog}
-                                >
-                                    Process Payroll
-                                </Button>
+                                {!isProcessPayrollBloacked && (
+                                    <Button
+                                        disabled={fetchedContent}
+                                        variant="solid"
+                                        color="blue-600"
+                                        onClick={openConfirmDialog}
+                                    >
+                                        Process Payroll
+                                    </Button>
+                                )}
 
                                 {isConfirmOpen && (
                                     <ConfirmDiaglog
@@ -395,12 +409,19 @@ const ConfirmedDataView = (props: FormProps) => {
                 </div>
             </Card>
             <div className="mb-4"></div>
+
             <Card>
                 {fetchedContent ? (
-                    <PayrollSummary data={payrollData} />
+                    <>
+                        <PayrollSummary data={payrollData} />
+                    </>
                 ) : (
                     // <DataSummary data={data} />
-                    <Statistic data={simulateData} />
+                    <>
+                        <Loading loading={isDataLoaded}>
+                            <Statistic data={simulateData} />
+                        </Loading>
+                    </>
                 )}
             </Card>
         </>

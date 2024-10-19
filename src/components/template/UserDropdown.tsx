@@ -17,7 +17,7 @@ type DropdownList = {
 const dropdownItemList: DropdownList[] = [
     {
         label: 'Profile',
-        path: '/Settings',
+        path: '/users/Account/Profile',
         icon: <HiOutlineCog />,
     },
 ]
@@ -45,9 +45,16 @@ const _UserDropdown = ({ className }: CommonProps) => {
         fetchData()
     }, [])
 
+    const AVATAR_SRC_PATH = '/img/avatars/thumb-2.jpg'
+
     const UserAvatar = (
         <div className={classNames(className, 'flex items-center gap-2')}>
-            <Avatar size={32} shape="circle" icon={<HiOutlineUser />} />
+            <Avatar
+                size={32}
+                shape="circle"
+                src={AVATAR_SRC_PATH}
+                // icon={<HiOutlineUser />}
+            />
             <div className="hidden md:block">
                 <div className="text-xs capitalize">{Role}</div>
                 <div className="font-bold">{UserID}</div>
@@ -64,7 +71,7 @@ const _UserDropdown = ({ className }: CommonProps) => {
             >
                 <Dropdown.Item variant="header">
                     <div className="py-2 px-3 flex items-center gap-2">
-                        <Avatar shape="circle" icon={<HiOutlineUser />} />
+                        <Avatar shape="circle" src={AVATAR_SRC_PATH} />
                         <div>
                             <Link
                                 className="flex h-full w-full px-2"

@@ -1,11 +1,5 @@
 import Table from '@/components/ui/Table'
-import {
-    useState,
-    useEffect,
-    useMemo,
-    SetStateAction,
-    InputHTMLAttributes,
-} from 'react'
+import { useState, useEffect, useMemo, InputHTMLAttributes } from 'react'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import AddDialogComponent from './AddDialogComponent'
@@ -33,6 +27,7 @@ import { PayCodeData } from '@/@types/paycode'
 import Tag from '@/components/ui/Tag/Tag'
 import { rankItem } from '@tanstack/match-sorter-utils'
 import Input from '@/components/ui/Input/Input'
+import Loading from '@/components/shared/Loading'
 
 type Option = {
     value: number
@@ -92,12 +87,15 @@ const ViewPayCodes = (props: FormProps) => {
     const [selectedPayCode, setSelectedPayCode] = useState({})
 
     const [data, setData] = useState([])
+    const [isDataLoad, setisDataLoad] = useState(false)
 
     useEffect(() => {
+        setisDataLoad(true)
         const result = getPayCodes()
         result.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
             setData(listItems)
+            setisDataLoad(false)
         })
     }, [])
 
@@ -330,6 +328,7 @@ const ViewPayCodes = (props: FormProps) => {
                 placeholder="Search all columns..."
                 onChange={(value) => setGlobalFilter(String(value))}
             />
+            <Loading loading={isDataLoad}></Loading>
             <Table>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (

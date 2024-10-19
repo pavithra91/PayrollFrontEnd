@@ -3,6 +3,7 @@ import { SetStateAction, useEffect, useState } from 'react'
 import { COLORS, COLOR_2 } from '@/constants/chart.constant'
 import Chart from 'react-apexcharts'
 import useCommon from '@/utils/hooks/useCommon'
+import Loading from '@/components/shared/Loading'
 
 interface DialogProps {
     companyCode: any
@@ -16,12 +17,14 @@ interface othoursList {
 const OTHours: React.FC<DialogProps> = ({ companyCode, period }) => {
     const { getOTHours } = useCommon()
     const [summaryList, setSummary] = useState<any[]>([])
+    const [isDataLoaded, setDataLoaded] = useState(false)
 
     const today = new Date()
     const month = today.toLocaleDateString('en-US', { month: 'long' })
     const year = today.getFullYear()
 
     useEffect(() => {
+        setDataLoaded(true)
         const result = getOTHours({
             companyCode,
             period,
@@ -54,6 +57,8 @@ const OTHours: React.FC<DialogProps> = ({ companyCode, period }) => {
             arr.push(grossAmount)
 
             setSummary(arr)
+
+            setDataLoaded(false)
         })
     }, [])
 
@@ -70,68 +75,70 @@ const OTHours: React.FC<DialogProps> = ({ companyCode, period }) => {
 
     return (
         <>
-            <Card bordered className="mb-4">
-                <h5>Gross Amount (Last 10 Months)</h5>
-                <Chart
-                    options={{
-                        chart: {
-                            type: 'line',
-                            zoom: {
-                                enabled: false,
-                            },
-                        },
-                        dataLabels: {
-                            enabled: false,
-                        },
-                        stroke: {
-                            curve: 'smooth',
-                            width: 3,
-                        },
-                        colors: [COLOR_2],
-                        xaxis: {
-                            categories: summaryList ? summaryList[2] : [],
-                        },
-                        yaxis: {
-                            axisBorder: {
-                                show: false,
-                            },
-                            axisTicks: {
-                                show: false,
-                            },
-                            labels: {
-                                show: true,
-                                formatter: function (val) {
-                                    return val.toLocaleString()
+            <Loading loading={isDataLoaded}>
+                <Card bordered className="mb-4">
+                    <h5>Gross Amount (Last 10 Months)</h5>
+                    <Chart
+                        options={{
+                            chart: {
+                                type: 'line',
+                                zoom: {
+                                    enabled: false,
                                 },
                             },
-                        },
-                    }}
-                    series={summaryData}
-                    height={300}
-                />
-            </Card>
-            <Card bordered className="mb-4">
-                <h5>OverTime (Last Payrun)</h5>
-                <Chart
-                    options={{
-                        plotOptions: {
-                            bar: {
-                                horizontal: false,
+                            dataLabels: {
+                                enabled: false,
                             },
-                        },
-                        colors: COLORS,
-                        dataLabels: {
-                            enabled: false,
-                        },
-                        xaxis: {
-                            categories: summaryList ? summaryList[1] : [],
-                        },
-                    }}
-                    series={data}
-                    type="bar"
-                    height={400}
-                />
-            </Card>
+                            stroke: {
+                                curve: 'smooth',
+                                width: 3,
+                            },
+                            colors: [COLOR_2],
+                            xaxis: {
+                                categories: summaryList ? summaryList[2] : [],
+                            },
+                            yaxis: {
+                                axisBorder: {
+                                    show: false,
+                                },
+                                axisTicks: {
+                                    show: false,
+                                },
+                                labels: {
+                                    show: true,
+                                    formatter: function (val) {
+                                        return val.toLocaleString()
+                                    },
+                                },
+                            },
+                        }}
+                        series={summaryData}
+                        height={300}
+                    />
+                </Card>
+                <Card bordered className="mb-4">
+                    <h5>OverTime (Last Payrun)</h5>
+                    <Chart
+                        options={{
+                            plotOptions: {
+                                bar: {
+                                    horizontal: false,
+                                },
+                            },
+                            colors: COLORS,
+                            dataLabels: {
+                                enabled: false,
+                            },
+                            xaxis: {
+                                categories: summaryList ? summaryList[1] : [],
+                            },
+                        }}
+                        series={data}
+                        type="bar"
+                        height={400}
+                    />
+                </Card>
+            </Loading>
         </>
     )
 }

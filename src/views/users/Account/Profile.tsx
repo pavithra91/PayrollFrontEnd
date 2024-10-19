@@ -1,231 +1,50 @@
-import Input from '@/components/ui/Input'
-import Button from '@/components/ui/Button'
-import Notification from '@/components/ui/Notification'
-import toast from '@/components/ui/toast'
-import { FormContainer } from '@/components/ui/Form'
-import FormDesription from './FormDesription'
-import FormRow from './FormRow'
-import { Field, Form, Formik } from 'formik'
-import {
-    HiOutlineUserCircle,
-    HiOutlineUser,
-    HiOutlineBriefcase,
-    HiOutlineLocationMarker,
-    HiOutlineIdentification,
-} from 'react-icons/hi'
-import * as Yup from 'yup'
-import useAccount from '@/utils/hooks/useAccount'
+import AdaptableCard from '@/components/shared/AdaptableCard'
+import Container from '@/components/shared/Container'
+import ProfileInfo from './ProfileInfo'
+import TabContent from '@/components/ui/Tabs/TabContent'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabNav from '@/components/ui/Tabs/TabNav'
+import Tabs from '@/components/ui/Tabs'
+import Password from './Password'
+import { useEffect, useState } from 'react'
 
-export type ProfileFormModel = {
-    id: number
-    userID: string
-    empName: string
-    epf: number
-    costCenter: string
-    role: string
-    lastUpdateBy?: string
-}
+const Profile = () => {
+    const [User, setUser] = useState()
+    const [isData, setIsData] = useState(false)
+    useEffect(() => {
+        const fetchData = async () => {
+            await new Promise((resolve) => setTimeout(resolve, 100))
 
-type ProfileProps = {
-    data?: ProfileFormModel
-    user?: any
-}
+            const user = JSON.parse(localStorage.getItem('admin') ?? '')
+            const userID = JSON.parse(user.auth).user
 
-const validationSchema = Yup.object().shape({
-    // name: Yup.string()
-    //     .min(3, 'Too Short!')
-    //     .max(20, 'Too Long!')
-    //     .required('User Name Required'),
-    costCenter: Yup.string().required('Cost Center Required'),
-})
-
-const Profile = ({
-    user,
-    data = {
-        id: user.id,
-        userID: user.userID,
-        empName: user.userName,
-        epf: user.epf,
-        costCenter: user.costCenter,
-        role: user.authority[0],
-        lastUpdateBy: user.userID,
-    },
-}: ProfileProps) => {
-    const { updateUser } = useAccount()
-
-    const onFormSubmit = async (
-        values: ProfileFormModel,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
-        console.log('values', values)
-
-        const { id, userID, empName, costCenter, epf, role, lastUpdateBy } =
-            values
-
-        const result = await updateUser({
-            id,
-            userID,
-            empName,
-            costCenter,
-            epf,
-            role,
-            lastUpdateBy,
-            companyCode: 0,
-            password: '',
-            status: false,
-            createdBy: '',
-        })
-
-        console.log(result?.status)
-
-        if (result?.status === 'failed') {
-            toast.push(
-                <Notification
-                    title={'Error ' + result.message}
-                    type="danger"
-                />,
-                {
-                    placement: 'top-center',
-                }
-            )
-        } else {
-            toast.push(
-                <Notification title={'Profile updated'} type="success" />,
-                {
-                    placement: 'top-center',
-                }
-            )
+            setUser(userID)
+            setIsData(true)
         }
-
-        setSubmitting(false)
-    }
+        fetchData()
+    }, [])
 
     return (
-        <Formik
-            enableReinitialize
-            initialValues={data}
-            validationSchema={validationSchema}
-            onSubmit={(values, { setSubmitting }) => {
-                setSubmitting(true)
-                setTimeout(() => {
-                    onFormSubmit(values, setSubmitting)
-                }, 1000)
-            }}
-        >
-            {({ touched, errors, isSubmitting, resetForm }) => {
-                const validatorProps = { touched, errors }
-                return (
-                    <Form>
-                        <FormContainer>
-                            <FormDesription
-                                title="General"
-                                desc="Basic info, like your name and attched location that will displayed in public"
-                            />
-                            <FormRow
-                                name="userID"
-                                label="User ID"
-                                {...validatorProps}
-                            >
-                                <Field
-                                    disabled
-                                    type="text"
-                                    autoComplete="off"
-                                    name="userID"
-                                    placeholder="User ID"
-                                    component={Input}
-                                    prefix={
-                                        <HiOutlineIdentification className="text-xl" />
-                                    }
-                                />
-                            </FormRow>
-                            <FormRow
-                                name="empName"
-                                label="Name"
-                                {...validatorProps}
-                            >
-                                <Field
-                                    type="text"
-                                    autoComplete="off"
-                                    name="empName"
-                                    placeholder="Name"
-                                    component={Input}
-                                    prefix={
-                                        <HiOutlineUserCircle className="text-xl" />
-                                    }
-                                />
-                            </FormRow>
-                            <FormRow name="epf" label="EPF" {...validatorProps}>
-                                <Field
-                                    disabled
-                                    type="text"
-                                    autoComplete="off"
-                                    name="epf"
-                                    placeholder="EPF"
-                                    component={Input}
-                                    prefix={
-                                        <HiOutlineUser className="text-xl" />
-                                    }
-                                />
-                            </FormRow>
-                            <FormRow
-                                name="costCenter"
-                                label="Cost Center / Location"
-                                {...validatorProps}
-                            >
-                                <Field
-                                    type="text"
-                                    autoComplete="off"
-                                    name="costCenter"
-                                    placeholder="Cost Center / Location"
-                                    component={Input}
-                                    prefix={
-                                        <HiOutlineLocationMarker className="text-xl" />
-                                    }
-                                />
-                            </FormRow>
+        <Container>
+            <AdaptableCard>
+                {/* <Profile /> */}
 
-                            <FormRow
-                                name="role"
-                                label="Role"
-                                {...validatorProps}
-                                border={false}
-                            >
-                                <Field
-                                    disabled
-                                    value={user.authority[0]}
-                                    type="text"
-                                    autoComplete="off"
-                                    name="role"
-                                    placeholder="Role"
-                                    component={Input}
-                                    prefix={
-                                        <HiOutlineBriefcase className="text-xl" />
-                                    }
-                                />
-                            </FormRow>
-
-                            <div className="mt-4 ltr:text-right">
-                                <Button
-                                    className="ltr:mr-2 rtl:ml-2"
-                                    type="button"
-                                    onClick={() => resetForm()}
-                                >
-                                    Reset
-                                </Button>
-                                <Button
-                                    variant="solid"
-                                    loading={isSubmitting}
-                                    type="submit"
-                                >
-                                    {isSubmitting ? 'Updating' : 'Update'}
-                                </Button>
-                            </div>
-                        </FormContainer>
-                    </Form>
-                )
-            }}
-        </Formik>
+                <Tabs defaultValue="tab1">
+                    <TabList>
+                        <TabNav value="tab1">Profile</TabNav>
+                        <TabNav value="tab2">Password</TabNav>
+                    </TabList>
+                    <div className="p-4">
+                        <TabContent value="tab1">
+                            {isData ? <ProfileInfo user={User} /> : ''}
+                        </TabContent>
+                        <TabContent value="tab2">
+                            <Password />
+                        </TabContent>
+                    </div>
+                </Tabs>
+            </AdaptableCard>
+        </Container>
     )
 }
-
 export default Profile

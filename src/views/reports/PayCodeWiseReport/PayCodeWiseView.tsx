@@ -21,6 +21,7 @@ import Tooltip from '@/components/ui/Tooltip/Tooltip'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import PayCodeWiseTableView from './PayCodeWiseTableView'
+import Loading from '@/components/shared/Loading'
 
 interface RenderProps<V = any> {
     field: FieldInputProps<V>
@@ -61,6 +62,8 @@ const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
 const PayCodeWiseView = () => {
     const { getPaycodeWiseDataList } = useCommon()
 
+    const [isDataLoad, setisDataLoad] = useState(false)
+
     const [layout, setLayout] = useState<FormLayout>('inline')
 
     const [dataFromChild, setDataFromChild] =
@@ -78,9 +81,11 @@ const PayCodeWiseView = () => {
 
     const onSubmit = async (values: PayrollDataSchema) => {
         const { companyCode, period } = values
-
+        setisDataLoad(true)
         if (values != null) {
             setDataFromChild(values)
+        } else {
+            setisDataLoad(false)
         }
     }
 
@@ -104,7 +109,7 @@ const PayCodeWiseView = () => {
                         header.push(item)
                     })
 
-                    //console.log(header)
+                    setisDataLoad(false)
 
                     setheaderData(header)
                     setPayCodeWiseData(listItems)
@@ -244,12 +249,17 @@ const PayCodeWiseView = () => {
                 </div>
             </Card>
             <div className="mb-4"></div>
-            <Card>
-                <PayCodeWiseTableView
-                    data={PaycodeWiseData}
-                    column={headerData}
-                />
-            </Card>
+
+            <Loading loading={isDataLoad}>
+                {/* {isDataLoad && ( */}
+                <Card>
+                    <PayCodeWiseTableView
+                        data={PaycodeWiseData}
+                        column={headerData}
+                    />
+                </Card>
+                {/* )} */}
+            </Loading>
         </>
     )
 }
