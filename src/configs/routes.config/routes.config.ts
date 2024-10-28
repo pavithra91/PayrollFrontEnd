@@ -1,14 +1,22 @@
 import { lazy } from 'react'
 import authRoute from './authRoute'
 import type { Routes } from '@/@types/routes'
+import appsRoute from './appsRoute'
 
 export const publicRoutes: Routes = [...authRoute]
 
 export const protectedRoutes = [
+    ...appsRoute,
     {
         key: 'home',
         path: '/home',
         component: lazy(() => import('@/views/Home')),
+        authority: [],
+    },
+    {
+        key: 'UserDashboard',
+        path: '/UserDashboard',
+        component: lazy(() => import('@/views/dashboard/User/UserDashboard')),
         authority: [],
     },
     // {
@@ -30,12 +38,12 @@ export const protectedRoutes = [
         authority: ['Admin'],
     },
     /** Example purpose only, please remove */
-    {
-        key: 'ViewSettings',
-        path: '/ViewSettings',
-        component: lazy(() => import('@/views/settings/Settings/ViewSettings')),
-        authority: [],
-    },
+    // {
+    //     key: 'ViewSettings',
+    //     path: '/ViewSettings',
+    //     component: lazy(() => import('@/views/settings/Settings/ViewSettings')),
+    //     authority: [],
+    // },
     {
         key: 'Development',
         path: '/settings/ResetData/Development',
@@ -161,14 +169,14 @@ export const protectedRoutes = [
         ),
         authority: [],
     },
-    {
-        key: 'articleadd',
-        path: '/knowledgebase/Article/articleadd',
-        component: lazy(
-            () => import('@/views/knowledgebase/Article/ArticleAdd')
-        ),
-        authority: [],
-    },
+    // {
+    //     key: 'articleadd',
+    //     path: '/knowledgebase/Article/articleadd',
+    //     component: lazy(
+    //         () => import('@/views/knowledgebase/Article/ArticleAdd')
+    //     ),
+    //     authority: [],
+    // },
     {
         key: 'Profile',
         path: '/users/Account/Profile',
@@ -197,4 +205,13 @@ export const protectedRoutes = [
     //     ),
     //     authority: [],
     // },
+]
+
+export const protectedEmployeeRoutes = [
+    {
+        key: 'UserDashboard',
+        path: '/UserDashboard',
+        component: lazy(() => import('@/views/dashboard/User/UserDashboard')),
+        authority: [],
+    },
 ]

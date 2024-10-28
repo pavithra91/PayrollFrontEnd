@@ -41,12 +41,18 @@ const Dashboard = () => {
                             companyCode={3000}
                             period={getPreviousMonthAndYear()}
                         />
-                        <PayrunStatus companyCode={2000} period={202312} />
+                        <PayrunStatus
+                            companyCode={2000}
+                            period={getPreviousMonthAndYear()}
+                        />
                     </div>
                 </AdaptableCard>
                 <AdaptableCard>
                     <div className="grid grid-cols-1 gap-4">
-                        <OTHours companyCode={3000} period={202406} />
+                        <OTHours
+                            companyCode={3000}
+                            period={getPreviousMonthAndYear()}
+                        />
                     </div>
                 </AdaptableCard>
             </div>

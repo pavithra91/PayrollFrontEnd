@@ -2,6 +2,7 @@ export type AppConfig = {
     baseURL: string
     apiPrefix: string
     authenticatedEntryPath: string
+    authenticatedEntryPathUser: string
     unAuthenticatedEntryPath: string
     tourPath: string
     locale: string
@@ -10,12 +11,12 @@ export type AppConfig = {
 }
 
 const appConfig: AppConfig = {
-    //baseURL: 'https://localhost:44360',
+    baseURL: 'https://localhost:44360',
     //baseURL: 'http://13.234.120.62',
-    baseURL:
-        'http://internal-cpstl-poc-internal-alb-1716520389.ap-southeast-1.elb.amazonaws.com',
+    //baseURL:   'http://internal-cpstl-poc-internal-alb-1716520389.ap-southeast-1.elb.amazonaws.com',
     apiPrefix: '/api',
     authenticatedEntryPath: '/home',
+    authenticatedEntryPathUser: '/UserDashboard',
     unAuthenticatedEntryPath: '/sign-in',
     tourPath: '/',
     locale: 'en',
