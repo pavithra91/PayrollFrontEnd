@@ -55,9 +55,21 @@ function useAuth() {
                 )
                 //    }
                 const redirectUrl = query.get(REDIRECT_URL_KEY)
-                navigate(
-                    redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath
-                )
+
+                if (resp.data._userDetails.role == 'Admin') {
+                    navigate(
+                        redirectUrl
+                            ? redirectUrl
+                            : appConfig.authenticatedEntryPath
+                    )
+                } else {
+                    navigate(
+                        redirectUrl
+                            ? redirectUrl
+                            : appConfig.authenticatedEntryPathUser
+                    )
+                }
+
                 return {
                     status: 'success',
                     message: '',

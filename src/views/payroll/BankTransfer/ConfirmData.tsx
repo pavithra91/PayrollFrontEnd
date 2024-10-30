@@ -61,24 +61,32 @@ const DialogComponent: React.FC<DialogProps> = ({
         payRunResults.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
 
-            // console.log(listItems)
-
             if (listItems.length > 0) {
                 if (listItems[0].payrunStatus == 'Unrec File Created') {
                     const bankTransfer =
                         createBankTransferFile(ConfirmDataTransfer)
 
                     bankTransfer.then((res) => {
-                        const listItems = JSON.parse(res?.data?.data ?? '')
-                        // console.log(listItems)
-                        onSendData(listItems)
-                        setMessage('Successfully Saved')
-                        openNotification(
-                            'success',
-                            'Bank File Transfered Successfully'
-                        )
-                        setSubmitting(false)
-                        onClose()
+                        const result = res?.status
+
+                        if (result == 'success') {
+                            //onSendData(listItems)
+                            setMessage('Successfully Saved')
+                            openNotification(
+                                'success',
+                                'Background Task Created Successfully. Please check Logs for more information'
+                            )
+                            setSubmitting(false)
+                            onClose()
+                        } else {
+                            setMessage('Error')
+                            openNotification(
+                                'danger',
+                                'Error Ouccered! Failed to Create Background Task'
+                            )
+                            setSubmitting(false)
+                            onClose()
+                        }
                     })
                 } else {
                     setMessage('Error')

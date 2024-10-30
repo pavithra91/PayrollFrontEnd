@@ -38,12 +38,12 @@ export const protectedRoutes = [
         authority: ['Admin'],
     },
     /** Example purpose only, please remove */
-    // {
-    //     key: 'ViewSettings',
-    //     path: '/ViewSettings',
-    //     component: lazy(() => import('@/views/settings/Settings/ViewSettings')),
-    //     authority: [],
-    // },
+    {
+        key: 'ViewSettings',
+        path: '/ViewSettings',
+        component: lazy(() => import('@/views/settings/Settings/ViewSettings')),
+        authority: [],
+    },
     {
         key: 'Development',
         path: '/settings/ResetData/Development',
@@ -211,7 +211,7 @@ export const protectedEmployeeRoutes = [
     {
         key: 'UserDashboard',
         path: '/UserDashboard',
-        component: lazy(() => import('@/views/dashboard/User/UserDashboard')),
+        component: lazy(() => import('@/views/hr/dashboard/Dashboard')),
         authority: [],
     },
 ]

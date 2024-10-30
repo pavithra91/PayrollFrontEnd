@@ -93,6 +93,16 @@ function useCommon() {
         }
     }
 
+    const getUserFromLocalStorage = () => {
+        if (localStorage.getItem('admin') == null) {
+            return null
+        } else {
+            const user = JSON.parse(localStorage.getItem('admin') ?? '')
+            const userObj = JSON.parse(user.auth).user
+            return userObj
+        }
+    }
+
     const getPreviousMonthAndYear = () => {
         const now = new Date()
 
@@ -192,6 +202,7 @@ function useCommon() {
         getLumpsumTaxList,
         deleteData,
         getUserIDFromLocalStorage,
+        getUserFromLocalStorage,
         getPreviousMonthAndYear,
         formatDate,
         formatDateFullMonth,

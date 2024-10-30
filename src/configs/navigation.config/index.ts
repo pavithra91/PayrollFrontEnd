@@ -15,29 +15,19 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.home',
         icon: 'home',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: [],
+        authority: ['Admin'],
         subMenu: [],
     },
     {
         key: 'UserDashboard',
         path: '/UserDashboard',
-        title: 'UserDashboard',
+        title: 'Home',
         translateKey: 'nav.UserDashboard',
-        icon: 'UserDashboard',
+        icon: 'home',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: [],
+        authority: ['User'],
         subMenu: [],
     },
-    // {
-    //     key: 'dashboard',
-    //     path: '/dashboard',
-    //     title: 'Dashboard',
-    //     translateKey: 'nav.dashboard',
-    //     icon: 'home',
-    //     type: NAV_ITEM_TYPE_ITEM,
-    //     authority: [],
-    //     subMenu: [],
-    // },
     // {
     //     key: 'empSplTax',
     //     path: '/empSplTax',
@@ -56,7 +46,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.collapseMenu.settings',
         icon: 'settings',
         type: NAV_ITEM_TYPE_COLLAPSE,
-        authority: [],
+        authority: ['Admin'],
         subMenu: [
             {
                 key: 'collapseMenu.ViewSettings',
@@ -88,7 +78,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.settings',
         icon: 'settings',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: [],
+        authority: ['Admin'],
         subMenu: [
             {
                 key: 'collapseMenu.ViewSettings',
@@ -120,7 +110,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.paycodes',
         icon: 'singleMenu',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: [],
+        authority: ['Admin'],
         subMenu: [],
     },
     {
@@ -130,7 +120,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.collapseMenu.calculations',
         icon: 'calculator',
         type: NAV_ITEM_TYPE_COLLAPSE,
-        authority: [],
+        authority: ['Admin'],
         subMenu: [
             {
                 key: 'collapseMenu.calculations',
@@ -161,7 +151,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.collapseMenu.payrollProcess',
         icon: 'process',
         type: NAV_ITEM_TYPE_COLLAPSE,
-        authority: [],
+        authority: ['Admin'],
         subMenu: [
             {
                 key: 'collapseMenu.DataVerification',
@@ -212,7 +202,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.collapseMenu.paysheetPrint',
         icon: 'print',
         type: NAV_ITEM_TYPE_COLLAPSE,
-        authority: [],
+        authority: ['Admin'],
         subMenu: [
             {
                 key: 'collapseMenu.paysheet',
@@ -243,7 +233,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.collapseMenu.users',
         icon: 'users',
         type: NAV_ITEM_TYPE_COLLAPSE,
-        authority: [],
+        authority: ['Admin'],
         subMenu: [
             {
                 key: 'collapseMenu.ViewUsers',
@@ -264,7 +254,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.collapseMenu.reposts',
         icon: 'reports',
         type: NAV_ITEM_TYPE_COLLAPSE,
-        authority: [],
+        authority: ['Admin'],
         subMenu: [
             {
                 key: 'collapseMenu.payrollSummary',

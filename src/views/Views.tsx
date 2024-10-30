@@ -1,6 +1,10 @@
 import { Suspense } from 'react'
 import Loading from '@/components/shared/Loading'
-import { protectedRoutes, publicRoutes } from '@/configs/routes.config'
+import {
+    protectedRoutes,
+    publicRoutes,
+    protectedEmployeeRoutes,
+} from '@/configs/routes.config'
 import appConfig from '@/configs/app.config'
 import PageContainer from '@/components/template/PageContainer'
 import { Routes, Route, Navigate } from 'react-router-dom'
@@ -18,19 +22,38 @@ interface ViewsProps {
 
 type AllRoutesProps = ViewsProps
 
-const { authenticatedEntryPath } = appConfig
+const { authenticatedEntryPath, authenticatedEntryPathUser } = appConfig
 
 const AllRoutes = (props: AllRoutesProps) => {
     const userAuthority = useAppSelector((state) => state.auth.user.authority)
+    var PathArray = protectedRoutes
+
+    const getAuthenticatedEntryPath = () => {
+        switch (userAuthority[0]) {
+            case 'Admin':
+                PathArray = protectedRoutes
+                return authenticatedEntryPath
+            case 'User':
+                PathArray = protectedEmployeeRoutes
+                return authenticatedEntryPathUser
+            default:
+                return authenticatedEntryPath
+        }
+    }
+
+    const authenticatedEntryPathToUse = getAuthenticatedEntryPath()
+    console.log(authenticatedEntryPathToUse)
 
     return (
         <Routes>
             <Route path="/" element={<ProtectedRoute />}>
                 <Route
                     path="/"
-                    element={<Navigate replace to={authenticatedEntryPath} />}
+                    element={
+                        <Navigate replace to={authenticatedEntryPathToUse} />
+                    }
                 />
-                {protectedRoutes.map((route, index) => (
+                {PathArray.map((route, index) => (
                     <Route
                         key={route.key + index}
                         path={route.path}
