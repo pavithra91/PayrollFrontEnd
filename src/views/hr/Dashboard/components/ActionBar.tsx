@@ -1,10 +1,19 @@
 import Button from '@/components/ui/Button'
+import { useAppDispatch } from '@/store/hook'
 import useCommon from '@/utils/hooks/useCommon'
 import { HiOutlinePlusCircle } from 'react-icons/hi'
+import { toggleNewLeaveDialog } from '../store/leaveSlice'
+
+const ActionBar = () => {
 
 const { getUserFromLocalStorage } = useCommon()
 
-const ActionBar = () => {
+const dispatch = useAppDispatch()
+
+    const onAddNewLeave = () => {
+        dispatch(toggleNewLeaveDialog(true))
+    }
+
     return (
         <>
             <div className="lg:flex items-center justify-between mb-4">
@@ -16,7 +25,7 @@ const ActionBar = () => {
                         size="sm"
                         variant="twoTone"
                         icon={<HiOutlinePlusCircle />}
-                        // onClick={onAddNewProject}
+                        onClick={onAddNewLeave}
                     >
                         Leave Request
                     </Button>
