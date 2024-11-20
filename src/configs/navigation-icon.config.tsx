@@ -19,6 +19,10 @@ import {
     FcConferenceCall,
     FcPrint,
     FcWorkflow,
+    FcMoneyTransfer,
+    FcCalendar,
+    FcApproval,
+    FcTreeStructure,
 } from 'react-icons/fc'
 
 import { FaRegFilePdf, FaFileCsv, FaRegFileExcel } from 'react-icons/fa'
@@ -33,6 +37,10 @@ const navigationIcon: NavigationIcons = {
     helpcenter: <FcWikipedia />,
     print: <FcPrint />,
     process: <FcWorkflow />,
+    money: <FcMoneyTransfer />,
+    calendar: <FcCalendar />,
+    approval: <FcApproval />,
+    treeStructure: <FcTreeStructure />,
     cash: <HiOutlineCash />,
     calculator: <HiOutlineCalculator />,
     openbook: <HiOutlineBookOpen />,

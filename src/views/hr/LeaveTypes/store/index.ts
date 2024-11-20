@@ -1,9 +1,9 @@
 import { combineReducers } from '@reduxjs/toolkit'
+import reducers, { SLICE_NAME, LeaveTypeState } from './leaveTypeSlice'
 import { useSelector } from 'react-redux'
 
 import type { TypedUseSelectorHook } from 'react-redux'
 import type { RootState } from '@/store'
-import reducers, { SLICE_NAME, LeaveTypeState } from './leaveTypeSlice'
 
 const reducer = combineReducers({
     data: reducers,
@@ -12,7 +12,6 @@ const reducer = combineReducers({
 export const useAppSelector: TypedUseSelectorHook<
     RootState & {
         [SLICE_NAME]: {
-            newLeaveTypeDialog: boolean
             data: LeaveTypeState
         }
     }

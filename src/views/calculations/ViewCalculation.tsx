@@ -108,7 +108,6 @@ const ViewCalculation = (props: FormProps) => {
     )
 
     const handleShowEditModal = (id: any) => {
-        console.log(id)
         openEditDialog(id)
     }
 

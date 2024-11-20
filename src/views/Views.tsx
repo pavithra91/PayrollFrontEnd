@@ -33,6 +33,9 @@ const AllRoutes = (props: AllRoutesProps) => {
             case 'Admin':
                 PathArray = protectedRoutes
                 return authenticatedEntryPath
+            case 'Supervisor':
+                PathArray = protectedEmployeeRoutes
+                return authenticatedEntryPathUser
             case 'User':
                 PathArray = protectedEmployeeRoutes
                 return authenticatedEntryPathUser

@@ -23,6 +23,7 @@ import type { RoleSelectOption } from '@/@types/common'
 import Checkbox from '@/components/ui/Checkbox'
 import { AccountSchema } from '@/@types/Account'
 import useAccount from '@/utils/hooks/useAccount'
+import useCommon from '@/utils/hooks/useCommon'
 
 interface DialogProps {
     isOpen: boolean // Type for the 'isOpen' prop
@@ -53,30 +54,13 @@ const companyOptions: SelectOption[] = [
 const roleOptions: RoleSelectOption[] = [
     { value: 'Admin', label: 'Admin' },
     { value: 'User', label: 'User' },
+    { value: 'Supervisor', label: 'Supervisor' },
 ]
 
 const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     const [field, meta, helpers] = useField(name)
 
     return render({ field, meta, helpers })
-}
-
-const getUserIDFromLocalStorage = () => {
-    const user = JSON.parse(localStorage.getItem('admin') ?? '')
-    const userID = JSON.parse(user.auth).user.userID
-    return userID
-}
-
-const initValues: AccountSchema = {
-    companyCode: companyOptions[0].value, // This will be the default one
-    costCenter: '',
-    epf: 0,
-    empName: '',
-    role: roleOptions[0].value,
-    userID: '',
-    password: '',
-    status: false,
-    createdBy: getUserIDFromLocalStorage(),
 }
 
 const validationSchema = Yup.object().shape({
@@ -95,6 +79,20 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
     const { disableSubmit = false, className } = props
 
     const { addUser } = useAccount()
+
+    const { getUserFromLocalStorage } = useCommon()
+
+    const initValues: AccountSchema = {
+        companyCode: companyOptions[0].value, // This will be the default one
+        costCenter: '',
+        epf: 0,
+        empName: '',
+        role: roleOptions[0].value,
+        userID: '',
+        password: '',
+        status: false,
+        createdBy: getUserFromLocalStorage().userID,
+    }
 
     const onSubmit = async (
         values: AccountSchema,

@@ -67,3 +67,10 @@ export async function apiGetPaycodeWiseDataList(values: PayrollDataSchema) {
         method: 'get',
     })
 }
+
+export async function apiGetNotifications<T>(params: number) {
+    return ApiService.fetchData<T>({
+        url: '/Leave/get-notifications/' + params,
+        method: 'get',
+    })
+}

@@ -29,3 +29,10 @@ export async function apiUpdateUser(data: AccountData) {
         data,
     })
 }
+
+export async function apiGetUsersbyCostCenter(data: string) {
+    return ApiService.fetchData<Response>({
+        url: '/User/get-users-byCostCenter?costCenter=' + data,
+        method: 'get',
+    })
+}

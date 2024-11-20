@@ -54,7 +54,6 @@ const DialogComponent: React.FC<DialogProps> = ({
     const ProcessData = async () => {
         setSubmitting(true)
 
-        console.log(ConfirmDataTransfer)
         const result = await processPayroll(ConfirmDataTransfer)
 
         if (result?.status === 'failed') {

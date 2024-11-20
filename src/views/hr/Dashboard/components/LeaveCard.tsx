@@ -2,11 +2,13 @@ import Card from '@/components/ui/Card'
 import Progress from '@/components/ui/Progress'
 
 export type Leave = {
-    precent: number
-    taken: number
-    remaining: number
-    total: number
-    leaveType: string
+    epf?: string
+    leaveTypeName?: string
+    year?: number
+    allocatedLeave?: number
+    usedLeave?: number
+    remainingLeave?: number
+    carrForwardLeave?: number
 }
 
 type LeaveRequestProps = {
@@ -23,6 +25,13 @@ const ProgressInfo = ({ remaining }: { remaining?: number }) => {
     )
 }
 
+const calculatePercentage = (data: Leave) => {
+    const allocatedLeave = data.allocatedLeave ?? 1 // Avoid division by 0
+    const usedLeave = data.usedLeave ?? 0
+
+    return (100 / allocatedLeave) * usedLeave
+}
+
 const LeaveCard = ({ data = {}, className, colour }: LeaveRequestProps) => {
     return (
         <Card className={className}>
@@ -30,15 +39,17 @@ const LeaveCard = ({ data = {}, className, colour }: LeaveRequestProps) => {
                 <Progress
                     color={colour}
                     variant="circle"
-                    percent={data.precent}
+                    percent={calculatePercentage(data)}
                     width={150}
                     className="flex justify-center"
                     strokeWidth={5}
-                    customInfo={<ProgressInfo remaining={data.remaining} />}
+                    customInfo={
+                        <ProgressInfo remaining={data.remainingLeave} />
+                    }
                 />
             </div>
             <div className="text-center mt-6">
-                <p className="font-semibold">{data.leaveType} </p>
+                <p className="font-semibold">{data.leaveTypeName} </p>
                 <h4 className="font-bold">Remaining</h4>
             </div>
         </Card>

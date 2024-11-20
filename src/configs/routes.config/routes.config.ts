@@ -17,7 +17,7 @@ export const protectedRoutes = [
         key: 'UserDashboard',
         path: '/UserDashboard',
         component: lazy(() => import('@/views/dashboard/User/UserDashboard')),
-        authority: [],
+        authority: ['User', 'Supervisor'],
     },
     // {
     //     key: 'dashboard',
@@ -212,6 +212,46 @@ export const protectedEmployeeRoutes = [
         key: 'UserDashboard',
         path: '/UserDashboard',
         component: lazy(() => import('@/views/hr/dashboard/Dashboard')),
-        authority: [],
+        authority: ['User', 'Supervisor'],
+    },
+    {
+        key: 'LeaveTypes',
+        path: '/LeaveTypes',
+        component: lazy(() => import('@/views/hr/LeaveTypes/LeaveTypes')),
+        authority: ['Supervisor'],
+    },
+    {
+        key: 'AssignApprovalLevels',
+        path: '/AssignApprovalLevels',
+        component: lazy(
+            () => import('@/views/hr/AssignApprovalLevels/AssignApprovalLevels')
+        ),
+        authority: ['Supervisor'],
+    },
+    {
+        key: 'RequestLeave',
+        path: '/RequestLeave',
+        component: lazy(() => import('@/views/hr/RequestLeave/RequestLeave')),
+        authority: ['User', 'Supervisor'],
+    },
+    {
+        key: 'LeaveHistory',
+        path: '/LeaveHistory',
+        component: lazy(() => import('@/views/hr/LeaveHistory/LeaveHistory')),
+        authority: ['User', 'Supervisor'],
+    },
+    {
+        key: 'AdvanceRequest',
+        path: '/AdvanceRequest',
+        component: lazy(
+            () => import('@/views/hr/AdvanceRequest/AdvanceRequest')
+        ),
+        authority: ['User', 'Supervisor'],
+    },
+    {
+        key: 'LeaveApprove',
+        path: '/LeaveApprove',
+        component: lazy(() => import('@/views/hr/LeaveApprove/LeaveApprove')),
+        authority: ['Supervisor'],
     },
 ]

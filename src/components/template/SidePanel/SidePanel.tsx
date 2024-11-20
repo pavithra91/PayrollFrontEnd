@@ -6,6 +6,7 @@ import withHeaderItem from '@/utils/hoc/withHeaderItem'
 import { setPanelExpand, useAppSelector, useAppDispatch } from '@/store'
 import type { CommonProps } from '@/@types/common'
 import AuthorityCheck from '@/components/shared/AuthorityCheck'
+import Notification from '@/components/ui/Notification'
 
 type SidePanelProps = SidePanelContentProps & CommonProps
 
@@ -58,6 +59,8 @@ const _SidePanel = (props: SidePanelProps) => {
                     <HiOutlineDocumentReport />
                 </div>
             </AuthorityCheck>
+
+            {/* <Notification className="" closable={true}></Notification> */}
 
             <Drawer
                 title="Side Panel"

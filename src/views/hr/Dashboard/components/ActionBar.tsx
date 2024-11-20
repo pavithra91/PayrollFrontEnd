@@ -1,18 +1,20 @@
 import Button from '@/components/ui/Button'
 import { useAppDispatch } from '@/store/hook'
 import useCommon from '@/utils/hooks/useCommon'
-import { HiOutlinePlusCircle } from 'react-icons/hi'
-import { toggleNewLeaveDialog } from '../store/leaveSlice'
+import { HiOutlineCash, HiOutlinePlusCircle } from 'react-icons/hi'
+import { useNavigate } from 'react-router-dom'
+import { toggleNewAdvanceDialog } from '../store/dashboardSlice'
 
 const ActionBar = () => {
+    const { getUserFromLocalStorage } = useCommon()
 
-const { getUserFromLocalStorage } = useCommon()
-
-const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch()
 
     const onAddNewLeave = () => {
-        dispatch(toggleNewLeaveDialog(true))
+        dispatch(toggleNewAdvanceDialog(true))
     }
+
+    const navigate = useNavigate()
 
     return (
         <>
@@ -24,8 +26,18 @@ const dispatch = useAppDispatch()
                     <Button
                         size="sm"
                         variant="twoTone"
-                        icon={<HiOutlinePlusCircle />}
+                        icon={<HiOutlineCash />}
+                        //onClick={() => navigate('/RequestLeave')}
                         onClick={onAddNewLeave}
+                    >
+                        Advance Payment Request
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="twoTone"
+                        icon={<HiOutlinePlusCircle />}
+                        onClick={() => navigate('/RequestLeave')}
+                        // onClick={onAddNewLeave}
                     >
                         Leave Request
                     </Button>

@@ -15,13 +15,18 @@ import {
     HiOutlineBan,
     HiOutlineMailOpen,
 } from 'react-icons/hi'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import isLastChild from '@/utils/isLastChild'
 import useTwColorByName from '@/utils/hooks/useTwColorByName'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useAppSelector } from '@/store'
 import useResponsive from '@/utils/hooks/useResponsive'
 import acronym from '@/utils/acronym'
+import useCommon from '@/utils/hooks/useCommon'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+dayjs.extend(relativeTime)
 
 type NotificationList = {
     id: string
@@ -34,6 +39,10 @@ type NotificationList = {
     locationLabel: string
     status: string
     readed: boolean
+}
+
+type NotificationResponse = {
+    items: NotificationList[]
 }
 
 const notificationHeight = 'h-72'
@@ -114,6 +123,7 @@ const NotificationToggle = ({
 }
 
 const _Notification = ({ className }: { className?: string }) => {
+    const { getUserFromLocalStorage, getNotifications } = useCommon()
     const [notificationList, setNotificationList] = useState<
         NotificationList[]
     >([])
@@ -125,14 +135,31 @@ const _Notification = ({ className }: { className?: string }) => {
 
     const { larger } = useResponsive()
 
+    const navigate = useNavigate()
+
     const direction = useAppSelector((state) => state.theme.direction)
 
     const getNotificationCount = async () => {
         // Fetch Notification count
+        //setNotificationList(notificationListData)
     }
 
     useEffect(() => {
-        getNotificationCount()
+        const result = getNotifications(getUserFromLocalStorage().epf)
+
+        result.then((res) => {
+            const notifications: NotificationList[] =
+                (res?.data as NotificationResponse)?.items || []
+
+            console.log(notifications)
+            setNotificationList(notifications)
+            if (notifications.length > 0) {
+                setUnreadNotification(true)
+            } else {
+                setUnreadNotification(false)
+            }
+        })
+        //getNotificationCount()
     }, [])
 
     const onNotificationOpen = async () => {
@@ -152,9 +179,11 @@ const _Notification = ({ className }: { className?: string }) => {
 
     const onMarkAsRead = useCallback(
         (id: string) => {
+            var selected
             const list = notificationList.map((item) => {
                 if (item.id === id) {
                     item.readed = true
+                    selected = item
                 }
                 return item
             })
@@ -164,6 +193,7 @@ const _Notification = ({ className }: { className?: string }) => {
             if (!hasUnread) {
                 setUnreadNotification(false)
             }
+            navigate('/LeaveApprove', { state: { notification: selected } })
         },
         [notificationList]
     )
@@ -217,7 +247,9 @@ const _Notification = ({ className }: { className?: string }) => {
                                         )}
                                         <span>{item.description}</span>
                                     </div>
-                                    <span className="text-xs">{item.date}</span>
+                                    <span className="text-xs">
+                                        {dayjs(item.date).fromNow()}
+                                    </span>
                                 </div>
                                 <Badge
                                     className="absolute top-4 ltr:right-4 rtl:left-4 mt-1.5"
@@ -262,7 +294,7 @@ const _Notification = ({ className }: { className?: string }) => {
             <Dropdown.Item variant="header">
                 <div className="flex justify-center border-t border-gray-200 dark:border-gray-600 px-4 py-2">
                     <Link
-                        to="/app/account/activity-log"
+                        to="/LeaveHistory"
                         className="font-semibold cursor-pointer p-2 px-3 text-gray-600 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
                     >
                         View All Activity

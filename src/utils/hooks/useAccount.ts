@@ -3,6 +3,7 @@ import {
     apiGetUsers,
     apiAddUser,
     apiUpdateUser,
+    apiGetUsersbyCostCenter,
 } from '@/services/AccountService'
 
 type Status = 'success' | 'failed'
@@ -61,10 +62,29 @@ function useAccount() {
             }
         }
     }
+
+    const getUsersbyCostCenter = async (values: string) => {
+        try {
+            const resp = await apiGetUsersbyCostCenter(values)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
     return {
         getUsers,
         addUser,
         updateUser,
+        getUsersbyCostCenter,
     }
 }
 

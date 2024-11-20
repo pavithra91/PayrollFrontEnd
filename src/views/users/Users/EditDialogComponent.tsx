@@ -61,6 +61,7 @@ const getUserIDFromLocalStorage = () => {
 const roleOptions: RoleSelectOption[] = [
     { value: 'Admin', label: 'Admin' },
     { value: 'User', label: 'User' },
+    { value: 'Supervisor', label: 'Supervisor' },
 ]
 
 const EditDialog: React.FC<DialogProps> = ({
