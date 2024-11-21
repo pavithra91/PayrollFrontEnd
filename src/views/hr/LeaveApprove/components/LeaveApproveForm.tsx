@@ -156,15 +156,18 @@ const LeaveApproveForm = (leaveData: any) => {
             leaveData.leaveData.leaveRequest.actingDelegate
         ) {
             setActingDelegate(true)
+
+            leaveData.leaveData.leaveRequest.actingDelegateApprovalStatus != 'Pending' 
+            ? setAlreadyClosed(true) 
+            : setAlreadyClosed(false)
         } else {
             setActingDelegate(false)
         }
 
-        if (leaveData.leaveData.leaveRequest.requestStatus == 'Approved') {
-            setAlreadyClosed(true)
-        } else {
-            setAlreadyClosed(false)
-        }
+        leaveData.leaveData.leaveRequest.requestStatus == 'Approved' 
+        ? setAlreadyClosed(true) 
+        : setAlreadyClosed(false)
+        
     }, [isActingDelegate])
 
     const onSubmit = async (

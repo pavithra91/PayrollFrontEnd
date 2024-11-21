@@ -151,10 +151,14 @@ const _Notification = ({ className }: { className?: string }) => {
             const notifications: NotificationList[] =
                 (res?.data as NotificationResponse)?.items || []
 
-            console.log(notifications)
             setNotificationList(notifications)
             if (notifications.length > 0) {
-                setUnreadNotification(true)
+
+                const hasUnreadNotification = notifications.some(item => !item.readed);
+                console.log(notifications)
+                if (hasUnreadNotification) {
+                    setUnreadNotification(true);
+                }
             } else {
                 setUnreadNotification(false)
             }

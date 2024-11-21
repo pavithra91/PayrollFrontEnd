@@ -1,5 +1,7 @@
 import Button from '@/components/ui/Button'
-import LeaveHistory from '../LeaveHistory'
+import toast from '@/components/ui/toast'
+import Notification from '@/components/ui/Notification'
+import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import {
     HiOutlineChatAlt,
     HiOutlineClipboardList,
@@ -7,9 +9,13 @@ import {
     HiOutlineUserCircle,
     HiX,
 } from 'react-icons/hi'
-import { ElementType, PropsWithChildren, ReactNode } from 'react'
+import { ElementType, PropsWithChildren, ReactNode, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
-import Badge from '@/components/ui/Badge'
+import { FormContainer, FormItem } from '@/components/ui/Form'
+import { Field, Form, Formik, FormikProps } from 'formik'
+import useCommon from '@/utils/hooks/useCommon'
+import { CancelModel } from '@/@types/Leave'
+import useLeave from '@/utils/hooks/useLeave'
 
 type TicketSectionProps = PropsWithChildren<{
     title?: string
@@ -88,9 +94,78 @@ const RequestContent = ({
         onTicketClose?.()
     }
 
-    console.log(data)
+    const { getUserFromLocalStorage } = useCommon()
+    const { cancelLeave } = useLeave()
+    const [message, setMessage] = useTimeOutMessage()
+    const [isAlreadyClosed, setAlreadyClosed] = useState(false)
+
+    useEffect(() => {
+    data.requestStatus == 'Pending' 
+    ? setAlreadyClosed(false)
+    : setAlreadyClosed(true)
+}, [isAlreadyClosed])
+
+
+const onSubmit = async (
+    formValue: CancelModel,
+    setSubmitting: (isSubmitting: boolean) => void
+) => {
+    setSubmitting(true)
+
+    const { leaveRequestId } = formValue
+
+    const result = await cancelLeave({
+        leaveRequestId,
+        cancelBy: getUserFromLocalStorage().userID,
+    })
+
+    console.log(result?.status)
+
+    if (result?.status === 'failed') {
+        setMessage(result.message)
+        openNotification('danger', result.message)
+    } else {
+        setMessage('Successfully Saved')
+        openNotification('success', 'Leave Request has been Cancelled')
+    }
+
+    setSubmitting(false)
+}
+
+const openNotification = (
+    type: 'success' | 'warning' | 'danger' | 'info',
+    message: string
+) => {
+    toast.push(
+        <Notification
+            title={type.charAt(0).toUpperCase() + type.slice(1)}
+            type={type}
+        >
+            {message}
+        </Notification>
+    )
+}
     return (
         <>
+        <Formik
+                        initialValues={{       
+                            leaveRequestId: 0,                  
+                            cancelBy: getUserFromLocalStorage().userID,
+                        }}
+                        //validationSchema={validationSchema}
+                        onSubmit={(values, { setSubmitting }) => {
+                            values.leaveRequestId = data.requestId
+                            onSubmit(values, setSubmitting)
+                            console.log(values)
+                        }}
+                    >
+                        {({
+                            setFieldValue,
+                            values,
+                            isSubmitting,
+                        }) => ( 
+                            <Form>
+                                <FormContainer>
             <div className="max-h-[700px] overflow-y-auto">
                 <TicketSection
                     title={data.leaveTypeName + ' Request'}
@@ -233,6 +308,9 @@ const RequestContent = ({
 
             <div className="text-right mt-4">
                 <Button
+                disabled={
+                    isAlreadyClosed
+                }
                     className="mr-2 rtl:ml-2"
                     size="sm"
                     variant="plain"
@@ -242,16 +320,28 @@ const RequestContent = ({
                 </Button>
 
                 <Button
+                disabled={
+                    isAlreadyClosed
+                }
                     className="text-red-600"
                     variant="plain"
                     size="sm"
                     icon={<HiOutlineTrash />}
-                    type="button"
-                    // onClick={onConfirmDialogOpen}
+                    type="submit"
+                    // onClick={() => {
+                    //     setFieldValue(
+                    //         'status',
+                    //         'Rejected'
+                    //     )
+                    // }}
                 >
                     Delete
                 </Button>
             </div>
+            </FormContainer>
+                            </Form>
+                        )}
+                    </Formik>
         </>
     )
 }

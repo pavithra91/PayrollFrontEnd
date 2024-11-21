@@ -56,3 +56,8 @@ export type ApprovalModel = {
     comment?: string
     approver?: string
 }
+
+export type CancelModel = {
+    leaveRequestId: number
+    cancelBy?: string
+}

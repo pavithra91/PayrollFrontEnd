@@ -2,6 +2,7 @@ import {
     AdvancePayment,
     ApprovalModel,
     AssignSupervisorDate,
+    CancelModel,
     LeaveRequest,
     LeaveTypeDate,
 } from '@/@types/Leave'
@@ -42,9 +43,22 @@ export async function apiLeaveRequest<T, U extends Record<string, unknown>>(
     })
 }
 
-export async function apiGetLeaveData<T>(params: number) {
+export async function apiGetLeaveData<T>(params: number, notification? : number) {
+    var url = ''
+
+    
+    if(notification != null)
+    {
+        url = '/Leave/get-leaveRequest/' + params + '?notification=' + notification
+    }
+    else
+    {
+        url = '/Leave/get-leaveRequest/' + params
+    }
+
+    console.log(url)
     return ApiService.fetchData<T>({
-        url: '/Leave/get-leaveRequest/' + params,
+        url: url,
         method: 'get',
     })
 }
@@ -85,6 +99,15 @@ export async function apiApproveOrRejectLeave(data: ApprovalModel) {
     console.log(data)
     return ApiService.fetchData<Response>({
         url: '/Leave/approve-leave',
+        method: 'post',
+        data,
+    })
+}
+
+export async function apiCancelLeave(data: CancelModel) {
+    console.log(data)
+    return ApiService.fetchData<Response>({
+        url: '/Leave/cancel-leave',
         method: 'post',
         data,
     })

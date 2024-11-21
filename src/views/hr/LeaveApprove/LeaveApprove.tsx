@@ -46,9 +46,9 @@ const LeaveApprove = () => {
         if (notification) {
             openDialog()
 
-            console.log(notification)
+           // console.log(notification.id)
 
-            const result = getLeaveData(notification.reference)
+            const result = getLeaveData(notification.reference, notification.id)
             result.then((res) => {
                 const leaveRequest: LeaveRequestResponse =
                     (res?.data as LeaveRequestResponse) || []

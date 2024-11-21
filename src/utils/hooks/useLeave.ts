@@ -2,6 +2,7 @@ import {
     AdvancePayment,
     ApprovalModel,
     AssignSupervisorDate,
+    CancelModel,
     LeaveRequest,
     LeaveTypeDate,
 } from '@/@types/Leave'
@@ -11,6 +12,7 @@ import {
     apiGetLeaveTypeList,
     apiRequestLeave,
     apiApproveOrRejectLeave,
+    apiCancelLeave,
     apiGetLeaveData,
     apiUpdateLeaveType,
     apiGetLeaveDashboardData,
@@ -126,9 +128,28 @@ function useLeave() {
         }
     }
 
-    const getLeaveData = async (values: number) => {
+    const cancelLeave = async (values: CancelModel) => {
         try {
-            const resp = await apiGetLeaveData(values)
+            const resp = await apiCancelLeave(values)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
+
+    const getLeaveData = async (values: number, notification?: number) => {
+        try {
+            console.log(notification)
+            const resp = await apiGetLeaveData(values, notification)
             //console.log(resp)
             if (resp.data) {
                 return {
@@ -189,6 +210,7 @@ function useLeave() {
         addassignSupervisor,
         requestLeave,
         approveOrRejectLeave,
+        cancelLeave,
         getLeaveData,
         getLeaveDashboardData,
         addAdvancePayment,

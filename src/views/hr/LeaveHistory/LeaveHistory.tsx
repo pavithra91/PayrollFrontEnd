@@ -93,7 +93,7 @@ const LeaveHistory = () => {
                 (res?.data as LeaveHistoryResponse)?.leaveHistory || []
             setLeaveHistory(leaveHistoryData)
 
-            console.log(leaveHistoryData)
+           // console.log(leaveHistoryData)
         })
     }, [])
 
