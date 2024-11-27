@@ -35,7 +35,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.LeaveTypes',
         icon: 'calendar',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: ['User'],
+        authority: ['Supervisor'],
         subMenu: [],
     },
     {

@@ -64,10 +64,11 @@ const RequestLeave = () => {
     const [message, setMessage] = useTimeOutMessage()
     const { getUsersbyCostCenter } = useAccount()
     const { getUserFromLocalStorage } = useCommon()
-    const { getLeaveTypeList, requestLeave } = useLeave()
+    const { getAvailableLeaveTypeList, requestLeave } = useLeave()
     const navigate = useNavigate()
 
     const [isHalfDay, setHalfDay] = useState(false)
+    const [isPastDaysAllowd, setPastDaysAllowd] = useState(false)
     const [DelegateData, setDelegateData] = useState<ManagerOption[]>([])
     const [LeaveTypeData, setLeaveTypeData] = useState<ManagerOption[]>([])
     const [isleavestartDate, setleavestartDate] = useState<string | null>(null)
@@ -75,6 +76,9 @@ const RequestLeave = () => {
     const handleDateChange = (date: Date | null) => {
         setleavestartDate(date ? dayjs(date).format() : null)
     }
+
+    const epf = getUserFromLocalStorage().epf
+    const costCenter = getUserFromLocalStorage().costCenter
 
     const dateGap = 30
 
@@ -86,24 +90,21 @@ const RequestLeave = () => {
     const maxDate = dayjs(isleavestartDate).toDate()
 
     useEffect(() => {
-        const result = getUsersbyCostCenter(
-            getUserFromLocalStorage().costCenter
-        )
+        const result = getUsersbyCostCenter(costCenter)
         result.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
 
             const formattedData = listItems
-                .filter(
-                    (item: any) => item.epf !== getUserFromLocalStorage().epf
-                )
+                .filter((item: any) => item.epf !== epf)
                 .map((item: any) => ({
                     value: item.epf,
                     label: item.empName,
                 }))
             setDelegateData(formattedData)
+            setPastDaysAllowd(true)
         })
 
-        const leaveTypes = getLeaveTypeList()
+        const leaveTypes = getAvailableLeaveTypeList(epf)
         leaveTypes.then((res) => {
             const listItems = res?.data?.items ?? []
             const formattedData = listItems.map((item: any) => ({
@@ -246,12 +247,16 @@ const RequestLeave = () => {
                                                             option.value ===
                                                             values.leaveType
                                                     )}
-                                                    onChange={(option) =>
+                                                    onChange={(option) => {
                                                         form.setFieldValue(
                                                             field.name,
                                                             option?.value
                                                         )
-                                                    }
+                                                        form.setFieldValue(
+                                                            'startDate',
+                                                            ''
+                                                        )
+                                                    }}
                                                 />
                                             )}
                                         </Field>
@@ -368,6 +373,12 @@ const RequestLeave = () => {
                                                     }: FieldProps) => (
                                                         <DatePicker
                                                             field={field}
+                                                            minDate={
+                                                                values.leaveType ==
+                                                                '6'
+                                                                    ? new Date()
+                                                                    : undefined
+                                                            }
                                                             form={form}
                                                             value={field.value}
                                                             onChange={(

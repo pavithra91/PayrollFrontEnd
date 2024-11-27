@@ -252,6 +252,6 @@ export const protectedEmployeeRoutes = [
         key: 'LeaveApprove',
         path: '/LeaveApprove',
         component: lazy(() => import('@/views/hr/LeaveApprove/LeaveApprove')),
-        authority: ['Supervisor'],
+        authority: ['User', 'Supervisor'],
     },
 ]

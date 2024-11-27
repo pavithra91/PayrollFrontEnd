@@ -33,6 +33,13 @@ export async function apiGetLeaveTypeList<T>() {
     })
 }
 
+export async function apiGetAvailableLeaveTypeList<T>(epf: number) {
+    return ApiService.fetchData<T>({
+        url: '/Leave/get-available-leaveTypes/' + epf,
+        method: 'get',
+    })
+}
+
 export async function apiLeaveRequest<T, U extends Record<string, unknown>>(
     data: U
 ) {
@@ -43,16 +50,19 @@ export async function apiLeaveRequest<T, U extends Record<string, unknown>>(
     })
 }
 
-export async function apiGetLeaveData<T>(params: number, notification? : number) {
+export async function apiGetLeaveData<T>(
+    params: number,
+    notification?: number
+) {
     var url = ''
 
-    
-    if(notification != null)
-    {
-        url = '/Leave/get-leaveRequest/' + params + '?notification=' + notification
-    }
-    else
-    {
+    if (notification != null) {
+        url =
+            '/Leave/get-leaveRequest/' +
+            params +
+            '?notification=' +
+            notification
+    } else {
         url = '/Leave/get-leaveRequest/' + params
     }
 

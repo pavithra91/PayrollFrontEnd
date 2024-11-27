@@ -9,7 +9,13 @@ import {
     HiOutlineUserCircle,
     HiX,
 } from 'react-icons/hi'
-import { ElementType, PropsWithChildren, ReactNode, useEffect, useState } from 'react'
+import {
+    ElementType,
+    PropsWithChildren,
+    ReactNode,
+    useEffect,
+    useState,
+} from 'react'
 import dayjs from 'dayjs'
 import { FormContainer, FormItem } from '@/components/ui/Form'
 import { Field, Form, Formik, FormikProps } from 'formik'
@@ -100,162 +106,169 @@ const RequestContent = ({
     const [isAlreadyClosed, setAlreadyClosed] = useState(false)
 
     useEffect(() => {
-    data.requestStatus == 'Pending' 
-    ? setAlreadyClosed(false)
-    : setAlreadyClosed(true)
-}, [isAlreadyClosed])
+        data.requestStatus == 'Pending'
+            ? setAlreadyClosed(false)
+            : setAlreadyClosed(true)
+    }, [isAlreadyClosed])
 
+    const onSubmit = async (
+        formValue: CancelModel,
+        setSubmitting: (isSubmitting: boolean) => void
+    ) => {
+        setSubmitting(true)
 
-const onSubmit = async (
-    formValue: CancelModel,
-    setSubmitting: (isSubmitting: boolean) => void
-) => {
-    setSubmitting(true)
+        const { leaveRequestId } = formValue
 
-    const { leaveRequestId } = formValue
+        const result = await cancelLeave({
+            leaveRequestId,
+            cancelBy: getUserFromLocalStorage().userID,
+        })
 
-    const result = await cancelLeave({
-        leaveRequestId,
-        cancelBy: getUserFromLocalStorage().userID,
-    })
+        console.log(result?.status)
 
-    console.log(result?.status)
+        if (result?.status === 'failed') {
+            setMessage(result.message)
+            openNotification('danger', result.message)
+        } else {
+            setMessage('Successfully Saved')
+            openNotification('success', 'Leave Request has been Cancelled')
+        }
 
-    if (result?.status === 'failed') {
-        setMessage(result.message)
-        openNotification('danger', result.message)
-    } else {
-        setMessage('Successfully Saved')
-        openNotification('success', 'Leave Request has been Cancelled')
+        setSubmitting(false)
     }
 
-    setSubmitting(false)
-}
-
-const openNotification = (
-    type: 'success' | 'warning' | 'danger' | 'info',
-    message: string
-) => {
-    toast.push(
-        <Notification
-            title={type.charAt(0).toUpperCase() + type.slice(1)}
-            type={type}
-        >
-            {message}
-        </Notification>
-    )
-}
+    const openNotification = (
+        type: 'success' | 'warning' | 'danger' | 'info',
+        message: string
+    ) => {
+        toast.push(
+            <Notification
+                title={type.charAt(0).toUpperCase() + type.slice(1)}
+                type={type}
+            >
+                {message}
+            </Notification>
+        )
+    }
     return (
         <>
-        <Formik
-                        initialValues={{       
-                            leaveRequestId: 0,                  
-                            cancelBy: getUserFromLocalStorage().userID,
-                        }}
-                        //validationSchema={validationSchema}
-                        onSubmit={(values, { setSubmitting }) => {
-                            values.leaveRequestId = data.requestId
-                            onSubmit(values, setSubmitting)
-                            console.log(values)
-                        }}
-                    >
-                        {({
-                            setFieldValue,
-                            values,
-                            isSubmitting,
-                        }) => ( 
-                            <Form>
-                                <FormContainer>
-            <div className="max-h-[700px] overflow-y-auto">
-                <TicketSection
-                    title={data.leaveTypeName + ' Request'}
-                    icon={<HiOutlineClipboardList />}
-                    titleSize="h5"
-                >
-                    <div className="grid grid-cols-3 gap-4">
-                        <div className="mt-4">
-                            <div className="">
-                                <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
-                                    {' '}
-                                    Start Date:
-                                </span>
-                                <span className="mx-1"></span>
-                                <span>
-                                    {dayjs(data.startDate).format(
-                                        'DD MMMM YYYY'
-                                    )}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="mt-4"></div>
-
-                        <div className="mt-4">
-                            <div className="">
-                                <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
-                                    {' '}
-                                    Status:
-                                </span>
-                                <span className="mx-1"></span>
-
-                                <span
-                                    className={`ml-2 rtl:mr-2 capitalize font-semibold ${
-                                        leaveStatusColor[data.requestStatus]
-                                            .textClass
-                                    }`}
+            <Formik
+                initialValues={{
+                    leaveRequestId: 0,
+                    cancelBy: getUserFromLocalStorage().userID,
+                }}
+                //validationSchema={validationSchema}
+                onSubmit={(values, { setSubmitting }) => {
+                    values.leaveRequestId = data.requestId
+                    onSubmit(values, setSubmitting)
+                    console.log(values)
+                }}
+            >
+                {({ setFieldValue, values, isSubmitting }) => (
+                    <Form>
+                        <FormContainer>
+                            <div className="max-h-[700px] overflow-y-auto">
+                                <TicketSection
+                                    title={data.leaveTypeName + ' Request'}
+                                    icon={<HiOutlineClipboardList />}
+                                    titleSize="h5"
                                 >
-                                    {leaveStatusColor[data.requestStatus].label}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="mt-4">
+                                            <div className="">
+                                                <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
+                                                    {' '}
+                                                    Start Date:
+                                                </span>
+                                                <span className="mx-1"></span>
+                                                <span>
+                                                    {dayjs(
+                                                        data.startDate
+                                                    ).format('DD MMMM YYYY')}
+                                                </span>
+                                            </div>
+                                        </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="mt-4">
-                            <div className="">
-                                <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
-                                    {' '}
-                                    End Date:
-                                </span>
-                                <span className="mx-1"></span>
-                                <span>
-                                    {dayjs(data.endDate).format('DD MMMM YYYY')}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                                        <div className="mt-4"></div>
 
-                    {data.isHalfDay && (
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="mt-4">
-                                <div className="">
-                                    <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
-                                        {' '}
-                                        Half Day:
-                                    </span>
-                                    <span className="mx-1"></span>
-                                    <span>{data.halfDayType}</span>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                                        <div className="mt-4">
+                                            <div className="">
+                                                <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
+                                                    {' '}
+                                                    Status:
+                                                </span>
+                                                <span className="mx-1"></span>
 
-                    {data.lieuLeaveDate != '0001-01-01T00:00:00' && (
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="mt-4">
-                                <div className="">
-                                    <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
-                                        {' '}
-                                        Lieu Leave:
-                                    </span>
-                                    <span className="mx-1"></span>
-                                    <span>{data.lieuLeaveDate}</span>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                                                <span
+                                                    className={`ml-2 rtl:mr-2 capitalize font-semibold ${
+                                                        leaveStatusColor[
+                                                            data.requestStatus
+                                                        ].textClass
+                                                    }`}
+                                                >
+                                                    {
+                                                        leaveStatusColor[
+                                                            data.requestStatus
+                                                        ].label
+                                                    }
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                    {/* <div className="mb-3 flex">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="mt-4">
+                                            <div className="">
+                                                <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
+                                                    {' '}
+                                                    End Date:
+                                                </span>
+                                                <span className="mx-1"></span>
+                                                <span>
+                                                    {dayjs(data.endDate).format(
+                                                        'DD MMMM YYYY'
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {data.isHalfDay && (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="mt-4">
+                                                <div className="">
+                                                    <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
+                                                        {' '}
+                                                        Half Day:
+                                                    </span>
+                                                    <span className="mx-1"></span>
+                                                    <span>
+                                                        {data.halfDayType}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {data.lieuLeaveDate !=
+                                        '0001-01-01T00:00:00' && (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="mt-4">
+                                                <div className="">
+                                                    <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
+                                                        {' '}
+                                                        Lieu Leave:
+                                                    </span>
+                                                    <span className="mx-1"></span>
+                                                    <span>
+                                                        {data.lieuLeaveDate}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* <div className="mb-3 flex">
                         <div className="ml-2 rtl:mr-2 p-3 rounded w-100">
                             <div className="flex items-center mb-2">
                                 <span className="font-semibold text-gray-900 dark:text-gray-100">
@@ -266,82 +279,89 @@ const openNotification = (
                             </div>
                         </div>
                     </div> */}
-                </TicketSection>
+                                </TicketSection>
 
-                <TicketSection title="Description" icon={<HiOutlineChatAlt />}>
-                    <div className="mt-2">
-                        <p className="mt-2">{data.reason}</p>
-                    </div>
-                </TicketSection>
+                                <TicketSection
+                                    title="Description"
+                                    icon={<HiOutlineChatAlt />}
+                                >
+                                    <div className="mt-2">
+                                        <p className="mt-2">{data.reason}</p>
+                                    </div>
+                                </TicketSection>
 
-                <TicketSection title="Approvals" icon={<HiOutlineUserCircle />}>
-                    <div className="mt-2">
-                        <div className="grid grid-cols-3 gap-4">
-                            <div className="mt-4">
-                                <div className="">
-                                    <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
-                                        {' '}
-                                        Acting Delegate :
-                                    </span>
-                                    <span className="mx-1"></span>
-                                    <span>{data.actingDelegate}</span>
-                                </div>
+                                <TicketSection
+                                    title="Approvals"
+                                    icon={<HiOutlineUserCircle />}
+                                >
+                                    <div className="mt-2">
+                                        <div className="grid grid-cols-3 gap-4">
+                                            <div className="mt-4">
+                                                <div className="">
+                                                    <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
+                                                        {' '}
+                                                        Acting Delegate :
+                                                    </span>
+                                                    <span className="mx-1"></span>
+                                                    <span>
+                                                        {data.actingDelegate}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="mt-4">
+                                                <div className="">
+                                                    <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
+                                                        {' '}
+                                                        Acting Delegate Approval
+                                                        Status :
+                                                    </span>
+                                                    <span className="mx-1"></span>
+                                                    <span>
+                                                        {
+                                                            data.actingDelegateApprovalStatus
+                                                        }
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </TicketSection>
                             </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="mt-4">
-                                <div className="">
-                                    <span className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
-                                        {' '}
-                                        Acting Delegate Approval Status :
-                                    </span>
-                                    <span className="mx-1"></span>
-                                    <span>
-                                        {data.actingDelegateApprovalStatus}
-                                    </span>
-                                </div>
+
+                            <div className="text-right mt-4">
+                                <Button
+                                    disabled={isAlreadyClosed}
+                                    className="mr-2 rtl:ml-2"
+                                    size="sm"
+                                    variant="plain"
+                                    onClick={() => handleTicketClose()}
+                                >
+                                    Cancel
+                                </Button>
+
+                                <Button
+                                    disabled={isAlreadyClosed}
+                                    className="text-red-600"
+                                    variant="plain"
+                                    size="sm"
+                                    icon={<HiOutlineTrash />}
+                                    type="submit"
+                                    // onClick={() => {
+                                    //     setFieldValue(
+                                    //         'status',
+                                    //         'Rejected'
+                                    //     )
+                                    // }}
+                                >
+                                    Delete
+                                </Button>
                             </div>
-                        </div>
-                    </div>
-                </TicketSection>
-            </div>
-
-            <div className="text-right mt-4">
-                <Button
-                disabled={
-                    isAlreadyClosed
-                }
-                    className="mr-2 rtl:ml-2"
-                    size="sm"
-                    variant="plain"
-                    onClick={() => handleTicketClose()}
-                >
-                    Cancel
-                </Button>
-
-                <Button
-                disabled={
-                    isAlreadyClosed
-                }
-                    className="text-red-600"
-                    variant="plain"
-                    size="sm"
-                    icon={<HiOutlineTrash />}
-                    type="submit"
-                    // onClick={() => {
-                    //     setFieldValue(
-                    //         'status',
-                    //         'Rejected'
-                    //     )
-                    // }}
-                >
-                    Delete
-                </Button>
-            </div>
-            </FormContainer>
-                            </Form>
-                        )}
-                    </Formik>
+                        </FormContainer>
+                    </Form>
+                )}
+            </Formik>
         </>
     )
 }

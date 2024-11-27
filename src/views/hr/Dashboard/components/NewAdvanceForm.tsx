@@ -56,7 +56,7 @@ const NewAdvanceForm = () => {
             createdBy: getUserFromLocalStorage().userID,
         })
 
-        console.log(result?.status)
+        //console.log(result)
 
         if (result?.status === 'failed') {
             setMessage(result.message)

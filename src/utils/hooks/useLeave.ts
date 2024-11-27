@@ -17,6 +17,7 @@ import {
     apiUpdateLeaveType,
     apiGetLeaveDashboardData,
     apiAddAdvancePayment,
+    apiGetAvailableLeaveTypeList,
 } from '@/services/LeaveService'
 
 function useLeave() {
@@ -58,6 +59,25 @@ function useLeave() {
     const getLeaveTypeList = async () => {
         try {
             const resp = await apiGetLeaveTypeList()
+            //console.log(resp)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
+
+    const getAvailableLeaveTypeList = async (values: number) => {
+        try {
+            const resp = await apiGetAvailableLeaveTypeList(values)
             //console.log(resp)
             if (resp.data) {
                 return {
@@ -188,6 +208,7 @@ function useLeave() {
     const addAdvancePayment = async (values: AdvancePayment) => {
         try {
             const resp = await apiAddAdvancePayment(values)
+
             if (resp.data) {
                 return {
                     status: 'success',
@@ -196,9 +217,16 @@ function useLeave() {
                 }
             }
         } catch (errors: any) {
+            //console.log(errors?.response?.data)
+            var msg = ''
+            if (errors?.response?.data?.status != undefined) {
+                msg = errors?.response?.data?.message || errors.toString()
+            } else {
+                msg = errors?.response?.data
+            }
             return {
                 status: 'failed',
-                message: errors?.response?.data?.message || errors.toString(),
+                message: msg,
             }
         }
     }
@@ -207,6 +235,7 @@ function useLeave() {
         addLeaveType,
         updateLeaveType,
         getLeaveTypeList,
+        getAvailableLeaveTypeList,
         addassignSupervisor,
         requestLeave,
         approveOrRejectLeave,

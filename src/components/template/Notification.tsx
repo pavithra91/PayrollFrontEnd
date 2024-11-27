@@ -145,24 +145,36 @@ const _Notification = ({ className }: { className?: string }) => {
     }
 
     useEffect(() => {
-        const result = getNotifications(getUserFromLocalStorage().epf)
-
-        result.then((res) => {
-            const notifications: NotificationList[] =
-                (res?.data as NotificationResponse)?.items || []
-
-            setNotificationList(notifications)
-            if (notifications.length > 0) {
-
-                const hasUnreadNotification = notifications.some(item => !item.readed);
-                console.log(notifications)
-                if (hasUnreadNotification) {
-                    setUnreadNotification(true);
+        const fetchNotifications = async () => {
+            try {
+                const user = getUserFromLocalStorage()
+                if (!user?.epf) {
+                    console.error('User not found in local storage.')
+                    return
                 }
-            } else {
-                setUnreadNotification(false)
+
+                const result = await getNotifications(user.epf)
+                const notifications: NotificationList[] =
+                    (result?.data as NotificationResponse)?.items || []
+
+                setNotificationList(notifications)
+
+                if (notifications.length > 0) {
+                    const hasUnreadNotification = notifications.some(
+                        (item) => !item.readed
+                    )
+                    if (hasUnreadNotification) {
+                        setUnreadNotification(true)
+                    }
+                } else {
+                    setUnreadNotification(false)
+                }
+            } catch (error) {
+                console.error('Failed to fetch notifications:', error)
             }
-        })
+        }
+
+        fetchNotifications()
         //getNotificationCount()
     }, [])
 

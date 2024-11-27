@@ -30,6 +30,7 @@ import Notification from '@/components/ui/Notification'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import { ApprovalModel } from '@/@types/Leave'
 import useLeave from '@/utils/hooks/useLeave'
+import ConfirmDialog from '@/components/shared/ConfirmDialog'
 
 type TicketSectionProps = PropsWithChildren<{
     title?: string
@@ -142,61 +143,147 @@ const TicketSection = ({
 }
 
 const LeaveApproveForm = (leaveData: any) => {
-    console.log(leaveData)
     const { getUserFromLocalStorage } = useCommon()
     const { approveOrRejectLeave } = useLeave()
 
     const [isActingDelegate, setActingDelegate] = useState(false)
+    const [isActingDelegateApproved, setActingDelegateApproved] =
+        useState(false)
     const [isAlreadyClosed, setAlreadyClosed] = useState(false)
     const [message, setMessage] = useTimeOutMessage()
+    const [pendingFormData, setPendingFormData] =
+        useState<ApprovalModel | null>(null)
 
     useEffect(() => {
-        if (
-            getUserFromLocalStorage().epf ==
-            leaveData.leaveData.leaveRequest.actingDelegate
-        ) {
+        const userEPF = getUserFromLocalStorage().epf
+        const leaveRequest = leaveData.leaveData.leaveRequest
+
+        leaveData.leaveData.leaveRequest.requestStatus != 'Pending'
+            ? setAlreadyClosed(true)
+            : setAlreadyClosed(false)
+
+        if (userEPF === leaveRequest.actingDelegate) {
             setActingDelegate(true)
 
-            leaveData.leaveData.leaveRequest.actingDelegateApprovalStatus != 'Pending' 
-            ? setAlreadyClosed(true) 
-            : setAlreadyClosed(false)
+            leaveData.leaveData.leaveRequest.actingDelegateApprovalStatus !=
+            'Pending'
+                ? setAlreadyClosed(true)
+                : setAlreadyClosed(false)
         } else {
             setActingDelegate(false)
         }
 
-        leaveData.leaveData.leaveRequest.requestStatus == 'Approved' 
-        ? setAlreadyClosed(true) 
-        : setAlreadyClosed(false)
-        
+        // if (
+        //     getUserFromLocalStorage().epf ==
+        //     leaveData.leaveData.leaveRequest.actingDelegate
+        // ) {
+        //     setActingDelegate(true)
+
+        //     leaveData.leaveData.leaveRequest.actingDelegateApprovalStatus !=
+        //     'Pending'
+        //         ? setAlreadyClosed(true)
+        //         : setAlreadyClosed(false)
+        // } else {
+        //     setActingDelegate(false)
+        // }
+
+        // leaveData.leaveData.leaveRequest.requestStatus == 'Approved'
+        //     ? setAlreadyClosed(true)
+        //     : setAlreadyClosed(false)
     }, [isActingDelegate])
+
+    const onDialogClose = () => {
+        //  dispatch(toggleDeleteConfirmation(false))
+
+        setActingDelegateApproved(false)
+        setPendingFormData(null)
+    }
 
     const onSubmit = async (
         formValue: ApprovalModel,
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
         setSubmitting(true)
+        // setActingDelegateApproved(true)
 
         const { requestId, status, approver, comment } = formValue
+        const leaveRequest = leaveData.leaveData.leaveRequest
 
-        const result = await approveOrRejectLeave({
-            requestId,
-            isDelegate: isActingDelegate,
-            status,
-            comment,
-            approver: getUserFromLocalStorage().userID,
-        })
+        if (!isActingDelegate && !isAlreadyClosed) {
+            const leaveRequest = leaveData.leaveData.leaveRequest
 
-        console.log(result?.status)
-
-        if (result?.status === 'failed') {
-            setMessage(result.message)
-            openNotification('danger', result.message)
+            if (leaveRequest.actingDelegateApprovalStatus === 'Pending') {
+                // Show confirmation dialog if acting delegate approval is pending
+                setActingDelegateApproved(true)
+                setPendingFormData(formValue)
+                setSubmitting(false) // Stop submitting until user confirms
+                return
+            }
         } else {
-            setMessage('Successfully Saved')
-            openNotification('success', 'Advance Request Send for Approval')
-        }
+            const result = await approveOrRejectLeave({
+                requestId,
+                isDelegate: isActingDelegate,
+                status,
+                comment,
+                approver,
+            })
 
+            if (result?.status === 'failed') {
+                setMessage(result.message)
+                openNotification('danger', result.message)
+            } else {
+                setMessage('Successfully Saved')
+                openNotification('success', 'Leave Request Approved/Rejected')
+            }
+
+            setAlreadyClosed(true)
+            setSubmitting(false)
+
+            return
+        }
+        setPendingFormData(formValue)
+        onConfirmation()
         setSubmitting(false)
+    }
+
+    const onConfirmation = async () => {
+        console.log(pendingFormData)
+        if (pendingFormData) {
+            const { requestId, status, approver, comment } = pendingFormData
+
+            try {
+                console.log('started')
+                const result = await approveOrRejectLeave({
+                    requestId,
+                    isDelegate: isActingDelegate,
+                    status,
+                    comment,
+                    approver,
+                })
+
+                if (result?.status === 'failed') {
+                    setMessage(result.message)
+                    openNotification('danger', result.message)
+                } else {
+                    setMessage('Successfully Saved')
+                    openNotification(
+                        'success',
+                        'Leave Request Approved/Rejected'
+                    )
+                }
+            } catch (error) {
+                openNotification(
+                    'danger',
+                    'An error occurred during submission.'
+                )
+            } finally {
+                setPendingFormData(null) // Clear temporary data
+            }
+
+            setActingDelegateApproved(false)
+        } else {
+            console.log('else')
+        }
     }
 
     const openNotification = (
@@ -231,7 +318,7 @@ const LeaveApproveForm = (leaveData: any) => {
                             values.requestId =
                                 leaveData.leaveData.leaveRequest.requestId
                             onSubmit(values, setSubmitting)
-                            console.log(values)
+                            //console.log(values)
                         }}
                     >
                         {({
@@ -396,14 +483,14 @@ const LeaveApproveForm = (leaveData: any) => {
                                                         <div className="grid grid-rows-2 grid-flow-col gap-4">
                                                             <div className="col-span-2">
                                                                 <div className="mt-2">
-                                                                    <p className="">
+                                                                    <div className="">
                                                                         {
                                                                             leaveData
                                                                                 .leaveData
                                                                                 .leaveRequest
                                                                                 .reason
                                                                         }
-                                                                    </p>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -454,7 +541,7 @@ const LeaveApproveForm = (leaveData: any) => {
                                                                     </TimelineAvatar>
                                                                 }
                                                             >
-                                                                <p className="flex items-center">
+                                                                <div className="flex items-center">
                                                                     <span className="font-semibold text-gray-900 dark:text-gray-100">
                                                                         {
                                                                             leaveData
@@ -475,7 +562,7 @@ const LeaveApproveForm = (leaveData: any) => {
                                                                                 .actingDelegateApprovalStatus
                                                                         }{' '}
                                                                     </span>
-                                                                </p>
+                                                                </div>
                                                             </Timeline.Item>
                                                             {leaveData.leaveData.approvals.map(
                                                                 (
@@ -491,7 +578,7 @@ const LeaveApproveForm = (leaveData: any) => {
                                                                             </TimelineAvatar>
                                                                         }
                                                                     >
-                                                                        <p className="flex items-center">
+                                                                        <div className="flex items-center">
                                                                             <span className="font-semibold text-gray-900 dark:text-gray-100">
                                                                                 {
                                                                                     elm.approver
@@ -514,7 +601,7 @@ const LeaveApproveForm = (leaveData: any) => {
                                                                                     elm.status
                                                                                 }
                                                                             </Tag>
-                                                                        </p>
+                                                                        </div>
                                                                     </Timeline.Item>
                                                                 )
                                                             )}
@@ -531,6 +618,7 @@ const LeaveApproveForm = (leaveData: any) => {
                                         <Button
                                             disabled={isAlreadyClosed}
                                             className="text-red-600"
+                                            loading={isSubmitting}
                                             variant="plain"
                                             size="sm"
                                             icon={<HiOutlineTrash />}
@@ -552,6 +640,7 @@ const LeaveApproveForm = (leaveData: any) => {
                                         <Button
                                             disabled={isAlreadyClosed}
                                             className="mr-2 rtl:ml-2"
+                                            loading={isSubmitting}
                                             size="sm"
                                             variant="plain"
                                             type="submit"
@@ -570,6 +659,22 @@ const LeaveApproveForm = (leaveData: any) => {
                             </Form>
                         )}
                     </Formik>
+
+                    <ConfirmDialog
+                        isOpen={isActingDelegateApproved}
+                        type="danger"
+                        title="Confirm without Prior Approvals"
+                        confirmButtonColor="red-600"
+                        onClose={onDialogClose}
+                        onRequestClose={onDialogClose}
+                        onCancel={onDialogClose}
+                        onConfirm={onConfirmation}
+                    >
+                        <p>
+                            Acting delegate approval is pending. Are you sure
+                            you want to continue? This action cannot be undone.
+                        </p>
+                    </ConfirmDialog>
                 </>
             )}
         </>
