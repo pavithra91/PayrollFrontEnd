@@ -83,7 +83,7 @@ const validationSchema = Yup.object().shape({
     comment: Yup.string().when([], (isActingDelegate, validationSchema) => {
         return isActingDelegate
             ? Yup.string().notRequired()
-            : Yup.string().required('Half day Type Required')
+            : Yup.string().required('Comment Required')
     }),
 })
 
@@ -158,101 +158,33 @@ const LeaveApproveForm = (leaveData: any) => {
         const userEPF = getUserFromLocalStorage().epf
         const leaveRequest = leaveData.leaveData.leaveRequest
 
-        leaveData.leaveData.leaveRequest.requestStatus != 'Pending'
-            ? setAlreadyClosed(true)
-            : setAlreadyClosed(false)
+        // Determine if already closed based on all conditions
+        const isAlreadyClosed =
+            leaveData.leaveData.approvals.some(
+                (item: { approver: string; status: string }) =>
+                    item.approver === userEPF && item.status !== 'Pending'
+            ) ||
+            leaveRequest.requestStatus !== 'Pending' ||
+            (userEPF === leaveRequest.actingDelegate &&
+                leaveRequest.actingDelegateApprovalStatus !== 'Pending')
 
-        if (userEPF === leaveRequest.actingDelegate) {
-            setActingDelegate(true)
+        // Update state once
+        setAlreadyClosed(isAlreadyClosed)
 
-            leaveData.leaveData.leaveRequest.actingDelegateApprovalStatus !=
-            'Pending'
-                ? setAlreadyClosed(true)
-                : setAlreadyClosed(false)
-        } else {
-            setActingDelegate(false)
-        }
-
-        // if (
-        //     getUserFromLocalStorage().epf ==
-        //     leaveData.leaveData.leaveRequest.actingDelegate
-        // ) {
-        //     setActingDelegate(true)
-
-        //     leaveData.leaveData.leaveRequest.actingDelegateApprovalStatus !=
-        //     'Pending'
-        //         ? setAlreadyClosed(true)
-        //         : setAlreadyClosed(false)
-        // } else {
-        //     setActingDelegate(false)
-        // }
-
-        // leaveData.leaveData.leaveRequest.requestStatus == 'Approved'
-        //     ? setAlreadyClosed(true)
-        //     : setAlreadyClosed(false)
-    }, [isActingDelegate])
+        // Determine if the current user is an acting delegate
+        setActingDelegate(userEPF === leaveRequest.actingDelegate)
+    }, [leaveData, isActingDelegate])
 
     const onDialogClose = () => {
-        //  dispatch(toggleDeleteConfirmation(false))
-
         setActingDelegateApproved(false)
         setPendingFormData(null)
     }
 
-    const onSubmit = async (
-        formValue: ApprovalModel,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
-        setSubmitting(true)
-        // setActingDelegateApproved(true)
-
-        const { requestId, status, approver, comment } = formValue
-        const leaveRequest = leaveData.leaveData.leaveRequest
-
-        if (!isActingDelegate && !isAlreadyClosed) {
-            const leaveRequest = leaveData.leaveData.leaveRequest
-
-            if (leaveRequest.actingDelegateApprovalStatus === 'Pending') {
-                // Show confirmation dialog if acting delegate approval is pending
-                setActingDelegateApproved(true)
-                setPendingFormData(formValue)
-                setSubmitting(false) // Stop submitting until user confirms
-                return
-            }
-        } else {
-            const result = await approveOrRejectLeave({
-                requestId,
-                isDelegate: isActingDelegate,
-                status,
-                comment,
-                approver,
-            })
-
-            if (result?.status === 'failed') {
-                setMessage(result.message)
-                openNotification('danger', result.message)
-            } else {
-                setMessage('Successfully Saved')
-                openNotification('success', 'Leave Request Approved/Rejected')
-            }
-
-            setAlreadyClosed(true)
-            setSubmitting(false)
-
-            return
-        }
-        setPendingFormData(formValue)
-        onConfirmation()
-        setSubmitting(false)
-    }
-
     const onConfirmation = async () => {
-        console.log(pendingFormData)
         if (pendingFormData) {
             const { requestId, status, approver, comment } = pendingFormData
 
             try {
-                console.log('started')
                 const result = await approveOrRejectLeave({
                     requestId,
                     isDelegate: isActingDelegate,
@@ -285,6 +217,54 @@ const LeaveApproveForm = (leaveData: any) => {
             console.log('else')
         }
     }
+
+    const onSubmit = async (
+        formValue: ApprovalModel,
+        setSubmitting: (isSubmitting: boolean) => void
+    ) => {
+        setSubmitting(true)
+        const { requestId, status, approver, comment } = formValue
+
+        if (!isActingDelegate && !isAlreadyClosed) {
+            const leaveRequest = leaveData.leaveData.leaveRequest
+
+            if (leaveRequest.actingDelegateApprovalStatus === 'Pending') {
+                setActingDelegateApproved(true)
+                setPendingFormData(formValue)
+                setSubmitting(false)
+                return
+            }
+        } else {
+            const result = await approveOrRejectLeave({
+                requestId,
+                isDelegate: isActingDelegate,
+                status,
+                comment,
+                approver,
+            })
+
+            if (result?.status === 'failed') {
+                setMessage(result.message)
+                openNotification('danger', result.message)
+            } else {
+                setMessage('Successfully Saved')
+                openNotification('success', 'Leave Request Approved/Rejected')
+            }
+
+            setAlreadyClosed(true)
+            setSubmitting(false)
+
+            return
+        }
+        setPendingFormData(formValue)
+        setSubmitting(false)
+    }
+
+    useEffect(() => {
+        if (pendingFormData) {
+            onConfirmation()
+        }
+    }, [pendingFormData])
 
     const openNotification = (
         type: 'success' | 'warning' | 'danger' | 'info',
@@ -555,12 +535,26 @@ const LeaveApproveForm = (leaveData: any) => {
                                                                         {
                                                                             ' acting delegate approval status '
                                                                         }
-                                                                        {
-                                                                            leaveData
-                                                                                .leaveData
-                                                                                .leaveRequest
-                                                                                .actingDelegateApprovalStatus
-                                                                        }{' '}
+                                                                        <Tag
+                                                                            prefix
+                                                                            className="mr-2 rtl:ml-2 cursor-pointer"
+                                                                            prefixClass={
+                                                                                leaveStatusColor[
+                                                                                    leaveData
+                                                                                        .leaveData
+                                                                                        .leaveRequest
+                                                                                        .actingDelegateApprovalStatus
+                                                                                ]
+                                                                                    .dotClass
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                leaveData
+                                                                                    .leaveData
+                                                                                    .leaveRequest
+                                                                                    .actingDelegateApprovalStatus
+                                                                            }
+                                                                        </Tag>
                                                                     </span>
                                                                 </div>
                                                             </Timeline.Item>
@@ -595,7 +589,13 @@ const LeaveApproveForm = (leaveData: any) => {
                                                                             <Tag
                                                                                 prefix
                                                                                 className="mr-2 rtl:ml-2 cursor-pointer"
-                                                                                prefixClass="bg-rose-500"
+                                                                                prefixClass={
+                                                                                    leaveStatusColor[
+                                                                                        elm
+                                                                                            .status
+                                                                                    ]
+                                                                                        .dotClass
+                                                                                }
                                                                             >
                                                                                 {
                                                                                     elm.status
