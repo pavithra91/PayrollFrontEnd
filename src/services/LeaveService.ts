@@ -73,6 +73,13 @@ export async function apiGetLeaveData<T>(
     })
 }
 
+export async function apiGetLeaveApproveData<T>(data: number) {
+    return ApiService.fetchData<T>({
+        url: '/Leave/get-leaveapprovals/' + data,
+        method: 'get',
+    })
+}
+
 export async function apiGetEmployeeData<T>() {
     return ApiService.fetchData<T>({
         url: '/Leave/get-all-workflow',

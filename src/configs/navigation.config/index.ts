@@ -49,6 +49,16 @@ const navigationConfig: NavigationTree[] = [
         subMenu: [],
     },
     {
+        key: 'LeaveApprove',
+        path: '/LeaveApprove',
+        title: 'Approve Leave Request',
+        translateKey: 'nav.LeaveApprove',
+        icon: 'money',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: ['Supervisor'],
+        subMenu: [],
+    },
+    {
         key: 'AdvanceRequest',
         path: '/AdvanceRequest',
         title: 'Advance Payment Request',
