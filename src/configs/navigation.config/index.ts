@@ -53,9 +53,9 @@ const navigationConfig: NavigationTree[] = [
         path: '/LeaveApprove',
         title: 'Approve Leave Request',
         translateKey: 'nav.LeaveApprove',
-        icon: 'money',
+        icon: 'clock',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: ['Supervisor'],
+        authority: ['User', 'Supervisor'],
         subMenu: [],
     },
     {

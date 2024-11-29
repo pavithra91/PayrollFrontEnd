@@ -31,6 +31,7 @@ import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import { ApprovalModel } from '@/@types/Leave'
 import useLeave from '@/utils/hooks/useLeave'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
+import { leaveStatusColor } from '@/@types/common'
 
 type TicketSectionProps = PropsWithChildren<{
     title?: string
@@ -38,36 +39,6 @@ type TicketSectionProps = PropsWithChildren<{
     titleSize?: ElementType
     ticketClose?: () => void
 }>
-
-const leaveStatusColor: Record<
-    string,
-    {
-        label: string
-        dotClass: string
-        textClass: string
-    }
-> = {
-    Approved: {
-        label: 'Approved',
-        dotClass: 'bg-emerald-500',
-        textClass: 'text-emerald-500',
-    },
-    Pending: {
-        label: 'Pending',
-        dotClass: 'bg-amber-500',
-        textClass: 'text-amber-500',
-    },
-    Rejected: {
-        label: 'Rejected',
-        dotClass: 'bg-red-500',
-        textClass: 'text-red-500',
-    },
-    Cancelled: {
-        label: 'Cancelled',
-        dotClass: 'bg-blue-500',
-        textClass: 'text-blue-500',
-    },
-}
 
 type TimelineAvatarProps = AvatarProps
 

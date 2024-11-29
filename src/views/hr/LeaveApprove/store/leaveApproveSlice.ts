@@ -15,6 +15,8 @@ type LeaveRequestData = {
 }
 
 export type LeaveApproveData = {
+    approverStatus: string
+    requestStatus: string
     id: number
     epf: number
     data: LeaveRequestData
@@ -40,9 +42,10 @@ const initialState: LeaveApproveState = {
 
 export const getLeaveApproveData = createAsyncThunk(
     SLICE_NAME + '/getLeaveApproveData',
-    async () => {
+    async (epf: number) => {
         const response =
-            await apiGetLeaveApproveData<GetLeaveApprovalListResponse>(16917)
+            await apiGetLeaveApproveData<GetLeaveApprovalListResponse>(epf)
+        //console.log(response.data)
         return response.data
     }
 )

@@ -2,15 +2,13 @@ import { useEffect, useMemo } from 'react'
 import {
     getList,
     LeaveType,
-    LeaveTypeState,
     setDrawerOpen,
     setSelectedLeaveType,
     useAppDispatch,
     useAppSelector,
 } from '../store'
 import DataTable from '@/components/shared/DataTable'
-import type { OnSortParam, ColumnDef } from '@/components/shared/DataTable'
-import cloneDeep from 'lodash/cloneDeep'
+import type { ColumnDef } from '@/components/shared/DataTable'
 import Badge from '@/components/ui/Badge'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import LeaveTypeEditDialog from './LeaveTypeEditDialog'

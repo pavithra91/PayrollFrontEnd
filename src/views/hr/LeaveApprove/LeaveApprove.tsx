@@ -13,6 +13,9 @@ import reducer, {
 import DataTable from '@/components/shared/DataTable'
 import type { ColumnDef } from '@/components/shared/DataTable'
 import useThemeClass from '@/utils/hooks/useThemeClass'
+import Badge from '@/components/ui/Badge'
+import { leaveStatusColor } from '@/@types/common'
+import useCommon from '@/utils/hooks/useCommon'
 
 injectReducer('leaveApprove', reducer)
 
@@ -46,6 +49,7 @@ type Approvals = {
 const LeaveApprove = () => {
     const location = useLocation()
     const { getLeaveData } = useLeave()
+    const { getUserFromLocalStorage } = useCommon()
 
     const { notification } = location.state || {}
     const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -57,7 +61,7 @@ const LeaveApprove = () => {
     const dispatch = useAppDispatch()
 
     const leaveApproveData = useAppSelector(
-        (state) => state.leaveApprove.data.leaveApproveDataList
+        (state) => state.leaveApprove.data.leaveApproveDataList.items
     )
 
     //console.log(leaveApproveData)
@@ -66,7 +70,7 @@ const LeaveApprove = () => {
 
     useEffect(() => {
         if (notification) {
-            dispatch(getLeaveApproveData())
+            dispatch(getLeaveApproveData(getUserFromLocalStorage().epf))
             openDialog()
 
             const result = getLeaveData(notification.reference, notification.id)
@@ -77,7 +81,7 @@ const LeaveApprove = () => {
                 setData(leaveRequest)
             })
         } else {
-            dispatch(getLeaveApproveData())
+            dispatch(getLeaveApproveData(getUserFromLocalStorage().epf))
         }
     }, [notification])
 
@@ -85,18 +89,14 @@ const LeaveApprove = () => {
         const { textTheme } = useThemeClass()
 
         const onEdit = () => {
-            //dispatch(setDrawerOpen())
-            //dispatch(setSelectedLeaveType(row))
+            const result = getLeaveData(row.requestId)
+            result.then((res) => {
+                const leaveRequest: LeaveRequestResponse =
+                    (res?.data as LeaveRequestResponse) || []
 
-            console.log(row)
-            const leaveRequests: LeaveRequestResponse = {
-                leaveRequest: row.requestId,
-                approvals: row.approver_id,
-            }
+                setData(leaveRequest)
+            })
 
-            console.log(leaveRequests)
-
-            setData(leaveRequests)
             openDialog()
         }
 
@@ -113,32 +113,58 @@ const LeaveApprove = () => {
     const columns: ColumnDef<LeaveApproveData>[] = useMemo(
         () => [
             {
-                header: 'Id',
-                accessorKey: 'id',
+                header: 'Request Id',
+                accessorKey: 'requestId',
             },
             {
                 header: 'epf',
                 accessorKey: 'epf',
             },
             {
-                header: 'comments',
-                accessorKey: 'comments',
+                header: 'start Date',
+                accessorKey: 'startDate',
+                cell: (cell) => (cell.getValue() + '').substring(0, 10),
+            },
+            {
+                header: 'end Date',
+                accessorKey: 'endDate',
+                cell: (cell) => (cell.getValue() + '').substring(0, 10),
+            },
+            {
+                header: 'No of Days',
+                accessorKey: 'noOfDays',
+            },
+            {
+                header: 'request Status',
+                accessorKey: 'approverStatus',
+                cell: (props) => {
+                    const row = props.row.original
+                    return (
+                        <div className="flex items-center">
+                            <Badge
+                                className={
+                                    leaveStatusColor[row.approverStatus]
+                                        .dotClass
+                                }
+                            />
+                            <span className="ml-2 rtl:mr-2 capitalize">
+                                {row.approverStatus}
+                            </span>
+                        </div>
+                    )
+                },
             },
             {
                 header: '',
                 id: 'action',
                 cell: (props) => <ActionColumn row={props.row.original} />,
             },
-            // {
-            //     header: 'Max Days',
-            //     accessorKey: 'maxDays',
-            // },
         ],
         []
     )
     return (
         <>
-            <h4>Leave Approval</h4>
+            <h4 className="mb-5">Leave Approval</h4>
 
             <DataTable
                 columns={columns}
