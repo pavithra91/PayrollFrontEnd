@@ -14,7 +14,8 @@ import PublicRoute from '@/components/route/PublicRoute'
 import AuthorityGuard from '@/components/route/AuthorityGuard'
 import AppRoute from '@/components/route/AppRoute'
 import type { LayoutType } from '@/@types/theme'
-
+import bcrypt from 'bcryptjs'
+import useAuth from '@/utils/hooks/useAuth'
 interface ViewsProps {
     pageContainerType?: 'default' | 'gutterless' | 'contained'
     layout?: LayoutType
@@ -25,8 +26,23 @@ type AllRoutesProps = ViewsProps
 const { authenticatedEntryPath, authenticatedEntryPathUser } = appConfig
 
 const AllRoutes = (props: AllRoutesProps) => {
-    const userAuthority = useAppSelector((state) => state.auth.user.authority)
+    const { signOut } = useAuth()
+
+    const userAuthority =
+        useAppSelector((state) => state.auth.user.authority) || []
+    const pwd = useAppSelector((state) => state.auth.user.pwd)
+
     var PathArray = protectedRoutes
+
+    console.log(pwd)
+
+    if (pwd != undefined) {
+        const isMatch = bcrypt.compareSync(userAuthority[0], pwd)
+
+        if (!isMatch) {
+            signOut()
+        }
+    }
 
     const getAuthenticatedEntryPath = () => {
         switch (userAuthority[0]) {
@@ -45,7 +61,7 @@ const AllRoutes = (props: AllRoutesProps) => {
     }
 
     const authenticatedEntryPathToUse = getAuthenticatedEntryPath()
-    console.log(authenticatedEntryPathToUse)
+    //console.log(authenticatedEntryPathToUse)
 
     return (
         <Routes>

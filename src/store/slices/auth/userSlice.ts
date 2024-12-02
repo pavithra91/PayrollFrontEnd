@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { SLICE_BASE_NAME } from './constants'
+import bcrypt from 'bcryptjs'
 
 export type UserState = {
     avatar?: string
@@ -9,6 +10,7 @@ export type UserState = {
     id?: string
     costCenter?: string
     authority?: string[]
+    pwd?: string
 }
 
 const initialState: UserState = {
@@ -19,6 +21,14 @@ const initialState: UserState = {
     id: '',
     costCenter: '',
     authority: [],
+    pwd: '',
+}
+const encryptItem = (item: any) => {
+    const salt = bcrypt.genSaltSync(10)
+    const hashedPassword = bcrypt.hashSync(item, salt)
+
+    console.log(hashedPassword)
+    return hashedPassword
 }
 
 const userSlice = createSlice({
@@ -33,6 +43,7 @@ const userSlice = createSlice({
             state.userID = action.payload?.userID
             state.costCenter = action.payload?.costCenter
             state.authority = action.payload?.authority
+            state.pwd = action.payload?.pwd
         },
     },
 })

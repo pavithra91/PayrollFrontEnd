@@ -11,7 +11,7 @@ import { REDIRECT_URL_KEY } from '@/constants/app.constant'
 import { useNavigate } from 'react-router-dom'
 import useQuery from './useQuery'
 import type { SignInCredential, SignUpCredential } from '@/@types/auth'
-
+import bcrypt from 'bcryptjs'
 type Status = 'success' | 'failed'
 
 function useAuth() {
@@ -22,6 +22,13 @@ function useAuth() {
     const query = useQuery()
 
     const { token, signedIn } = useAppSelector((state) => state.auth.session)
+
+    const encryptItem = (item: any) => {
+        const salt = bcrypt.genSaltSync(10)
+        const hashedPassword = bcrypt.hashSync(item, salt)
+
+        return hashedPassword
+    }
 
     const signIn = async (
         values: SignInCredential
@@ -50,6 +57,7 @@ function useAuth() {
                             authority: [resp.data._userDetails.role],
                             id: resp.data._userDetails.id,
                             costCenter: resp.data._userDetails.costCenter,
+                            pwd: encryptItem(resp.data._userDetails.role),
                         }
                     )
                 )
