@@ -34,8 +34,6 @@ const AllRoutes = (props: AllRoutesProps) => {
 
     var PathArray = protectedRoutes
 
-    console.log(pwd)
-
     if (pwd != undefined) {
         const isMatch = bcrypt.compareSync(userAuthority[0], pwd)
 

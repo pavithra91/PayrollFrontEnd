@@ -62,15 +62,17 @@ const RequestLeave = () => {
     //const dispatch = useAppDispatch()
 
     const [message, setMessage] = useTimeOutMessage()
-    const { getUsersbyCostCenter } = useAccount()
+    const { getUsersbyEpf } = useAccount()
     const { getUserFromLocalStorage } = useCommon()
-    const { getAvailableLeaveTypeList, requestLeave } = useLeave()
+    const { getAvailableLeaveTypeList, requestLeave, getMySupervisorList } =
+        useLeave()
     const navigate = useNavigate()
 
     const [isHalfDay, setHalfDay] = useState(false)
     const [isPastDaysAllowd, setPastDaysAllowd] = useState(false)
     const [DelegateData, setDelegateData] = useState<ManagerOption[]>([])
     const [LeaveTypeData, setLeaveTypeData] = useState<ManagerOption[]>([])
+    const [Supervisor, setSuperviorData] = useState<ManagerOption[]>([])
     const [isleavestartDate, setleavestartDate] = useState<string | null>(null)
 
     const handleDateChange = (date: Date | null) => {
@@ -78,7 +80,6 @@ const RequestLeave = () => {
     }
 
     const epf = getUserFromLocalStorage().epf
-    const costCenter = getUserFromLocalStorage().costCenter
 
     const dateGap = 30
 
@@ -90,28 +91,43 @@ const RequestLeave = () => {
     const maxDate = dayjs(isleavestartDate).toDate()
 
     useEffect(() => {
-        const result = getUsersbyCostCenter(costCenter)
-        result.then((res) => {
-            const listItems = JSON.parse(res?.data?.data ?? '')
+        const result = getUsersbyEpf(epf)
 
-            const formattedData = listItems
-                .filter((item: any) => item.epf !== epf)
-                .map((item: any) => ({
-                    value: item.epf,
-                    label: item.empName,
-                }))
+        result.then((res) => {
+            const listItems = res?.data?.items ?? []
+            const formattedData = listItems?.map((item: any) => ({
+                value: item.epf,
+                label: item.empName + ' - ' + item.grade,
+            }))
+
+            formattedData.push({
+                value: 'None',
+                label: 'None',
+            })
             setDelegateData(formattedData)
             setPastDaysAllowd(true)
         })
 
         const leaveTypes = getAvailableLeaveTypeList(epf)
         leaveTypes.then((res) => {
-            const listItems = res?.data?.items ?? []
+            const listItems = (res?.data as { items: any[] })?.items ?? []
             const formattedData = listItems.map((item: any) => ({
                 value: item.leaveTypeId,
                 label: item.leaveTypeName,
             }))
             setLeaveTypeData(formattedData)
+        })
+
+        const supervisors = getMySupervisorList(epf)
+        supervisors.then((res) => {
+            const listItems = (res?.data as { items: any[] })?.items ?? []
+
+            const formattedData = listItems.map((item: any) => ({
+                value: item.epf,
+                label: item.epf + ' - ' + item.grade,
+            }))
+
+            setSuperviorData(formattedData)
         })
     }, [])
 
@@ -515,10 +531,8 @@ const RequestLeave = () => {
                                                         <Select<ManagerOption>
                                                             field={field}
                                                             form={form}
-                                                            options={
-                                                                leaveApprovalOptions
-                                                            }
-                                                            value={leaveApprovalOptions.filter(
+                                                            options={Supervisor}
+                                                            value={Supervisor.filter(
                                                                 (option) =>
                                                                     option.value ===
                                                                     values.manager

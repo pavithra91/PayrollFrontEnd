@@ -30,9 +30,9 @@ export async function apiUpdateUser(data: AccountData) {
     })
 }
 
-export async function apiGetUsersbyCostCenter(data: string) {
+export async function apiGetUsersbyEpf(data: string) {
     return ApiService.fetchData<Response>({
-        url: '/User/get-users-byCostCenter?costCenter=' + data,
+        url: '/Employee/get-employee-grade/' + data,
         method: 'get',
     })
 }

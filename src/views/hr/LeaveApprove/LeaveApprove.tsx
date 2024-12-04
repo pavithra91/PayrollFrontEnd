@@ -5,6 +5,8 @@ import { useLocation } from 'react-router-dom'
 import LeaveApproveForm from './components/LeaveApproveForm'
 import { injectReducer } from '@/store'
 import reducer, {
+    closeDialog,
+    openDialog,
     getLeaveApproveData,
     LeaveApproveData,
     useAppDispatch,
@@ -52,11 +54,7 @@ const LeaveApprove = () => {
     const { getUserFromLocalStorage } = useCommon()
 
     const { notification } = location.state || {}
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [data, setData] = useState<LeaveRequestResponse>()
-
-    const openDialog = () => setIsDialogOpen(true)
-    const closeDialog = () => setIsDialogOpen(false)
 
     const dispatch = useAppDispatch()
 
@@ -64,14 +62,24 @@ const LeaveApprove = () => {
         (state) => state.leaveApprove.data.leaveApproveDataList.items
     )
 
-    //console.log(leaveApproveData)
+    const dialogOpen = useAppSelector(
+        (state) => state.leaveApprove.data.dialogOpen
+    )
+
+    const onDialogClose = () => {
+        dispatch(closeDialog())
+    }
+
+    const onDialogOpen = () => {
+        dispatch(openDialog())
+    }
 
     const loading = useAppSelector((state) => state.leaveApprove.data.loading)
 
     useEffect(() => {
         if (notification) {
             dispatch(getLeaveApproveData(getUserFromLocalStorage().epf))
-            openDialog()
+            onDialogOpen()
 
             const result = getLeaveData(notification.reference, notification.id)
             result.then((res) => {
@@ -97,7 +105,7 @@ const LeaveApprove = () => {
                 setData(leaveRequest)
             })
 
-            openDialog()
+            onDialogOpen()
         }
 
         return (
@@ -181,9 +189,9 @@ const LeaveApprove = () => {
             />
 
             <Dialog
-                isOpen={isDialogOpen}
-                onClose={closeDialog}
-                onRequestClose={closeDialog}
+                isOpen={dialogOpen}
+                onClose={onDialogClose}
+                onRequestClose={onDialogClose}
                 width={800}
             >
                 {data && <LeaveApproveForm leaveData={data} />}

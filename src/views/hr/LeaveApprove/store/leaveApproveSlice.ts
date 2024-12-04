@@ -28,6 +28,7 @@ type LeaveApproveDataList = LeaveApproveData[]
 
 export type LeaveApproveState = {
     loading: boolean
+    dialogOpen: boolean
     leaveApproveDataList: LeaveApproveDataList
 }
 
@@ -36,6 +37,7 @@ type GetLeaveApprovalListResponse = LeaveApproveDataList
 export const SLICE_NAME = 'leaveApprove'
 
 const initialState: LeaveApproveState = {
+    dialogOpen: false,
     loading: false,
     leaveApproveDataList: [],
 }
@@ -64,7 +66,14 @@ export const getLeaveApproveData = createAsyncThunk(
 const leaveApproveSlice = createSlice({
     name: `${SLICE_NAME}/state`,
     initialState,
-    reducers: {},
+    reducers: {
+        openDialog: (state) => {
+            state.dialogOpen = true
+        },
+        closeDialog: (state) => {
+            state.dialogOpen = false
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getLeaveApproveData.fulfilled, (state, action) => {
@@ -80,6 +89,6 @@ const leaveApproveSlice = createSlice({
     },
 })
 
-export const {} = leaveApproveSlice.actions
+export const { openDialog, closeDialog } = leaveApproveSlice.actions
 
 export default leaveApproveSlice.reducer

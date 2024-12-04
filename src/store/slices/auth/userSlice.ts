@@ -23,13 +23,6 @@ const initialState: UserState = {
     authority: [],
     pwd: '',
 }
-const encryptItem = (item: any) => {
-    const salt = bcrypt.genSaltSync(10)
-    const hashedPassword = bcrypt.hashSync(item, salt)
-
-    console.log(hashedPassword)
-    return hashedPassword
-}
 
 const userSlice = createSlice({
     name: `${SLICE_BASE_NAME}/user`,

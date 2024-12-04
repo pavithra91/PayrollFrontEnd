@@ -67,6 +67,8 @@ const AssignApproverForm = (onDataSaved: any) => {
         (state) => state.empData.data.selectedRow
     )
 
+    console.log(selectedRow)
+
     const resetSupervisors = () => {
         setIsAlreadyAssigned(false)
     }
@@ -76,10 +78,10 @@ const AssignApproverForm = (onDataSaved: any) => {
     }
 
     const data = useAppSelector((state) => state.empData.data.supervisorData)
-
+    //console.log(data)
     const refineData = data.map((item) => ({
         value: item.id,
-        label: item.epf,
+        label: item.epf + ' - ' + item.empName,
     }))
 
     supervisorList = refineData
@@ -137,7 +139,7 @@ const AssignApproverForm = (onDataSaved: any) => {
             updateBy: getUserFromLocalStorage().userID,
         })
 
-        console.log(result)
+        // console.log(result)
 
         fetchData()
 
@@ -174,6 +176,8 @@ const AssignApproverForm = (onDataSaved: any) => {
                 initialValues={{
                     id: selectedRow.id,
                     epf: selectedRow.epf,
+                    userId: selectedRow.empName,
+                    empGrade: selectedRow.empGrade,
                     approvalLevel: 1,
                     approverNames: Array(noOfLevels).fill(''),
                     supervisorList: selectedRow?.supervisorList ?? [],
@@ -202,23 +206,37 @@ const AssignApproverForm = (onDataSaved: any) => {
                                 </TabList>
                                 <div className="pt-6">
                                     <TabContent value="basicData">
-                                        <FormItem label="User ID">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <FormItem label="EPF">
+                                                <Field
+                                                    type="text"
+                                                    disabled
+                                                    autoComplete="off"
+                                                    name="epf"
+                                                    placeholder="EPF"
+                                                    component={Input}
+                                                />
+                                            </FormItem>
+
+                                            <FormItem label="Grade">
+                                                <Field
+                                                    type="text"
+                                                    disabled
+                                                    autoComplete="off"
+                                                    name="empGrade"
+                                                    placeholder="Grade"
+                                                    component={Input}
+                                                />
+                                            </FormItem>
+                                        </div>
+
+                                        <FormItem label="Employee Name">
                                             <Field
                                                 type="text"
                                                 disabled
                                                 autoComplete="off"
                                                 name="userId"
-                                                placeholder="User ID"
-                                                component={Input}
-                                            />
-                                        </FormItem>
-                                        <FormItem label="EPF">
-                                            <Field
-                                                type="text"
-                                                disabled
-                                                autoComplete="off"
-                                                name="epf"
-                                                placeholder="EPF"
+                                                placeholder="Employee Name"
                                                 component={Input}
                                             />
                                         </FormItem>

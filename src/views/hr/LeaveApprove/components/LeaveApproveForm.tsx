@@ -32,6 +32,7 @@ import { ApprovalModel } from '@/@types/Leave'
 import useLeave from '@/utils/hooks/useLeave'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import { leaveStatusColor } from '@/@types/common'
+import { useAppDispatch, closeDialog } from '../store'
 
 type TicketSectionProps = PropsWithChildren<{
     title?: string
@@ -114,6 +115,7 @@ const TicketSection = ({
 }
 
 const LeaveApproveForm = (leaveData: any) => {
+    const dispatch = useAppDispatch()
     const { getUserFromLocalStorage } = useCommon()
     const { approveOrRejectLeave } = useLeave()
 
@@ -173,6 +175,7 @@ const LeaveApproveForm = (leaveData: any) => {
                         'success',
                         'Leave Request Approved/Rejected'
                     )
+                    dispatch(closeDialog())
                 }
             } catch (error) {
                 openNotification(

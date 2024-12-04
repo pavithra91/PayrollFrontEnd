@@ -16,10 +16,12 @@ export type AllEmployeeData = {
     epf: string
     approvalLevel: string
     supervisorList?: Approver[]
-    name?: string
+    empName?: string
+    empGrade?: string
 }
 
 export type AllSupervisorData = {
+    empName?: string
     id: number
     epf: string
     userId?: string

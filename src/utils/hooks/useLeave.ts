@@ -10,6 +10,7 @@ import {
     apiAddLeaveType,
     apiAssignSupervisor,
     apiGetLeaveTypeList,
+    apiGetMySupervisorList,
     apiRequestLeave,
     apiApproveOrRejectLeave,
     apiCancelLeave,
@@ -78,6 +79,25 @@ function useLeave() {
     const getAvailableLeaveTypeList = async (values: number) => {
         try {
             const resp = await apiGetAvailableLeaveTypeList(values)
+            //console.log(resp)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
+
+    const getMySupervisorList = async (values: number) => {
+        try {
+            const resp = await apiGetMySupervisorList(values)
             //console.log(resp)
             if (resp.data) {
                 return {
@@ -168,7 +188,6 @@ function useLeave() {
 
     const getLeaveData = async (values: number, notification?: number) => {
         try {
-            console.log(notification)
             const resp = await apiGetLeaveData(values, notification)
             //console.log(resp)
             if (resp.data) {
@@ -236,6 +255,7 @@ function useLeave() {
         updateLeaveType,
         getLeaveTypeList,
         getAvailableLeaveTypeList,
+        getMySupervisorList,
         addassignSupervisor,
         requestLeave,
         approveOrRejectLeave,

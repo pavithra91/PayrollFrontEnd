@@ -40,6 +40,13 @@ export async function apiGetAvailableLeaveTypeList<T>(epf: number) {
     })
 }
 
+export async function apiGetMySupervisorList<T>(epf: number) {
+    return ApiService.fetchData<T>({
+        url: '/Leave/get-my-supervisors/' + epf,
+        method: 'get',
+    })
+}
+
 export async function apiLeaveRequest<T, U extends Record<string, unknown>>(
     data: U
 ) {

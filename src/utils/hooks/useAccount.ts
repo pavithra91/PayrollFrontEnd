@@ -3,7 +3,7 @@ import {
     apiGetUsers,
     apiAddUser,
     apiUpdateUser,
-    apiGetUsersbyCostCenter,
+    apiGetUsersbyEpf,
 } from '@/services/AccountService'
 
 type Status = 'success' | 'failed'
@@ -63,9 +63,9 @@ function useAccount() {
         }
     }
 
-    const getUsersbyCostCenter = async (values: string) => {
+    const getUsersbyEpf = async (values: string) => {
         try {
-            const resp = await apiGetUsersbyCostCenter(values)
+            const resp = await apiGetUsersbyEpf(values)
             if (resp.data) {
                 return {
                     status: 'success',
@@ -84,7 +84,7 @@ function useAccount() {
         getUsers,
         addUser,
         updateUser,
-        getUsersbyCostCenter,
+        getUsersbyEpf,
     }
 }
 

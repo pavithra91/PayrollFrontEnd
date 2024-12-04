@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import cloneDeep from 'lodash/cloneDeep'
 import {
     AllEmployeeData,
@@ -18,7 +18,7 @@ import ActionColumn from './ActionColumn'
 import QueryInput from './QueryInput'
 
 type AllTableProps = {
-    data?: AllEmployeeData[]
+    data: AllEmployeeData[]
     loading: boolean
     tableData: TableQueries
 }
@@ -41,6 +41,8 @@ const EmployeeData = ({ data, loading, tableData }: AllTableProps) => {
         order: 'asc',
     })
 
+    //const [paginatedData, setPaginatedData] = useState<AllEmployeeData[]>()
+
     const inputRef = useRef(null)
 
     const columns: ColumnDef<AllEmployeeData>[] = useMemo(
@@ -52,6 +54,14 @@ const EmployeeData = ({ data, loading, tableData }: AllTableProps) => {
             {
                 header: 'epf',
                 accessorKey: 'epf',
+            },
+            {
+                header: 'Employee Name',
+                accessorKey: 'empName',
+            },
+            {
+                header: 'Grade Code',
+                accessorKey: 'empGrade',
             },
             {
                 header: 'Approval Level',
@@ -109,9 +119,14 @@ const EmployeeData = ({ data, loading, tableData }: AllTableProps) => {
         setSortConfig({ key, order })
     }
 
+    console.log(data)
     const startIndex = (pageIndex - 1) * pageSize
     const endIndex = startIndex + pageSize
     const paginatedData = filteredData?.slice(startIndex, endIndex) || []
+
+    useEffect(() => {
+        setFilteredData(data)
+    }, [data])
 
     return (
         <>
