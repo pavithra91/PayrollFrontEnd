@@ -108,6 +108,16 @@ const navigationConfig: NavigationTree[] = [
                 authority: ['Admin'],
                 subMenu: [],
             },
+            {
+                key: 'collapseMenu.ScheduleJobs',
+                path: '/configurations/ScheduleJobs/ScheduleJobs',
+                title: 'Backgroud Jobs',
+                translateKey: 'nav.collapseMenu.ScheduleJobs',
+                icon: '',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: ['Admin'],
+                subMenu: [],
+            },
         ],
     },
 

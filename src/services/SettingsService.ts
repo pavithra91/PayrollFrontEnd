@@ -28,3 +28,10 @@ export async function apiUpdateSystemVariable(data: SystemVariableData) {
         data,
     })
 }
+
+export async function apiGetScheduleJobsData<T>() {
+    return ApiService.fetchData<T>({
+        url: '/JobSchedule/get-allScheduledJobs',
+        method: 'get',
+    })
+}

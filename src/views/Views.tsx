@@ -30,7 +30,7 @@ const AllRoutes = (props: AllRoutesProps) => {
 
     const userAuthority =
         useAppSelector((state) => state.auth.user.authority) || []
-    const pwd = useAppSelector((state) => state.auth.user.pwd)
+    const pwd = useAppSelector((state) => state.auth.user.pwd) || undefined
 
     var PathArray = protectedRoutes
 

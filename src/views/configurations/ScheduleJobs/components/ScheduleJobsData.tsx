@@ -1,30 +1,36 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import {
-    AllEmployeeData,
-    useAppDispatch,
-    toggleNewAssignLevelDialog,
-} from '../store'
-import DataTable from '@/components/shared/DataTable'
-import type { ColumnDef, OnSortParam } from '@/components/shared'
 import { TableQueries } from '@/@types/common'
-import AssignApproverDialog from './AssignApproverDialog'
+import {
+    AllScheduleJobsData,
+    toggleNewJobDialog,
+    useAppDispatch,
+    useAppSelector,
+} from '../store'
+import { useEffect, useMemo, useState } from 'react'
+import DataTable, {
+    ColumnDef,
+    OnSortParam,
+} from '@/components/shared/DataTable'
 import ActionColumn from './ActionColumn'
-import QueryInput from './QueryInput'
+import Dialog from '@/components/ui/Dialog'
 
 type AllTableProps = {
-    data: AllEmployeeData[]
+    data: AllScheduleJobsData[]
     loading: boolean
     tableData: TableQueries
 }
 
-const EmployeeData = ({ data, loading, tableData }: AllTableProps) => {
+const ScheduleJobsData = ({ data, loading, tableData }: AllTableProps) => {
     const dispatch = useAppDispatch()
 
-    const onAddLeaveApprovalLevel = () => {
-        dispatch(toggleNewAssignLevelDialog(true))
+    const jobDialog = useAppSelector(
+        (state) => state.JobsData.data.newJobDialog
+    )
+
+    const onDialogClose = () => {
+        dispatch(toggleNewJobDialog(false))
     }
 
-    const [filteredData, setFilteredData] = useState<AllEmployeeData[]>(
+    const [filteredData, setFilteredData] = useState<AllScheduleJobsData[]>(
         data || []
     )
 
@@ -35,31 +41,27 @@ const EmployeeData = ({ data, loading, tableData }: AllTableProps) => {
         order: 'asc',
     })
 
-    //const [paginatedData, setPaginatedData] = useState<AllEmployeeData[]>()
-
-    const inputRef = useRef(null)
-
-    const columns: ColumnDef<AllEmployeeData>[] = useMemo(
+    const columns: ColumnDef<AllScheduleJobsData>[] = useMemo(
         () => [
             {
                 header: 'Id',
                 accessorKey: 'id',
             },
             {
-                header: 'epf',
-                accessorKey: 'epf',
+                header: 'Name',
+                accessorKey: 'jobName',
             },
             {
-                header: 'Employee Name',
-                accessorKey: 'empName',
+                header: 'Group',
+                accessorKey: 'groupName',
             },
             {
-                header: 'Grade Code',
-                accessorKey: 'empGrade',
+                header: 'Crone Expression',
+                accessorKey: 'cronExpression',
             },
             {
-                header: 'Approval Level',
-                accessorKey: 'approvalLevel',
+                header: 'Status',
+                accessorKey: 'isActive',
             },
             {
                 header: '',
@@ -77,8 +79,8 @@ const EmployeeData = ({ data, loading, tableData }: AllTableProps) => {
         const query = val.toLowerCase()
         const filtered = (data || []).filter(
             (item) =>
-                item.epf.toString().includes(query) ||
-                item.approvalLevel.toLowerCase().includes(query)
+                item.jobName.toString().includes(query) ||
+                item.groupName.toLowerCase().includes(query)
         )
 
         setFilteredData(filtered)
@@ -95,8 +97,8 @@ const EmployeeData = ({ data, loading, tableData }: AllTableProps) => {
         const sortedData = [...filteredData] // Clone the filtered data for sorting
 
         sortedData.sort((a, b) => {
-            const aValue = a[key as keyof AllEmployeeData] // Get the value of the key for item a
-            const bValue = b[key as keyof AllEmployeeData] // Get the value of the key for item b
+            const aValue = a[key as keyof AllScheduleJobsData] // Get the value of the key for item a
+            const bValue = b[key as keyof AllScheduleJobsData] // Get the value of the key for item b
 
             // Compare values for strings
             if (typeof aValue === 'string' && typeof bValue === 'string') {
@@ -113,7 +115,6 @@ const EmployeeData = ({ data, loading, tableData }: AllTableProps) => {
         setSortConfig({ key, order })
     }
 
-    console.log(data)
     const startIndex = (pageIndex - 1) * pageSize
     const endIndex = startIndex + pageSize
     const paginatedData = filteredData?.slice(startIndex, endIndex) || []
@@ -125,7 +126,7 @@ const EmployeeData = ({ data, loading, tableData }: AllTableProps) => {
     return (
         <>
             <div className="lg:flex items-center justify-between mb-4">
-                <h3 className="mb-4 lg:mb-0">Assign Employees to Approver</h3>
+                <h3 className="mb-4 lg:mb-0">Backgroud Job Scheduler</h3>
                 {/* <Button
                     size="sm"
                     variant="twoTone"
@@ -135,7 +136,7 @@ const EmployeeData = ({ data, loading, tableData }: AllTableProps) => {
                     Assign Employee
                 </Button> */}
 
-                <QueryInput ref={inputRef} onInputChange={handleInputChange} />
+                {/* <QueryInput ref={inputRef} onInputChange={handleInputChange} /> */}
             </div>
 
             <DataTable
@@ -151,9 +152,16 @@ const EmployeeData = ({ data, loading, tableData }: AllTableProps) => {
                 onSort={onSort}
             />
 
-            <AssignApproverDialog />
+            <Dialog
+                isOpen={jobDialog}
+                onClose={onDialogClose}
+                onRequestClose={onDialogClose}
+            >
+                <h4>Backgroud Job</h4>
+                <div className="mt-4">{/* <AssignApproverForm /> */}</div>
+            </Dialog>
         </>
     )
 }
 
-export default EmployeeData
+export default ScheduleJobsData

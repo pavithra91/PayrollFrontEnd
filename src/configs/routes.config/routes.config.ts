@@ -51,6 +51,14 @@ export const protectedRoutes = [
         authority: [],
     },
     {
+        key: 'ScheduleJobs',
+        path: '/configurations/ScheduleJobs/ScheduleJobs',
+        component: lazy(
+            () => import('@/views/configurations/ScheduleJobs/ScheduleJobs')
+        ),
+        authority: [],
+    },
+    {
         key: 'Paycodes',
         path: '/Paycodes',
         component: lazy(() => import('@/views/paycodes/PayCodes/PayCodes')),
