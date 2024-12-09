@@ -1,37 +1,34 @@
 import { TableQueries } from '@/@types/common'
-import {
-    AllScheduleJobsData,
-    toggleNewJobDialog,
-    useAppDispatch,
-    useAppSelector,
-} from '../store'
 import { useEffect, useMemo, useState } from 'react'
 import DataTable, {
     ColumnDef,
     OnSortParam,
 } from '@/components/shared/DataTable'
-import ActionColumn from './ActionColumn'
-import Dialog from '@/components/ui/Dialog'
-import JobContent from './JobContent'
+import {
+    AllSupervisorData,
+    toggleNewSupervisorDialog,
+    useAppDispatch,
+    useAppSelector,
+} from '../store'
 
 type AllTableProps = {
-    data: AllScheduleJobsData[]
+    data: AllSupervisorData[]
     loading: boolean
     tableData: TableQueries
 }
 
-const ScheduleJobsData = ({ data, loading, tableData }: AllTableProps) => {
+const SupervisorData = ({ data, loading, tableData }: AllTableProps) => {
     const dispatch = useAppDispatch()
 
-    const jobDialog = useAppSelector(
-        (state) => state.JobsData.data.newJobDialog
+    const supervisorDialog = useAppSelector(
+        (state) => state.SupervisorData.data.newSupervisorDialog
     )
 
     const onDialogClose = () => {
-        dispatch(toggleNewJobDialog(false))
+        dispatch(toggleNewSupervisorDialog(false))
     }
 
-    const [filteredData, setFilteredData] = useState<AllScheduleJobsData[]>(
+    const [filteredData, setFilteredData] = useState<AllSupervisorData[]>(
         data || []
     )
 
@@ -42,36 +39,36 @@ const ScheduleJobsData = ({ data, loading, tableData }: AllTableProps) => {
         order: 'asc',
     })
 
-    const columns: ColumnDef<AllScheduleJobsData>[] = useMemo(
+    const columns: ColumnDef<AllSupervisorData>[] = useMemo(
         () => [
             {
                 header: 'Id',
                 accessorKey: 'id',
             },
             {
+                header: 'epf',
+                accessorKey: 'epf',
+            },
+            {
                 header: 'Name',
-                accessorKey: 'jobName',
+                accessorKey: 'empName',
             },
             {
-                header: 'Group',
-                accessorKey: 'groupName',
-            },
-            {
-                header: 'Crone Expression',
-                accessorKey: 'cronExpression',
+                header: 'grade',
+                accessorKey: 'grade',
             },
             {
                 header: 'Status',
                 accessorKey: 'isActive',
             },
-            {
-                header: '',
-                id: 'action',
-                cell: (props) => {
-                    const row = props.row.original
-                    return <ActionColumn row={row} />
-                },
-            },
+            // {
+            //     header: '',
+            //     id: 'action',
+            //     cell: (props) => {
+            //         const row = props.row.original
+            //         return <ActionColumn row={row} />
+            //     },
+            // },
         ],
         []
     )
@@ -80,8 +77,8 @@ const ScheduleJobsData = ({ data, loading, tableData }: AllTableProps) => {
         const query = val.toLowerCase()
         const filtered = (data || []).filter(
             (item) =>
-                item.jobName.toString().includes(query) ||
-                item.groupName.toLowerCase().includes(query)
+                item.epf.toString().includes(query) ||
+                item.empName.toLowerCase().includes(query)
         )
 
         setFilteredData(filtered)
@@ -98,8 +95,8 @@ const ScheduleJobsData = ({ data, loading, tableData }: AllTableProps) => {
         const sortedData = [...filteredData] // Clone the filtered data for sorting
 
         sortedData.sort((a, b) => {
-            const aValue = a[key as keyof AllScheduleJobsData] // Get the value of the key for item a
-            const bValue = b[key as keyof AllScheduleJobsData] // Get the value of the key for item b
+            const aValue = a[key as keyof AllSupervisorData] // Get the value of the key for item a
+            const bValue = b[key as keyof AllSupervisorData] // Get the value of the key for item b
 
             // Compare values for strings
             if (typeof aValue === 'string' && typeof bValue === 'string') {
@@ -123,21 +120,10 @@ const ScheduleJobsData = ({ data, loading, tableData }: AllTableProps) => {
     useEffect(() => {
         setFilteredData(data)
     }, [data])
-
     return (
         <>
             <div className="lg:flex items-center justify-between mb-4">
-                <h3 className="mb-4 lg:mb-0">Backgroud Job Scheduler</h3>
-                {/* <Button
-                    size="sm"
-                    variant="twoTone"
-                    icon={<HiOutlinePlusCircle />}
-                    onClick={onAddLeaveApprovalLevel}
-                >
-                    Assign Employee
-                </Button> */}
-
-                {/* <QueryInput ref={inputRef} onInputChange={handleInputChange} /> */}
+                <h3 className="mb-4 lg:mb-0">Supervisors</h3>
             </div>
 
             <DataTable
@@ -152,19 +138,8 @@ const ScheduleJobsData = ({ data, loading, tableData }: AllTableProps) => {
                 onPaginationChange={onPaginationChange}
                 onSort={onSort}
             />
-
-            <Dialog
-                isOpen={jobDialog}
-                onClose={onDialogClose}
-                onRequestClose={onDialogClose}
-            >
-                <h4>Backgroud Job</h4>
-                <div className="mt-4">
-                    <JobContent />
-                </div>
-            </Dialog>
         </>
     )
 }
 
-export default ScheduleJobsData
+export default SupervisorData

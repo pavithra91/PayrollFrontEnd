@@ -108,9 +108,6 @@ const AssignApproverForm = (onDataSaved: any) => {
     })
 
     const fetchData = () => {
-        console.log('running')
-
-        //setEmployeeData()
         dispatch(getEmployeeData())
     }
 

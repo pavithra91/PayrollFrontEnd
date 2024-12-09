@@ -147,7 +147,7 @@ export async function apiGetLeaveDashboardData<T>(params: number) {
 export async function apiAddAdvancePayment(data: AdvancePayment) {
     console.log(data)
     return ApiService.fetchData<Response>({
-        url: '/Leave/request-advancePayment',
+        url: '/Employee/request-advancePayment',
         method: 'post',
         data,
     })

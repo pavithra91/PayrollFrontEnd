@@ -229,6 +229,12 @@ export const protectedEmployeeRoutes = [
         authority: ['Supervisor'],
     },
     {
+        key: 'Supervisor',
+        path: '/Supervisor',
+        component: lazy(() => import('@/views/hr/Supervisor/Supervisor')),
+        authority: ['Supervisor'],
+    },
+    {
         key: 'AssignApprovalLevels',
         path: '/AssignApprovalLevels',
         component: lazy(
@@ -251,9 +257,7 @@ export const protectedEmployeeRoutes = [
     {
         key: 'AdvanceRequest',
         path: '/AdvanceRequest',
-        component: lazy(
-            () => import('@/views/hr/AdvanceRequest/AdvanceRequest')
-        ),
+        component: lazy(() => import('@/views/hr/Supervisor/Supervisor')),
         authority: ['User', 'Supervisor'],
     },
     {

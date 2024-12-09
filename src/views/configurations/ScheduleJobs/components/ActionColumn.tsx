@@ -5,6 +5,7 @@ import {
     setSelectedRow,
     useAppDispatch,
     Row,
+    toggleNewJobDialog,
 } from '../store'
 import { HiPause, HiPencil, HiPlay, HiStop } from 'react-icons/hi'
 
@@ -12,7 +13,7 @@ const ActionColumn = ({ row }: { row: Row }) => {
     const dispatch = useAppDispatch()
 
     const onView = useCallback(() => {
-        //  dispatch(toggleNewAssignLevelDialog(true))
+        dispatch(toggleNewJobDialog(true))
         dispatch(setSelectedRow(row))
     }, [dispatch, row])
 

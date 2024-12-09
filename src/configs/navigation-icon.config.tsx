@@ -24,6 +24,7 @@ import {
     FcApproval,
     FcTreeStructure,
     FcAlarmClock,
+    FcBusinessman,
 } from 'react-icons/fc'
 
 import { FaRegFilePdf, FaFileCsv, FaRegFileExcel } from 'react-icons/fa'
@@ -47,6 +48,7 @@ const navigationIcon: NavigationIcons = {
     openbook: <HiOutlineBookOpen />,
     printer: <HiOutlinePrinter />,
     users: <FcConferenceCall />,
+    manager: <FcBusinessman />,
     clock: <FcAlarmClock />,
     outlineScale: <HiOutlineScale />,
     singleMenu: <HiOutlineViewGridAdd />,

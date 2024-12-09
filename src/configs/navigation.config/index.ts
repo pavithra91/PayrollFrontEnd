@@ -39,6 +39,16 @@ const navigationConfig: NavigationTree[] = [
         subMenu: [],
     },
     {
+        key: 'Supervisor',
+        path: '/Supervisor',
+        title: 'Supervisor',
+        translateKey: 'nav.Supervisor',
+        icon: 'manager',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: ['Supervisor'],
+        subMenu: [],
+    },
+    {
         key: 'AssignApprovalLevels',
         path: '/AssignApprovalLevels',
         title: 'Assign Approval Levels',
