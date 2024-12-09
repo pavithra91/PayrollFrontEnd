@@ -3,6 +3,7 @@ import { AdaptableCard } from '@/components/shared'
 import { injectReducer } from '@/store'
 import reducer, {
     AllSupervisorData,
+    getEmployeeData,
     getSupervisorData,
     useAppDispatch,
     useAppSelector,
@@ -24,7 +25,7 @@ const Supervisor = () => {
         (state) => state.SupervisorData.data.tableData
     )
 
-    console.log(data)
+   // console.log(data)
 
     useEffect(() => {
         fetchData()
@@ -33,6 +34,7 @@ const Supervisor = () => {
 
     const fetchData = () => {
         dispatch(getSupervisorData())
+        dispatch(getEmployeeData())
     }
 
     return (

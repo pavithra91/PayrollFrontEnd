@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { TableQueries } from '@/@types/common'
 import { apiGetSupervisorData } from '@/services/LeaveService'
+import { apiGetEmployeeData } from '@/services/EmployeeService'
 
 export type AllSupervisorData = {
     id: number
@@ -10,13 +11,27 @@ export type AllSupervisorData = {
     isManager: boolean
 }
 
+export type AllEmployeeData = {
+    id: number
+    epf: string
+    empName: string
+    grade: string
+    costCenter: string
+    // isManager: boolean
+}
+
 export type Row = AllSupervisorData
 
 type SupervisorData = AllSupervisorData[]
+type EmployeeData = AllSupervisorData[]
 
 type GetSupervisorDataResponse = {
     items: SupervisorData
     total: number
+}
+
+type GetEmployeeDataResponse = {
+    items: EmployeeData
 }
 
 export const initialTableData: TableQueries = {
@@ -36,6 +51,14 @@ export const getSupervisorData = createAsyncThunk(
     SLICE_NAME + '/getSupervisorDataList',
     async () => {
         const response = await apiGetSupervisorData<GetSupervisorDataResponse>()
+        return response.data
+    }
+)
+
+export const getEmployeeData = createAsyncThunk(
+    SLICE_NAME + '/getEmployeeDataList',
+    async () => {
+        const response = await apiGetEmployeeData<GetEmployeeDataResponse>()
         console.log(response.data)
         return response.data
     }
@@ -44,6 +67,7 @@ export const getSupervisorData = createAsyncThunk(
 export type SupervisorState = {
     loading: boolean
     supervisorData: SupervisorData
+    employeeData: EmployeeData
     tableData: TableQueries
     // selectedTab: string
     //tradeDialogOpen: boolean
@@ -54,6 +78,7 @@ export type SupervisorState = {
 const initialState: SupervisorState = {
     loading: true,
     supervisorData: [],
+    employeeData: [],
     tableData: initialTableData,
     // selectedTab: 'all',
     //tradeDialogOpen: false,
@@ -70,6 +95,9 @@ const supervisorSlice = createSlice({
         },
         setSupervisorData: (state, action) => {
             state.supervisorData = action.payload
+        },
+        setEmployeeData: (state, action) => {
+            state.employeeData = action.payload
         },
         toggleNewSupervisorDialog: (state, action) => {
             state.newSupervisorDialog = action.payload
@@ -88,11 +116,15 @@ const supervisorSlice = createSlice({
             .addCase(getSupervisorData.pending, (state) => {
                 state.loading = true
             })
+            .addCase(getEmployeeData.fulfilled, (state, action) => {
+                state.employeeData = action.payload.items
+            })
     },
 })
 
 export const {
     setSupervisorData,
+    setEmployeeData,
     setTableData,
     toggleNewSupervisorDialog,
     setSelectedRow,

@@ -10,6 +10,10 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../store'
+import Button from '@/components/ui/Button'
+import { HiOutlinePlusCircle } from 'react-icons/hi'
+import Dialog from '@/components/ui/Dialog'
+import AddSupervisor from './AddSupervisor'
 
 type AllTableProps = {
     data: AllSupervisorData[]
@@ -23,6 +27,10 @@ const SupervisorData = ({ data, loading, tableData }: AllTableProps) => {
     const supervisorDialog = useAppSelector(
         (state) => state.SupervisorData.data.newSupervisorDialog
     )
+    const onDialogOpen = () => {
+        //console.log('click')
+        dispatch(toggleNewSupervisorDialog(true))
+    }
 
     const onDialogClose = () => {
         dispatch(toggleNewSupervisorDialog(false))
@@ -126,6 +134,15 @@ const SupervisorData = ({ data, loading, tableData }: AllTableProps) => {
                 <h3 className="mb-4 lg:mb-0">Supervisors</h3>
             </div>
 
+            <Button
+                    size="sm"
+                    variant="twoTone"
+                    icon={<HiOutlinePlusCircle />}
+                    onClick={onDialogOpen}
+                >
+                    Add Supervisor
+                </Button>
+
             <DataTable
                 columns={columns}
                 data={paginatedData}
@@ -138,6 +155,17 @@ const SupervisorData = ({ data, loading, tableData }: AllTableProps) => {
                 onPaginationChange={onPaginationChange}
                 onSort={onSort}
             />
+
+        <Dialog
+            isOpen={supervisorDialog}
+            onClose={onDialogClose}
+            onRequestClose={onDialogClose}
+        >
+            <h4>Assign Supervisor</h4>
+            <div className="mt-4">
+                <AddSupervisor />
+            </div>
+        </Dialog>
         </>
     )
 }
