@@ -1,9 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { TableQueries } from '@/@types/common'
 import { apiGetSupervisorData } from '@/services/LeaveService'
-import { apiGetEmployeeData } from '@/services/EmployeeService'
+import {
+    apiAddSupervisor,
+    apiEditSupervisor,
+    apiGetEmployeeData,
+} from '@/services/EmployeeService'
 
 export type AllSupervisorData = {
+    isActive: boolean
     id: number
     epf: string
     empName: string
@@ -20,10 +25,28 @@ export type AllEmployeeData = {
     // isManager: boolean
 }
 
+type AddSupervisorRequest = {
+    userId: string
+    epf: string
+    isActive: boolean
+    createdBy?: string
+}
+
+type EditSupervisorRequest = {
+    userId?: string
+    epf: string
+    isActive: boolean
+    isManager: boolean
+    createdBy?: string
+}
+
 export type Row = AllSupervisorData
 
 type SupervisorData = AllSupervisorData[]
 type EmployeeData = AllSupervisorData[]
+
+type AddSupervisorResponse = SupervisorData
+type EditSupervisorResponse = SupervisorData
 
 type GetSupervisorDataResponse = {
     items: SupervisorData
@@ -59,8 +82,37 @@ export const getEmployeeData = createAsyncThunk(
     SLICE_NAME + '/getEmployeeDataList',
     async () => {
         const response = await apiGetEmployeeData<GetEmployeeDataResponse>()
-        console.log(response.data)
         return response.data
+    }
+)
+
+export const addSupervisor = createAsyncThunk(
+    SLICE_NAME + '/addSupervisorList',
+    async (data: AddSupervisorRequest) => {
+        const response = await apiAddSupervisor<
+            AddSupervisorResponse,
+            AddSupervisorRequest
+        >(data)
+
+        const supervisorResponse =
+            await apiGetSupervisorData<GetSupervisorDataResponse>()
+
+        return supervisorResponse.data
+    }
+)
+
+export const editSupervisor = createAsyncThunk(
+    SLICE_NAME + '/editSupervisorList',
+    async (data: EditSupervisorRequest) => {
+        const response = await apiEditSupervisor<
+            EditSupervisorResponse,
+            EditSupervisorRequest
+        >(data)
+
+        const supervisorResponse =
+            await apiGetSupervisorData<GetSupervisorDataResponse>()
+
+        return supervisorResponse.data
     }
 )
 
@@ -73,6 +125,7 @@ export type SupervisorState = {
     //tradeDialogOpen: boolean
     selectedRow: Partial<Row>
     newSupervisorDialog: boolean
+    editSupervisorDialog: boolean
 }
 
 const initialState: SupervisorState = {
@@ -84,6 +137,7 @@ const initialState: SupervisorState = {
     //tradeDialogOpen: false,
     selectedRow: {},
     newSupervisorDialog: false,
+    editSupervisorDialog: false,
 }
 
 const supervisorSlice = createSlice({
@@ -102,6 +156,9 @@ const supervisorSlice = createSlice({
         toggleNewSupervisorDialog: (state, action) => {
             state.newSupervisorDialog = action.payload
         },
+        toggleEditSupervisorDialog: (state, action) => {
+            state.editSupervisorDialog = action.payload
+        },
         setSelectedRow: (state, action) => {
             state.selectedRow = action.payload
         },
@@ -119,6 +176,12 @@ const supervisorSlice = createSlice({
             .addCase(getEmployeeData.fulfilled, (state, action) => {
                 state.employeeData = action.payload.items
             })
+            .addCase(addSupervisor.fulfilled, (state, action) => {
+                state.supervisorData = action.payload.items
+            })
+            .addCase(editSupervisor.fulfilled, (state, action) => {
+                state.supervisorData = action.payload.items
+            })
     },
 })
 
@@ -127,6 +190,7 @@ export const {
     setEmployeeData,
     setTableData,
     toggleNewSupervisorDialog,
+    toggleEditSupervisorDialog,
     setSelectedRow,
 } = supervisorSlice.actions
 

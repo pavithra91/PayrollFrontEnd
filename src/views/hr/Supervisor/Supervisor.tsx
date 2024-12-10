@@ -25,11 +25,12 @@ const Supervisor = () => {
         (state) => state.SupervisorData.data.tableData
     )
 
-   // console.log(data)
+    // console.log(data)
 
     useEffect(() => {
         fetchData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
+        console.log('changed')
     }, [dispatch, tableData])
 
     const fetchData = () => {

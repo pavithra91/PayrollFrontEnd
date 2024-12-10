@@ -13,11 +13,17 @@ import DataTable, {
 import ActionColumn from './ActionColumn'
 import Dialog from '@/components/ui/Dialog'
 import JobContent from './JobContent'
+import Badge from '@/components/ui/Badge'
 
 type AllTableProps = {
     data: AllScheduleJobsData[]
     loading: boolean
     tableData: TableQueries
+}
+
+const statusColor: Record<string, string> = {
+    active: 'bg-emerald-500',
+    blocked: 'bg-red-500',
 }
 
 const ScheduleJobsData = ({ data, loading, tableData }: AllTableProps) => {
@@ -63,6 +69,28 @@ const ScheduleJobsData = ({ data, loading, tableData }: AllTableProps) => {
             {
                 header: 'Status',
                 accessorKey: 'isActive',
+                cell: (props) => {
+                    const row = props.row.original
+                    return (
+                        <div className="flex items-center">
+                            {row.isActive ? (
+                                <>
+                                    <Badge className={statusColor['active']} />
+                                    <span className="ml-2 rtl:mr-2 capitalize">
+                                        {row.isActive} Active
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    <Badge className={statusColor['block']} />
+                                    <span className="ml-2 rtl:mr-2 capitalize">
+                                        {row.isActive} Deactive
+                                    </span>
+                                </>
+                            )}
+                        </div>
+                    )
+                },
             },
             {
                 header: '',
