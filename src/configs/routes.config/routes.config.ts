@@ -219,7 +219,7 @@ export const protectedEmployeeRoutes = [
     {
         key: 'UserDashboard',
         path: '/UserDashboard',
-        component: lazy(() => import('@/views/hr/dashboard/Dashboard')),
+        component: lazy(() => import('@/views/hr/Dashboard/Dashboard')),
         authority: ['User', 'Supervisor'],
     },
     {
