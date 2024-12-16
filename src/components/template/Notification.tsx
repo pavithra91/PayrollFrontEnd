@@ -84,12 +84,12 @@ const notificationTypeAvatar = (data: {
                 <Avatar
                     shape="circle"
                     className={
-                        status === 'succeed'
+                        status === 'Approved'
                             ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-100'
                             : 'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-100'
                     }
                     icon={
-                        status === 'succeed' ? (
+                        status === 'Approved' ? (
                             <HiOutlineClipboardCheck />
                         ) : (
                             <HiOutlineBan />

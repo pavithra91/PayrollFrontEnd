@@ -62,6 +62,10 @@ const LeaveApprove = () => {
         (state) => state.leaveApprove.data.leaveApproveDataList.items
     )
 
+    console.log(leaveApproveData)
+
+    const loading = useAppSelector((state) => state.leaveApprove.data.loading)
+
     const dialogOpen = useAppSelector(
         (state) => state.leaveApprove.data.dialogOpen
     )
@@ -74,7 +78,7 @@ const LeaveApprove = () => {
         dispatch(openDialog())
     }
 
-    const loading = useAppSelector((state) => state.leaveApprove.data.loading)
+
 
     useEffect(() => {
         if (notification) {
@@ -113,7 +117,7 @@ const LeaveApprove = () => {
                 className={`${textTheme} cursor-pointer select-none font-semibold`}
                 onClick={onEdit}
             >
-                Edit
+                View
             </div>
         )
     }
@@ -121,7 +125,7 @@ const LeaveApprove = () => {
     const columns: ColumnDef<LeaveApproveData>[] = useMemo(
         () => [
             {
-                header: 'Request Id',
+                header: 'Id',
                 accessorKey: 'requestId',
             },
             {
@@ -143,7 +147,7 @@ const LeaveApprove = () => {
                 accessorKey: 'noOfDays',
             },
             {
-                header: 'request Status',
+                header: 'My Status',
                 accessorKey: 'approverStatus',
                 cell: (props) => {
                     const row = props.row.original
@@ -157,6 +161,26 @@ const LeaveApprove = () => {
                             />
                             <span className="ml-2 rtl:mr-2 capitalize">
                                 {row.approverStatus}
+                            </span>
+                        </div>
+                    )
+                },
+            },
+            {
+                header: 'request Status',
+                accessorKey: 'requestStatus',
+                cell: (props) => {
+                    const row = props.row.original
+                    return (
+                        <div className="flex items-center">
+                            <Badge
+                                className={
+                                    leaveStatusColor[row.requestStatus]
+                                        .dotClass
+                                }
+                            />
+                            <span className="ml-2 rtl:mr-2 capitalize">
+                                {row.requestStatus}
                             </span>
                         </div>
                     )

@@ -227,8 +227,15 @@ const RequestLeave = () => {
                 onSubmit={(values, { setSubmitting }) => {
                     const date1 = dayjs(values.startDate)
                     const date2 = dayjs(values.endDate)
-                    values.noOfDays = date2.diff(date1, 'd')
-
+                    if(date1.isSame(date2))
+                    {
+                        values.noOfDays = 1
+                    }
+                    else
+                    {
+                        values.noOfDays = date2.diff(date1, 'd') + 1
+                    }
+                    
                     if (isHalfDay) {
                         values.endDate = values.startDate
                         values.noOfDays = 0.5
