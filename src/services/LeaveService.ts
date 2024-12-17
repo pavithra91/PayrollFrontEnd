@@ -101,6 +101,16 @@ export async function apiGetSupervisorData<T>() {
     })
 }
 
+export async function apiGetSupervisorDataByCo<
+    T,
+    U extends Record<string, unknown>
+>(data: U) {
+    return ApiService.fetchData<T>({
+        url: '/Employee/get-all-supervisors/' + data,
+        method: 'get',
+    })
+}
+
 export async function apiAssignSupervisor(data: AssignSupervisorDate) {
     console.log(data)
     return ApiService.fetchData<Response>({
@@ -141,14 +151,5 @@ export async function apiGetLeaveDashboardData<T>(params: number) {
     return ApiService.fetchData<T>({
         url: '/Leave/get-dashboard/' + params,
         method: 'get',
-    })
-}
-
-export async function apiAddAdvancePayment(data: AdvancePayment) {
-    console.log(data)
-    return ApiService.fetchData<Response>({
-        url: '/Employee/request-advancePayment',
-        method: 'post',
-        data,
     })
 }

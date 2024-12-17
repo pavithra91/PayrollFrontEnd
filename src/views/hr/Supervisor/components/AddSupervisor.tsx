@@ -1,3 +1,4 @@
+import * as Yup from 'yup'
 import { Field, Form, Formik, FieldProps } from 'formik'
 import {
     AllSupervisorData,
@@ -22,6 +23,10 @@ type FormModel = {
     isActive: boolean
     createdBy?: string
 }
+
+const validationSchema = Yup.object().shape({
+    epf: Yup.string().required('Please Select Supervisor'),
+})
 
 const AddSupervisor = () => {
     const dispatch = useAppDispatch()
@@ -109,7 +114,7 @@ const AddSupervisor = () => {
                     isActive: true,
                 }}
                 enableReinitialize={true}
-                //validationSchema={validationSchema}
+                validationSchema={validationSchema}
                 onSubmit={(values, { setSubmitting }) => {
                     values.userId = values.epf
                     values.epf = values.epf

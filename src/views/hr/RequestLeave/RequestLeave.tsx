@@ -142,7 +142,6 @@ const RequestLeave = () => {
             endDate,
             ishalfDay,
             halfDayType,
-            manager,
             actDelegate,
             noOfDays,
         } = values
@@ -165,7 +164,6 @@ const RequestLeave = () => {
             endDate,
             ishalfDay,
             halfDayType,
-            manager,
             actDelegate,
             noOfDays,
             requestBy: getUserFromLocalStorage().userID,
@@ -219,7 +217,6 @@ const RequestLeave = () => {
                     startDate: '',
                     endDate: '',
                     lieuLeaveDate: '',
-                    manager: '',
                     actDelegate: '',
                     noOfDays: 0,
                 }}
@@ -227,15 +224,12 @@ const RequestLeave = () => {
                 onSubmit={(values, { setSubmitting }) => {
                     const date1 = dayjs(values.startDate)
                     const date2 = dayjs(values.endDate)
-                    if(date1.isSame(date2))
-                    {
+                    if (date1.isSame(date2)) {
                         values.noOfDays = 1
-                    }
-                    else
-                    {
+                    } else {
                         values.noOfDays = date2.diff(date1, 'd') + 1
                     }
-                    
+
                     if (isHalfDay) {
                         values.endDate = values.startDate
                         values.noOfDays = 0.5
@@ -519,43 +513,6 @@ const RequestLeave = () => {
                                                     </Field>
                                                 </FormItem>
                                             )}
-                                        </div>
-                                        <div className="..">
-                                            <FormItem
-                                                label="Forward for Approval"
-                                                asterisk={true}
-                                                invalid={
-                                                    errors.manager &&
-                                                    touched.manager
-                                                }
-                                                errorMessage={errors.manager}
-                                            >
-                                                <Field name="manager">
-                                                    {({
-                                                        field,
-                                                        form,
-                                                    }: FieldProps) => (
-                                                        <Select<ManagerOption>
-                                                            field={field}
-                                                            form={form}
-                                                            options={Supervisor}
-                                                            value={Supervisor.filter(
-                                                                (option) =>
-                                                                    option.value ===
-                                                                    values.manager
-                                                            )}
-                                                            onChange={(
-                                                                option
-                                                            ) =>
-                                                                form.setFieldValue(
-                                                                    field.name,
-                                                                    option?.value
-                                                                )
-                                                            }
-                                                        />
-                                                    )}
-                                                </Field>
-                                            </FormItem>
                                         </div>
                                     </div>
                                     <AdaptableCard

@@ -9,8 +9,8 @@ import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import useCommon from '@/utils/hooks/useCommon'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
-import useLeave from '@/utils/hooks/useLeave'
 import { AdvancePayment } from '@/@types/Leave'
+import useEmployee from '@/utils/hooks/useEmployee'
 
 const validationSchema = Yup.object().shape({
     amount: Yup.number().when(
@@ -28,7 +28,7 @@ const validationSchema = Yup.object().shape({
 const NewAdvanceForm = () => {
     const dispatch = useAppDispatch()
     const { getUserFromLocalStorage } = useCommon()
-    const { addAdvancePayment } = useLeave()
+    const { addAdvancePayment } = useEmployee()
 
     const [message, setMessage] = useTimeOutMessage()
     const [isFullAmount, setFullAmount] = useState(true)

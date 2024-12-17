@@ -1,3 +1,4 @@
+import { AdvancePayment } from '@/@types/Leave'
 import ApiService from './ApiService'
 
 export async function apiGetEmployeeData<T>() {
@@ -24,5 +25,24 @@ export async function apiEditSupervisor<T, U extends Record<string, unknown>>(
         url: '/Employee/update-supervisor/' + data.id,
         method: 'put',
         data,
+    })
+}
+
+export async function apiAddAdvancePayment(data: AdvancePayment) {
+    console.log(data)
+    return ApiService.fetchData<Response>({
+        url: '/Employee/request-advancePayment',
+        method: 'post',
+        data,
+    })
+}
+
+export async function apiGetMyAdvancePayments<
+    T,
+    U extends Record<string, unknown>
+>(data: U) {
+    return ApiService.fetchData<T>({
+        url: '/Employee/get-my-advancePayments/' + data,
+        method: 'get',
     })
 }

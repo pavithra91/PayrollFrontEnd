@@ -37,7 +37,6 @@ export type LeaveRequest = {
     noOfDays: number | 0
     ishalfDay?: boolean | false
     halfDayType?: string
-    manager: string
     actDelegate?: string
     requestBy?: string
 }

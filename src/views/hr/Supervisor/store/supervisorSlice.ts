@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { TableQueries } from '@/@types/common'
-import { apiGetSupervisorData } from '@/services/LeaveService'
+import {
+    apiGetSupervisorData,
+    apiGetSupervisorDataByCo,
+} from '@/services/LeaveService'
 import {
     apiAddSupervisor,
     apiEditSupervisor,
@@ -30,6 +33,10 @@ type AddSupervisorRequest = {
     epf: string
     isActive: boolean
     createdBy?: string
+}
+
+type SupervisorRequest = {
+    costCenter: string
 }
 
 type EditSupervisorRequest = {
@@ -72,8 +79,11 @@ export const SLICE_NAME = 'SupervisorData'
 
 export const getSupervisorData = createAsyncThunk(
     SLICE_NAME + '/getSupervisorDataList',
-    async () => {
-        const response = await apiGetSupervisorData<GetSupervisorDataResponse>()
+    async (costCenter: any) => {
+        const response = await apiGetSupervisorDataByCo<
+            GetSupervisorDataResponse,
+            SupervisorRequest
+        >(costCenter)
         return response.data
     }
 )

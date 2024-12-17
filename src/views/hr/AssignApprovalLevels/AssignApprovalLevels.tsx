@@ -9,11 +9,13 @@ import reducer, {
     getSupervisorData,
 } from './store'
 import EmployeeData from './components/EmployeeData'
+import useCommon from '@/utils/hooks/useCommon'
 
 injectReducer('empData', reducer)
 
 const AssignApprovalLevels = () => {
     const dispatch = useAppDispatch()
+    const { getUserFromLocalStorage } = useCommon()
 
     const data = useAppSelector((state) => state.empData.data.employeeData)
 
@@ -28,7 +30,7 @@ const AssignApprovalLevels = () => {
 
     const fetchData = () => {
         dispatch(getEmployeeData())
-        dispatch(getSupervisorData())
+        dispatch(getSupervisorData(getUserFromLocalStorage().costCenter))
     }
 
     return (

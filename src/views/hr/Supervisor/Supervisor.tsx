@@ -9,11 +9,13 @@ import reducer, {
     useAppSelector,
 } from './store'
 import SupervisorData from './components/SupervisorData'
+import useCommon from '@/utils/hooks/useCommon'
 
 injectReducer('SupervisorData', reducer)
 
 const Supervisor = () => {
     const dispatch = useAppDispatch()
+    const { getUserFromLocalStorage } = useCommon()
 
     const data = useAppSelector(
         (state) => state.SupervisorData.data.supervisorData
@@ -29,12 +31,10 @@ const Supervisor = () => {
 
     useEffect(() => {
         fetchData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        console.log('changed')
     }, [dispatch, tableData])
 
     const fetchData = () => {
-        dispatch(getSupervisorData())
+        dispatch(getSupervisorData(getUserFromLocalStorage().costCenter))
         dispatch(getEmployeeData())
     }
 

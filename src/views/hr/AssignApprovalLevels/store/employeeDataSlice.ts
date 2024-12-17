@@ -3,6 +3,7 @@ import type { TableQueries } from '@/@types/common'
 import {
     apiGetEmployeeData,
     apiGetSupervisorData,
+    apiGetSupervisorDataByCo,
 } from '@/services/LeaveService'
 
 type Approver = {
@@ -43,6 +44,10 @@ type GetSupervisorDataResponse = {
     items: AllSupervisorData[]
 }
 
+type SupervisorRequest = {
+    costCenter: string
+}
+
 export const initialTableData: TableQueries = {
     total: 0,
     pageIndex: 1,
@@ -65,10 +70,21 @@ export const getEmployeeData = createAsyncThunk(
     }
 )
 
+// export const getSupervisorData = createAsyncThunk(
+//     SLICE_NAME + '/getSupervisorList',
+//     async () => {
+//         const response = await apiGetSupervisorData<GetSupervisorDataResponse>()
+//         return response.data.items
+//     }
+// )
+
 export const getSupervisorData = createAsyncThunk(
-    SLICE_NAME + '/getSupervisorList',
-    async () => {
-        const response = await apiGetSupervisorData<GetSupervisorDataResponse>()
+    SLICE_NAME + '/getSupervisorDataList',
+    async (costCenter: any) => {
+        const response = await apiGetSupervisorDataByCo<
+            GetSupervisorDataResponse,
+            SupervisorRequest
+        >(costCenter)
         return response.data.items
     }
 )
