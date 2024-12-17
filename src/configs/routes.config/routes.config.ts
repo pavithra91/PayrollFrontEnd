@@ -257,7 +257,7 @@ export const protectedEmployeeRoutes = [
     {
         key: 'AdvanceRequest',
         path: '/AdvanceRequest',
-        component: lazy(() => import('@/views/hr/Supervisor/Supervisor')),
+        component: lazy(() => import('@/views/hr/AdvancePayment/AdvancePayment')),
         authority: ['User', 'Supervisor'],
     },
     {

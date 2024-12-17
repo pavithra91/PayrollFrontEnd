@@ -8,18 +8,13 @@ const ConfirmationDialog = (dialogOpen: boolean) => {
     }
 
     const onDelete = async () => {
-        //dispatch(toggleDeleteConfirmation(false))
-        //const success = await deleteProduct({ id: selectedProduct })
-
-        //if (success) {
-        // dispatch(getProducts(tableData))
         toast.push(
             <Notification
                 title={'Successfuly Deleted'}
                 type="success"
                 duration={2500}
             >
-                Product successfuly deleted
+                Request Deleted Successfully
             </Notification>,
             {
                 placement: 'top-center',
@@ -40,8 +35,8 @@ const ConfirmationDialog = (dialogOpen: boolean) => {
             onConfirm={onDelete}
         >
             <p>
-                Are you sure you want to delete this product? All record related
-                to this product will be deleted as well. This action cannot be
+                Are you sure you want to delete this leave request? All record related
+                to this leave request will be deleted as well. This action cannot be
                 undone.
             </p>
         </ConfirmDialog>

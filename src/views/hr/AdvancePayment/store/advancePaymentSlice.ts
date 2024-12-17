@@ -1,11 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { TableQueries } from '@/@types/common'
-import { apiGetMyAdvancePayments } from '@/services/EmployeeService'
+import {
+    apiDeleteAdvancePayments,
+    apiGetMyAdvancePayments,
+} from '@/services/EmployeeService'
 
 export type AllAdvancePaymentData = {
     id: number
+    epf: string
+    empName: string
     period: string
-    status: boolean
+    status: string
     isFullAmount?: boolean
     amount?: number
 }
@@ -43,6 +48,17 @@ export const getAdvancePaymentData = createAsyncThunk(
             GetAdvancePaymentResponse,
             AdvancePaymentRequest
         >(epf)
+        return response.data
+    }
+)
+
+export const deleteAdvancePaymentData = createAsyncThunk(
+    SLICE_NAME + '/deleteAdvancePaymentData',
+    async (id: any) => {
+        const response = await apiDeleteAdvancePayments<
+            GetAdvancePaymentResponse,
+            AdvancePaymentRequest
+        >(id)
         return response.data
     }
 )
@@ -95,9 +111,9 @@ const supervisorSlice = createSlice({
             .addCase(getAdvancePaymentData.pending, (state) => {
                 state.loading = true
             })
-        // .addCase(addSupervisor.fulfilled, (state, action) => {
-        //     state.advancePaymentData = action.payload.items
-        // })
+            .addCase(deleteAdvancePaymentData.fulfilled, (state, action) => {
+                state.advancePaymentData = action.payload.items
+            })
         // .addCase(editSupervisor.fulfilled, (state, action) => {
         //     state.advancePaymentData = action.payload.items
         // })
