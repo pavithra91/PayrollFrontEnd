@@ -356,6 +356,16 @@ const navigationConfig: NavigationTree[] = [
                 authority: ['Admin'],
                 subMenu: [],
             },
+            {
+                key: 'collapseMenu.AdvancePayment',
+                path: '/AdvancePayment',
+                title: 'Advance Payment Report',
+                translateKey: 'nav.collapseMenu.AdvancePayment',
+                icon: '',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: ['Admin'],
+                subMenu: [],
+            },
         ],
     },
     {

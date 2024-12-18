@@ -56,3 +56,13 @@ export async function apiDeleteAdvancePayments<
         method: 'put',
     })
 }
+
+export async function apiGetAdvancePayments<
+    T,
+    U extends Record<string, unknown>
+>(data: U) {
+    return ApiService.fetchData<T>({
+        url: '/Employee/get-all-advancePayments/' + data,
+        method: 'get',
+    })
+}

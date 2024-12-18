@@ -168,6 +168,14 @@ export const protectedRoutes = [
         ),
         authority: ['Admin'],
     },
+    {
+        key: 'AdvancePayment',
+        path: '/AdvancePayment',
+        component: lazy(
+            () => import('@/views/hr/reports/AdvancePayment/AdvancePayment')
+        ),
+        authority: ['Admin'],
+    },
 
     {
         key: 'knowledgebase',
@@ -257,7 +265,9 @@ export const protectedEmployeeRoutes = [
     {
         key: 'AdvanceRequest',
         path: '/AdvanceRequest',
-        component: lazy(() => import('@/views/hr/AdvancePayment/AdvancePayment')),
+        component: lazy(
+            () => import('@/views/hr/AdvancePayment/AdvancePayment')
+        ),
         authority: ['User', 'Supervisor'],
     },
     {
