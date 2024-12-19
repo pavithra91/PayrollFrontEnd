@@ -346,7 +346,7 @@ const DialogComponent: React.FC<DialogProps> = ({ onClose, isOpen, props }) => {
                                         errorMessage={errors.password}
                                     >
                                         <Field
-                                            type="text"
+                                            type="password"
                                             autoComplete="off"
                                             name="password"
                                             placeholder="Password"

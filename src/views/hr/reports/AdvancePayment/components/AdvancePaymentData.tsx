@@ -4,23 +4,8 @@ import DataTable, {
     ColumnDef,
     OnSortParam,
 } from '@/components/shared/DataTable'
-import {
-    AllAdvancePaymentData,
-    setSelectedRow,
-    toggleEditSupervisorDialog,
-    toggleAdvancePaymentDialog,
-    useAppDispatch,
-    useAppSelector,
-    deleteAdvancePaymentData,
-} from '../store'
-import Button from '@/components/ui/Button'
-import { HiOutlineTrash } from 'react-icons/hi'
-import useThemeClass from '@/utils/hooks/useThemeClass'
+import { AllAdvancePaymentData, useAppDispatch } from '../store'
 import Badge from '@/components/ui/Badge'
-import ConfirmDialog from '@/components/shared/ConfirmDialog'
-import toast from '@/components/ui/toast'
-import Notification from '@/components/ui/Notification'
-import { string } from 'yup'
 
 type AllTableProps = {
     data: AllAdvancePaymentData[]
@@ -49,50 +34,8 @@ const AdvancePaymentData = ({ data, loading, tableData }: AllTableProps) => {
         order: 'asc',
     })
 
-    const ActionColumn = ({ row }: { row: any }) => {
-        const { textTheme } = useThemeClass()
-
-        const onDeleteClick = () => {
-            setdialogOpen(true)
-            setData(row)
-            dispatch(setSelectedRow(row))
-        }
-
-        var Status = false
-
-        if (row.status != 'Pending') {
-            Status = true
-        }
-
-        return (
-            <Button
-                disabled={Status}
-                size="sm"
-                icon={<HiOutlineTrash />}
-                onClick={onDeleteClick}
-            ></Button>
-        )
-    }
-
     const onDialogClose = () => {
         setdialogOpen(false)
-    }
-
-    const onDelete = async () => {
-        dispatch(deleteAdvancePaymentData(selectedData.id))
-        onDialogClose()
-        toast.push(
-            <Notification
-                title={'Successfuly Deleted'}
-                type="success"
-                duration={3500}
-            >
-                Request Deleted Successfully
-            </Notification>,
-            {
-                placement: 'top-center',
-            }
-        )
     }
 
     const columns: ColumnDef<AllAdvancePaymentData>[] = useMemo(
@@ -100,6 +43,10 @@ const AdvancePaymentData = ({ data, loading, tableData }: AllTableProps) => {
             {
                 header: 'Id',
                 accessorKey: 'id',
+            },
+            {
+                header: 'period',
+                accessorKey: 'period',
             },
             {
                 header: 'epf',
@@ -110,8 +57,8 @@ const AdvancePaymentData = ({ data, loading, tableData }: AllTableProps) => {
                 accessorKey: 'empName',
             },
             {
-                header: 'period',
-                accessorKey: 'period',
+                header: 'costCenter',
+                accessorKey: 'costCenter',
             },
             {
                 header: 'Full Amount',
@@ -146,14 +93,6 @@ const AdvancePaymentData = ({ data, loading, tableData }: AllTableProps) => {
             {
                 header: 'status',
                 accessorKey: 'status',
-            },
-            {
-                header: '',
-                id: 'action',
-                cell: (props) => {
-                    const row = props.row.original
-                    return <ActionColumn row={row} />
-                },
             },
         ],
         []
@@ -209,9 +148,6 @@ const AdvancePaymentData = ({ data, loading, tableData }: AllTableProps) => {
 
     return (
         <>
-            <div className="lg:flex items-center justify-between mb-4">
-                <h3 className="mb-4 lg:mb-0">Advance Payment Requests</h3>
-            </div>
             <DataTable
                 columns={columns}
                 data={paginatedData}
@@ -224,23 +160,6 @@ const AdvancePaymentData = ({ data, loading, tableData }: AllTableProps) => {
                 onPaginationChange={onPaginationChange}
                 onSort={onSort}
             />
-
-            <ConfirmDialog
-                isOpen={dialogOpen}
-                type="danger"
-                title="Delete Advance Payment Request"
-                confirmButtonColor="red-600"
-                onClose={onDialogClose}
-                onRequestClose={onDialogClose}
-                onCancel={onDialogClose}
-                onConfirm={onDelete}
-            >
-                <p>
-                    Are you sure you want to delete this advance request? Record
-                    related to this product will be deleted as well. This action
-                    cannot be undone.
-                </p>
-            </ConfirmDialog>
         </>
     )
 }

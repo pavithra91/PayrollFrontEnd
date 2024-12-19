@@ -3,6 +3,7 @@ import { TableQueries } from '@/@types/common'
 import {
     apiDeleteAdvancePayments,
     apiGetAdvancePayments,
+    apiProcessAdvancePayments,
 } from '@/services/EmployeeService'
 
 export type AllAdvancePaymentData = {
@@ -18,6 +19,7 @@ export type AllAdvancePaymentData = {
 type AdvancePaymentRequest = {
     companyCode?: number
     period: string
+    processBy: string
 }
 
 type AdvancePaymentData = AllAdvancePaymentData[]
@@ -53,13 +55,11 @@ export const getAdvancePaymentData = createAsyncThunk(
     }
 )
 
-export const deleteAdvancePaymentData = createAsyncThunk(
-    SLICE_NAME + '/deleteAdvancePaymentData',
-    async (id: any) => {
-        const response = await apiDeleteAdvancePayments<
-            GetAdvancePaymentResponse,
-            AdvancePaymentRequest
-        >(id)
+export const processAdvancePaymentData = createAsyncThunk(
+    SLICE_NAME + '/processAdvancePaymentData',
+    async (period: AdvancePaymentRequest) => {
+        const response = await apiProcessAdvancePayments(period)
+        console.log(response)
         return response.data
     }
 )
@@ -112,8 +112,8 @@ const supervisorSlice = createSlice({
             .addCase(getAdvancePaymentData.pending, (state) => {
                 state.loading = true
             })
-            .addCase(deleteAdvancePaymentData.fulfilled, (state, action) => {
-                state.advancePaymentData = action.payload.items
+            .addCase(processAdvancePaymentData.fulfilled, (state, action) => {
+                console.log(action.payload)
             })
         // .addCase(editSupervisor.fulfilled, (state, action) => {
         //     state.advancePaymentData = action.payload.items

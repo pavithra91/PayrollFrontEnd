@@ -18,6 +18,8 @@ import useThemeClass from '@/utils/hooks/useThemeClass'
 import Badge from '@/components/ui/Badge'
 import { leaveStatusColor } from '@/@types/common'
 import useCommon from '@/utils/hooks/useCommon'
+import Button from '@/components/ui/Button'
+import { HiOutlineEye, HiPencil } from 'react-icons/hi'
 
 injectReducer('leaveApprove', reducer)
 
@@ -78,8 +80,6 @@ const LeaveApprove = () => {
         dispatch(openDialog())
     }
 
-
-
     useEffect(() => {
         if (notification) {
             dispatch(getLeaveApproveData(getUserFromLocalStorage().epf))
@@ -113,12 +113,14 @@ const LeaveApprove = () => {
         }
 
         return (
-            <div
-                className={`${textTheme} cursor-pointer select-none font-semibold`}
-                onClick={onEdit}
-            >
-                View
-            </div>
+            // <div
+            //     className={`${textTheme} cursor-pointer select-none font-semibold`}
+            //     onClick={onEdit}
+            // >
+            //     View
+            // </div>
+
+            <Button size="sm" icon={<HiOutlineEye />} onClick={onEdit}></Button>
         )
     }
 
@@ -175,8 +177,7 @@ const LeaveApprove = () => {
                         <div className="flex items-center">
                             <Badge
                                 className={
-                                    leaveStatusColor[row.requestStatus]
-                                        .dotClass
+                                    leaveStatusColor[row.requestStatus].dotClass
                                 }
                             />
                             <span className="ml-2 rtl:mr-2 capitalize">

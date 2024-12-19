@@ -60,3 +60,9 @@ export type CancelModel = {
     leaveRequestId: number
     cancelBy?: string
 }
+
+export type AdvancePaymentRequest = {
+    companyCode?: number
+    period: string
+    processBy: string
+}

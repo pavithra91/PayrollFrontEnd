@@ -1,4 +1,4 @@
-import { AdvancePayment } from '@/@types/Leave'
+import { AdvancePayment, AdvancePaymentRequest } from '@/@types/Leave'
 import ApiService from './ApiService'
 
 export async function apiGetEmployeeData<T>() {
@@ -64,5 +64,14 @@ export async function apiGetAdvancePayments<
     return ApiService.fetchData<T>({
         url: '/Employee/get-all-advancePayments/' + data,
         method: 'get',
+    })
+}
+
+export async function apiProcessAdvancePayments(data: AdvancePaymentRequest) {
+    console.log(data)
+    return ApiService.fetchData<Response>({
+        url: '/Employee/process-advancePayment',
+        method: 'post',
+        data,
     })
 }

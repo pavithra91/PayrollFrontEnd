@@ -12,6 +12,8 @@ import type { ColumnDef } from '@/components/shared/DataTable'
 import Badge from '@/components/ui/Badge'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import LeaveTypeEditDialog from './LeaveTypeEditDialog'
+import { Button } from '@/components/ui/Button'
+import { HiPencil } from 'react-icons/hi'
 
 const statusColor: Record<string, string> = {
     active: 'bg-emerald-500',
@@ -39,14 +41,7 @@ const LeaveTypeListContent = () => {
             dispatch(setSelectedLeaveType(row))
         }
 
-        return (
-            <div
-                className={`${textTheme} cursor-pointer select-none font-semibold`}
-                onClick={onEdit}
-            >
-                Edit
-            </div>
-        )
+        return <Button size="sm" icon={<HiPencil />} onClick={onEdit}></Button>
     }
 
     const columns: ColumnDef<LeaveType>[] = useMemo(
