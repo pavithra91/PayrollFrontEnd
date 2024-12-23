@@ -193,6 +193,34 @@ export const protectedRoutes = [
         authority: ['Admin'],
     },
     {
+        key: 'EditBungalow',
+        path: '/EditBungalow',
+        component: lazy(
+            () =>
+                import('@/views/reservation/Bungalows/components/EditBungalow')
+        ),
+        authority: ['Admin'],
+    },
+    {
+        key: 'Reservation',
+        path: '/Reservation',
+        component: lazy(
+            () => import('@/views/reservation/Reservation/Reservation')
+        ),
+        authority: [],
+    },
+    {
+        key: 'AddReservation',
+        path: '/AddReservation',
+        component: lazy(
+            () =>
+                import(
+                    '@/views/reservation/Reservation/components/AddReservation'
+                )
+        ),
+        authority: [],
+    },
+    {
         key: 'knowledgebase',
         path: '/knowledgebase',
         component: lazy(

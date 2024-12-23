@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { TableQueries } from '@/@types/common'
 import {
     apiAddBungalow,
+    apiEditBungalow,
     apiGetBungalowData,
 } from '@/services/ReservationService'
 
@@ -15,6 +16,7 @@ export type AllBungalowData = {
     noOfRooms: number
     perDayCost: number
     maxBookingPeriod: number
+    maxOccupancy: number
     isCloded: boolean
     reopenDate?: string | null
     contactNumber: string
@@ -30,6 +32,7 @@ type AddBungalowRequest = {
     noOfRooms: number
     perDayCost: number
     maxBookingPeriod: number
+    maxOccupancy: number
     isCloded: boolean
     reopenDate?: string | null
     contactNumber: string
@@ -48,9 +51,9 @@ type EditBungalowRequest = {
     maxOccupancy: number
     maxBookingPeriod: number
     isCloded: boolean
-    reopenDate: string
+    reopenDate?: string | null
     contactNumber: string
-    createdBy: string
+    lastUpdateBy: string
 }
 
 export type Row = AllBungalowData
@@ -101,20 +104,20 @@ export const addBungalow = createAsyncThunk(
     }
 )
 
-// export const editBungalow = createAsyncThunk(
-//     SLICE_NAME + '/editBungalowList',
-//     async (data: EditBungalowRequest) => {
-//         const response = await apiEditBungalow<
-//             EditBungalowResponse,
-//             EditBungalowRequest
-//         >(data)
+export const editBungalow = createAsyncThunk(
+    SLICE_NAME + '/editBungalowList',
+    async (data: EditBungalowRequest) => {
+        const response = await apiEditBungalow<
+            EditBungalowResponse,
+            EditBungalowRequest
+        >(data)
 
-//         const supervisorResponse =
-//             await apiGetBungalowData<GetBungalowDataResponse>()
+        const supervisorResponse =
+            await apiGetBungalowData<GetBungalowDataResponse>()
 
-//         return supervisorResponse.data
-//     }
-// )
+        return supervisorResponse.data
+    }
+)
 
 export type BungalowState = {
     loading: boolean
@@ -167,9 +170,9 @@ const bungalowSlice = createSlice({
             .addCase(addBungalow.fulfilled, (state, action) => {
                 state.bungalowData = action.payload.items
             })
-        // .addCase(editBungalow.fulfilled, (state, action) => {
-        //     state.bungalowData = action.payload.items
-        // })
+            .addCase(editBungalow.fulfilled, (state, action) => {
+                state.bungalowData = action.payload.items
+            })
     },
 })
 

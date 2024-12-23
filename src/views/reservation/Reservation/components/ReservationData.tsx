@@ -5,24 +5,24 @@ import DataTable, {
     OnSortParam,
 } from '@/components/shared/DataTable'
 import {
-    AllBungalowData,
+    AllReservationData,
     setSelectedRow,
-    toggleNewBungalowDialog,
-    toggleEditBungalowDialog,
+    toggleNewReservationDialog,
+    toggleEditReservationDialog,
     useAppDispatch,
     useAppSelector,
 } from '../store'
 import Button from '@/components/ui/Button'
 import { HiOutlineCash, HiOutlinePlusCircle, HiPencil } from 'react-icons/hi'
 import Dialog from '@/components/ui/Dialog'
-import AddBungalow from './AddBungalow'
+// import AddBungalow from './AddBungalow'
 import Badge from '@/components/ui/Badge'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useNavigate } from 'react-router-dom'
-import EditBungalow from './EditBungalow'
+// import EditBungalow from './EditBungalow'
 
 type AllTableProps = {
-    data: AllBungalowData[]
+    data: AllReservationData[]
     loading: boolean
     tableData: TableQueries
 }
@@ -32,32 +32,32 @@ const statusColor: Record<string, string> = {
     blocked: 'bg-red-500',
 }
 
-const BungalowData = ({ data, loading, tableData }: AllTableProps) => {
+const ReservationData = ({ data, loading, tableData }: AllTableProps) => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
-    const bungalowDialog = useAppSelector(
-        (state) => state.BungalowData.data.newBungalowDialog
+    const supervisorDialog = useAppSelector(
+        (state) => state.ReservationData.data.newReservationDialog
     )
 
     const editDialog = useAppSelector(
-        (state) => state.BungalowData.data.editBungalowDialog
+        (state) => state.ReservationData.data.editReservationDialog
     )
 
     const onDialogOpen = () => {
         //console.log('click')
-        dispatch(toggleNewBungalowDialog(true))
+        dispatch(toggleNewReservationDialog(true))
     }
 
     const onDialogClose = () => {
-        dispatch(toggleNewBungalowDialog(false))
+        dispatch(toggleNewReservationDialog(false))
     }
 
     const onEditDialogClose = () => {
-        dispatch(toggleEditBungalowDialog(false))
+        dispatch(toggleEditReservationDialog(false))
     }
 
-    const [filteredData, setFilteredData] = useState<AllBungalowData[]>(
+    const [filteredData, setFilteredData] = useState<AllReservationData[]>(
         data || []
     )
 
@@ -73,11 +73,11 @@ const BungalowData = ({ data, loading, tableData }: AllTableProps) => {
 
         const onEdit = () => {
             dispatch(setSelectedRow(row))
-            navigate('/EditBungalow')
+            navigate('/EditReservation')
         }
 
         const onRateEdit = () => {
-            dispatch(toggleEditBungalowDialog(true))
+            dispatch(toggleEditReservationDialog(true))
         }
         return (
             <>
@@ -101,7 +101,7 @@ const BungalowData = ({ data, loading, tableData }: AllTableProps) => {
         )
     }
 
-    const columns: ColumnDef<AllBungalowData>[] = useMemo(
+    const columns: ColumnDef<AllReservationData>[] = useMemo(
         () => [
             {
                 header: 'Id',
@@ -112,46 +112,46 @@ const BungalowData = ({ data, loading, tableData }: AllTableProps) => {
                 accessorKey: 'companyCode',
             },
             {
-                header: 'Name',
-                accessorKey: 'bungalowName',
+                header: 'Check In',
+                accessorKey: 'checkInDate',
             },
             {
-                header: 'address',
-                accessorKey: 'address',
+                header: 'Check Out',
+                accessorKey: 'checkOutDate',
             },
             {
-                header: 'Capacity',
-                accessorKey: 'noOfRooms',
+                header: 'Pax Count',
+                accessorKey: 'totalPax',
             },
             {
-                header: 'Cost',
-                accessorKey: 'perDayCost',
+                header: 'bungalowid',
+                accessorKey: 'bungalowid',
             },
             {
                 header: 'Status',
                 accessorKey: 'isActive',
-                cell: (props) => {
-                    const row = props.row.original
-                    return (
-                        <div className="flex items-center">
-                            {row.isCloded ? (
-                                <>
-                                    <Badge className={statusColor['block']} />
-                                    <span className="ml-2 rtl:mr-2 capitalize">
-                                        {row.isCloded} Closed
-                                    </span>
-                                </>
-                            ) : (
-                                <>
-                                    <Badge className={statusColor['active']} />
-                                    <span className="ml-2 rtl:mr-2 capitalize">
-                                        {row.isCloded} Open
-                                    </span>
-                                </>
-                            )}
-                        </div>
-                    )
-                },
+                // cell: (props) => {
+                //     const row = props.row.original
+                //     return (
+                //         <div className="flex items-center">
+                //             {row.isCloded ? (
+                //                 <>
+                //                     <Badge className={statusColor['block']} />
+                //                     <span className="ml-2 rtl:mr-2 capitalize">
+                //                         {row.isCloded} Closed
+                //                     </span>
+                //                 </>
+                //             ) : (
+                //                 <>
+                //                     <Badge className={statusColor['active']} />
+                //                     <span className="ml-2 rtl:mr-2 capitalize">
+                //                         {row.isCloded} Open
+                //                     </span>
+                //                 </>
+                //             )}
+                //         </div>
+                //     )
+                // },
             },
             {
                 header: '',
@@ -170,7 +170,7 @@ const BungalowData = ({ data, loading, tableData }: AllTableProps) => {
         const filtered = (data || []).filter(
             (item) =>
                 item.id.toString().includes(query) ||
-                item.bungalowName.toLowerCase().includes(query)
+                item.bungalowid.toString().includes(query)
         )
 
         setFilteredData(filtered)
@@ -187,8 +187,8 @@ const BungalowData = ({ data, loading, tableData }: AllTableProps) => {
         const sortedData = [...filteredData] // Clone the filtered data for sorting
 
         sortedData.sort((a, b) => {
-            const aValue = a[key as keyof AllBungalowData] // Get the value of the key for item a
-            const bValue = b[key as keyof AllBungalowData] // Get the value of the key for item b
+            const aValue = a[key as keyof AllReservationData] // Get the value of the key for item a
+            const bValue = b[key as keyof AllReservationData] // Get the value of the key for item b
 
             // Compare values for strings
             if (typeof aValue === 'string' && typeof bValue === 'string') {
@@ -215,16 +215,16 @@ const BungalowData = ({ data, loading, tableData }: AllTableProps) => {
     return (
         <>
             <div className="lg:flex items-center justify-between mb-4">
-                <h3 className="mb-4 lg:mb-0">Bungalow Management</h3>
+                <h3 className="mb-4 lg:mb-0">Bungalow Reservations</h3>
 
                 <div className="flex flex-col md:flex-row md:items-center gap-1">
                     <Button
                         size="sm"
                         variant="twoTone"
                         icon={<HiOutlinePlusCircle />}
-                        onClick={() => navigate('/AddBungalow')}
+                        onClick={() => navigate('/AddReservation')}
                     >
-                        Add Bungalow
+                        Create Reservation
                     </Button>
                 </div>
             </div>
@@ -254,4 +254,4 @@ const BungalowData = ({ data, loading, tableData }: AllTableProps) => {
     )
 }
 
-export default BungalowData
+export default ReservationData
