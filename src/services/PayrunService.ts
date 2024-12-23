@@ -1,4 +1,3 @@
-import { AxiosHeaders } from 'axios'
 import ApiService from './ApiService'
 import type {
     ConfirmDataTransfer,

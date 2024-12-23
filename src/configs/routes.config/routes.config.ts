@@ -65,6 +65,12 @@ export const protectedRoutes = [
         authority: ['Admin'],
     },
     {
+        key: 'Payments',
+        path: '/Payments',
+        component: lazy(() => import('@/views/payments/Payments')),
+        authority: ['Admin'],
+    },
+    {
         key: 'calculations',
         path: '/calculations',
         component: lazy(() => import('@/views/calculations/Calculations')),
