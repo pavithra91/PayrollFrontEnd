@@ -176,7 +176,22 @@ export const protectedRoutes = [
         ),
         authority: ['Admin'],
     },
-
+    {
+        key: 'CircuitBungalow',
+        path: '/CircuitBungalow',
+        component: lazy(
+            () => import('@/views/reservation/Bungalows/Bungalows')
+        ),
+        authority: ['Admin'],
+    },
+    {
+        key: 'AddBungalow',
+        path: '/AddBungalow',
+        component: lazy(
+            () => import('@/views/reservation/Bungalows/components/AddBungalow')
+        ),
+        authority: ['Admin'],
+    },
     {
         key: 'knowledgebase',
         path: '/knowledgebase',

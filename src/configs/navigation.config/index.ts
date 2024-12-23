@@ -78,6 +78,27 @@ const navigationConfig: NavigationTree[] = [
         authority: ['User', 'Supervisor'],
         subMenu: [],
     },
+    {
+        key: 'CircuitBungalow',
+        path: '',
+        title: 'Circuit Bungalow',
+        translateKey: 'nav.collapseMenu.CircuitBungalow',
+        icon: 'bungalow',
+        type: NAV_ITEM_TYPE_COLLAPSE,
+        authority: ['Admin', 'User', 'Supervisor'],
+        subMenu: [
+            {
+                key: 'collapseMenu.CircuitBungalow',
+                path: '/CircuitBungalow',
+                title: 'Circuit Bungalow',
+                translateKey: 'nav.collapseMenu.CircuitBungalow',
+                icon: '',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: ['Admin'],
+                subMenu: [],
+            },
+        ],
+    },
     // {
     //     key: 'empSplTax',
     //     path: '/empSplTax',
