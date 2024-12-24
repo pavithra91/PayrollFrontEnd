@@ -104,7 +104,7 @@ const navigationConfig: NavigationTree[] = [
                 translateKey: 'nav.collapseMenu.Reservation',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
-                authority: ['Admin', 'User', 'Supervisor'],
+                authority: [],
                 subMenu: [],
             },
         ],

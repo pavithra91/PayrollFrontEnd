@@ -36,6 +36,8 @@ const ReservationData = ({ data, loading, tableData }: AllTableProps) => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
+    console.log(data)
+
     const supervisorDialog = useAppSelector(
         (state) => state.ReservationData.data.newReservationDialog
     )
@@ -90,11 +92,11 @@ const ReservationData = ({ data, loading, tableData }: AllTableProps) => {
                         ></Button>
                     </div>
                     <div className="..">
-                        <Button
+                        {/* <Button
                             size="sm"
                             icon={<HiOutlineCash />}
                             onClick={onRateEdit}
-                        ></Button>
+                        ></Button> */}
                     </div>
                 </div>
             </>
@@ -124,34 +126,12 @@ const ReservationData = ({ data, loading, tableData }: AllTableProps) => {
                 accessorKey: 'totalPax',
             },
             {
-                header: 'bungalowid',
-                accessorKey: 'bungalowid',
+                header: 'bungalow Name',
+                accessorKey: 'bungalowName',
             },
             {
                 header: 'Status',
-                accessorKey: 'isActive',
-                // cell: (props) => {
-                //     const row = props.row.original
-                //     return (
-                //         <div className="flex items-center">
-                //             {row.isCloded ? (
-                //                 <>
-                //                     <Badge className={statusColor['block']} />
-                //                     <span className="ml-2 rtl:mr-2 capitalize">
-                //                         {row.isCloded} Closed
-                //                     </span>
-                //                 </>
-                //             ) : (
-                //                 <>
-                //                     <Badge className={statusColor['active']} />
-                //                     <span className="ml-2 rtl:mr-2 capitalize">
-                //                         {row.isCloded} Open
-                //                     </span>
-                //                 </>
-                //             )}
-                //         </div>
-                //     )
-                // },
+                accessorKey: 'bookingStatus',
             },
             {
                 header: '',

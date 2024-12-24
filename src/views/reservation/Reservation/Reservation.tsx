@@ -35,7 +35,7 @@ const Reservation = () => {
     }, [dispatch, tableData])
 
     const fetchData = () => {
-        dispatch(getReservationData())
+        dispatch(getReservationData(getUserFromLocalStorage().epf))
     }
 
     return (

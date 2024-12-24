@@ -6,3 +6,14 @@ export async function apiGetVoucherData<T>(data: string) {
         method: 'get',
     })
 }
+
+export async function apiProcessVoucherData<
+    T,
+    U extends Record<string, unknown>
+>(data: U) {
+    return ApiService.fetchData<T>({
+        url: '/Payment/process-voucher',
+        method: 'post',
+        data,
+    })
+}

@@ -4,6 +4,7 @@ import {
     apiAddReservation,
     apiEditReservation,
     apiGetReservationData,
+    apiGetRestrictedDates,
 } from '@/services/ReservationService'
 
 export type AllReservationData = {
@@ -79,9 +80,17 @@ export const SLICE_NAME = 'ReservationData'
 
 export const getReservationData = createAsyncThunk(
     SLICE_NAME + '/getReservationDataList',
-    async () => {
+    async (epf: string) => {
         const response =
-            await apiGetReservationData<GetReservationDataResponse>()
+            await apiGetReservationData<GetReservationDataResponse>(epf)
+        return response.data
+    }
+)
+
+export const getRestrictedDate = createAsyncThunk(
+    SLICE_NAME + '/getRestrictedDateList',
+    async () => {
+        const response = await apiGetRestrictedDates()
         return response.data
     }
 )
@@ -95,14 +104,16 @@ export const createReservation = createAsyncThunk(
         >(data)
 
         const ReservatiorResponse =
-            await apiGetReservationData<GetReservationDataResponse>()
+            await apiGetReservationData<GetReservationDataResponse>(
+                data.epf.toString()
+            )
 
         return ReservatiorResponse.data
     }
 )
 
 export const editReservation = createAsyncThunk(
-    SLICE_NAME + '/editBungalowList',
+    SLICE_NAME + '/editReservationList',
     async (data: EditReservationRequest) => {
         const response = await apiEditReservation<
             EditReservationResponse,
@@ -110,7 +121,9 @@ export const editReservation = createAsyncThunk(
         >(data)
 
         const reservationResponse =
-            await apiGetReservationData<GetReservationDataResponse>()
+            await apiGetReservationData<GetReservationDataResponse>(
+                data.epf.toString()
+            )
 
         return reservationResponse.data
     }

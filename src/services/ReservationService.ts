@@ -27,9 +27,16 @@ export async function apiEditBungalow<T, U extends Record<string, unknown>>(
     })
 }
 
-export async function apiGetReservationData<T>() {
+export async function apiGetReservationData<T>(epf: string) {
     return ApiService.fetchData<T>({
-        url: '/Reservation/get-all-reservations',
+        url: '/Reservation/get-my-reservations/' + epf,
+        method: 'get',
+    })
+}
+
+export async function apiGetRestrictedDates<T>() {
+    return ApiService.fetchData<T>({
+        url: '/Reservation/get-disabledates',
         method: 'get',
     })
 }

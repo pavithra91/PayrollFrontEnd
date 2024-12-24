@@ -1,7 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { TableQueries } from '@/@types/common'
-import { apiGetVoucherData } from '@/services/PaymentService'
-
+import {
+    apiGetVoucherData,
+    apiProcessVoucherData,
+} from '@/services/PaymentService'
 
 export type AllPaymentData = {
     id: number
@@ -28,6 +30,16 @@ type GetPaymentDataResponse = {
     total: number
 }
 
+type PaymentRequest = {
+    voucherNo: string
+    bankDate: Date | string
+    processBy: string
+}
+
+type PaymentResponse = {
+    processBy: string
+}
+
 export const initialTableData: TableQueries = {
     total: 0,
     pageIndex: 1,
@@ -44,8 +56,22 @@ export const SLICE_NAME = 'PaymentData'
 export const getPaymentData = createAsyncThunk(
     SLICE_NAME + '/getPaymentDataList',
     async (data: string) => {
-        const response =
-            await apiGetVoucherData<GetPaymentDataResponse>(data)
+        const response = await apiGetVoucherData<GetPaymentDataResponse>(data)
+        return response.data
+    }
+)
+
+export const processPaymentData = createAsyncThunk(
+    SLICE_NAME + '/processPaymentData',
+    async (data: PaymentRequest) => {
+        const response = await apiProcessVoucherData<
+            PaymentResponse,
+            PaymentRequest
+        >(data)
+
+        const ReservatiorResponse =
+            await apiGetVoucherData<GetPaymentDataResponse>(data.voucherNo)
+
         return response.data
     }
 )
@@ -128,12 +154,12 @@ const paymentSlice = createSlice({
             .addCase(getPaymentData.pending, (state) => {
                 state.loading = true
             })
-            // .addCase(createReservation.fulfilled, (state, action) => {
-            //     state.reservationData = action.payload.items
-            // })
-            // .addCase(editReservation.fulfilled, (state, action) => {
-            //     state.reservationData = action.payload.items
-            // })
+        // .addCase(createReservation.fulfilled, (state, action) => {
+        //     state.reservationData = action.payload.items
+        // })
+        // .addCase(editReservation.fulfilled, (state, action) => {
+        //     state.reservationData = action.payload.items
+        // })
     },
 })
 

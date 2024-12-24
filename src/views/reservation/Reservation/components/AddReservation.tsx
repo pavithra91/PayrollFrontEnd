@@ -1,5 +1,5 @@
 import { Field, Form, Formik, FieldProps } from 'formik'
-import { createReservation, useAppDispatch } from '../store'
+import { createReservation, getRestrictedDate, useAppDispatch } from '../store'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Button from '@/components/ui/Button'
 import useCommon from '@/utils/hooks/useCommon'
@@ -15,6 +15,7 @@ import { getBungalowData, useAppSelector } from '../../Bungalows/store'
 import { useEffect, useState } from 'react'
 import { DoubleSidedImage } from '@/components/shared'
 import Dialog from '@/components/ui/Dialog'
+import dayjs from 'dayjs'
 
 const companyOptions: SelectOption[] = [
     { value: 2000, label: '2000' },
@@ -71,6 +72,8 @@ const AddReservation = () => {
 
     const [BungalowData, setBungalowData] = useState<SelectOption[]>([])
     const [termsDialog, settermsDialog] = useState(false)
+    const [restrictedDates, setRestrictedDates] = useState<any>([])
+    const [checkInDate, setCheckInDate] = useState<Date | null>(null)
 
     const [imageSrc, setImageSrc] = useState('') // Default src
 
@@ -81,6 +84,9 @@ const AddReservation = () => {
 
     useEffect(() => {
         fetchData()
+        dispatch(getRestrictedDate()).then((res) => {
+            setRestrictedDates(res.payload)
+        })
     }, [dispatch])
 
     const fetchData = () => {
@@ -141,12 +147,22 @@ const AddReservation = () => {
 
         dispatch(createReservation(values))
 
-        openNotification('success', 'New Bungalow has been added')
+        openNotification('success', 'Your Reservation has been added')
 
         setTimeout(() => {
             setSubmitting(false)
-            navigate('/CircuitBungalow')
+            navigate('/Reservation')
         }, 500)
+    }
+
+    const disableCertainDate = (date: Date) => {
+        const disabledDates = restrictedDates
+
+        return disabledDates.some(
+            (disabledDate: { day: number; month: number }) =>
+                date.getDate() === disabledDate.day &&
+                date.getMonth() === disabledDate.month
+        )
     }
 
     const openNotification = (
@@ -348,6 +364,10 @@ const AddReservation = () => {
                                                     }: FieldProps) => (
                                                         <DatePicker
                                                             field={field}
+                                                            minDate={new Date()}
+                                                            disableDate={
+                                                                disableCertainDate
+                                                            }
                                                             form={form}
                                                             value={field.value}
                                                             onChange={(
@@ -355,6 +375,9 @@ const AddReservation = () => {
                                                             ) => {
                                                                 form.setFieldValue(
                                                                     field.name,
+                                                                    date
+                                                                )
+                                                                setCheckInDate(
                                                                     date
                                                                 )
                                                             }}
@@ -386,6 +409,18 @@ const AddReservation = () => {
                                                         <DatePicker
                                                             field={field}
                                                             form={form}
+                                                            minDate={
+                                                                checkInDate ||
+                                                                new Date()
+                                                            }
+                                                            maxDate={dayjs(
+                                                                checkInDate
+                                                            )
+                                                                .add(2, 'day')
+                                                                .toDate()}
+                                                            disableDate={
+                                                                disableCertainDate
+                                                            }
                                                             value={field.value}
                                                             onChange={(
                                                                 date

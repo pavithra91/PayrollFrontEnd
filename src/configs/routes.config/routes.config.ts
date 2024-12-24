@@ -325,4 +325,23 @@ export const protectedEmployeeRoutes = [
         component: lazy(() => import('@/views/hr/LeaveApprove/LeaveApprove')),
         authority: ['User', 'Supervisor'],
     },
+    {
+        key: 'Reservation',
+        path: '/Reservation',
+        component: lazy(
+            () => import('@/views/reservation/Reservation/Reservation')
+        ),
+        authority: [],
+    },
+    {
+        key: 'AddReservation',
+        path: '/AddReservation',
+        component: lazy(
+            () =>
+                import(
+                    '@/views/reservation/Reservation/components/AddReservation'
+                )
+        ),
+        authority: [],
+    },
 ]

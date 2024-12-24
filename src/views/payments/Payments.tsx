@@ -33,6 +33,8 @@ const Payments = () => {
     const dispatch = useAppDispatch()
     const { getUserFromLocalStorage } = useCommon()
 
+    const [voucherNo, setvoucherNo] = useState('')
+
     const [state, setState] = useState({
         data: [] as AllPaymentData[], // stores the fetched payment data
         isProcess: false, // stores the 'Process' button state
@@ -40,7 +42,9 @@ const Payments = () => {
         isShowData: false, // flag for whether data should be shown
     })
 
-
+    const onProcess = () => {
+        //settermsDialog(true)
+    }
 
     const onSubmit = (
         formValue: FormModel,
@@ -53,6 +57,7 @@ const Payments = () => {
         const values = {
             voucherNo: voucherNo,
         }
+        setvoucherNo(voucherNo)
         dispatch(getPaymentData(values.voucherNo)).then((res: any) => {
             const fetchedData = res.payload.items
 
@@ -88,6 +93,20 @@ const Payments = () => {
                 {message}
             </Notification>
         )
+    }
+    const [confirmDialog, setConfirmDialog] = useState(false)
+    const handleProcess = () => {
+        setConfirmDialog(true)
+    }
+
+    const handleConfirm = (values: { bankTransferDate: string }) => {
+        setConfirmDialog(false)
+        console.log('Processing voucher:', values.bankTransferDate)
+        // Add processing logic here
+    }
+
+    const handleCancel = () => {
+        setConfirmDialog(false)
     }
 
     return (
@@ -155,7 +174,9 @@ const Payments = () => {
                                                             color="emerald-600"
                                                             variant="solid"
                                                             // icon={<HiOutlinePlusCircle />}
-                                                            // onClick={() => navigate('/AddReservation')}
+                                                            onClick={
+                                                                handleProcess
+                                                            }
                                                         >
                                                             Process
                                                         </Button>
@@ -195,7 +216,11 @@ const Payments = () => {
                     </>
                 )}
 
-                <ProcessConfirmationDialog />
+                <ProcessConfirmationDialog
+                    isOpen={confirmDialog}
+                    voucherNo={voucherNo}
+                    onCancel={handleCancel}
+                />
             </AdaptableCard>
         </>
     )
