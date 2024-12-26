@@ -40,6 +40,8 @@ const EditBungalow = () => {
         (state) => state.BungalowData.data.selectedRow
     )
 
+    console.log(selectedRow)
+
     const onSubmit = (
         formValue: FormModel,
         setSubmitting: (isSubmitting: boolean) => void
@@ -354,6 +356,8 @@ const EditBungalow = () => {
                                     >
                                         Cancel
                                     </Button>
+                                    </div>
+                                    <div className="..">
                                     <Button
                                         size="sm"
                                         variant="twoTone"
@@ -363,7 +367,9 @@ const EditBungalow = () => {
                                     >
                                         Edit Bungalow
                                     </Button>
-                                </div>
+                                    </div>
+
+
                             </div>
                         </FormContainer>
                     </Form>

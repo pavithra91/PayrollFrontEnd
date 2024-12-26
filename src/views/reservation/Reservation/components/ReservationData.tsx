@@ -8,18 +8,20 @@ import {
     AllReservationData,
     setSelectedRow,
     toggleNewReservationDialog,
-    toggleEditReservationDialog,
+    toggleCancelReservationDialog,
     useAppDispatch,
     useAppSelector,
+    cancelReservation,
 } from '../store'
 import Button from '@/components/ui/Button'
-import { HiOutlineCash, HiOutlinePlusCircle, HiPencil } from 'react-icons/hi'
+import { HiOutlinePlusCircle, HiOutlineTrash, HiPencil } from 'react-icons/hi'
 import Dialog from '@/components/ui/Dialog'
-// import AddBungalow from './AddBungalow'
-import Badge from '@/components/ui/Badge'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useNavigate } from 'react-router-dom'
-// import EditBungalow from './EditBungalow'
+import ConfirmDialog from '@/components/shared/ConfirmDialog'
+import useCommon from '@/utils/hooks/useCommon'
+import toast from '@/components/ui/toast'
+import Notification from '@/components/ui/Notification'
 
 type AllTableProps = {
     data: AllReservationData[]
@@ -36,14 +38,20 @@ const ReservationData = ({ data, loading, tableData }: AllTableProps) => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
-    console.log(data)
+    const { getUserFromLocalStorage } = useCommon()
 
-    const supervisorDialog = useAppSelector(
-        (state) => state.ReservationData.data.newReservationDialog
+    const[selectedReservation, setSelectedReservation] = useState<number>(0)
+
+    const selectedRow = useAppSelector(
+        (state) => state.ReservationData.data.selectedRow
     )
 
     const editDialog = useAppSelector(
-        (state) => state.ReservationData.data.editReservationDialog
+        (state) => state.ReservationData.data.cancelReservationDialog
+    )
+
+    const cancelDialog = useAppSelector(
+        (state) => state.ReservationData.data.cancelReservationDialog
     )
 
     const onDialogOpen = () => {
@@ -56,7 +64,37 @@ const ReservationData = ({ data, loading, tableData }: AllTableProps) => {
     }
 
     const onEditDialogClose = () => {
-        dispatch(toggleEditReservationDialog(false))
+        // dispatch(toggleEditReservationDialog(false))
+    }
+
+    const onCancel = () => {
+        dispatch(toggleCancelReservationDialog(false))
+    }
+
+    const onCancelReservation = () => {
+        const request = {
+            id : selectedReservation,
+            lastUpdateBy: getUserFromLocalStorage().epf
+        }
+        dispatch(cancelReservation(request)).then((res)=>{
+            dispatch(toggleCancelReservationDialog(false))
+            if(res.payload == "success")
+            {
+                openNotification(
+                    'success',
+                    'Reservation Cancelled Successfully',
+                    'Your reservation has been cancelled. Thank you for your cooperation.'
+                )
+            }
+            else
+            {
+                openNotification(
+                    'danger',
+                    'Reservation Cancellation Failed',
+                    'We encountered an issue while processing your cancellation. Please try again later or contact Secretariat function.'
+                )
+            }
+        })
     }
 
     const [filteredData, setFilteredData] = useState<AllReservationData[]>(
@@ -78,8 +116,9 @@ const ReservationData = ({ data, loading, tableData }: AllTableProps) => {
             navigate('/EditReservation')
         }
 
-        const onRateEdit = () => {
-            dispatch(toggleEditReservationDialog(true))
+        const onCancellation = () => {
+            setSelectedReservation(row.id)
+            dispatch(toggleCancelReservationDialog(true))
         }
         return (
             <>
@@ -92,11 +131,11 @@ const ReservationData = ({ data, loading, tableData }: AllTableProps) => {
                         ></Button>
                     </div>
                     <div className="..">
-                        {/* <Button
+                        <Button
                             size="sm"
-                            icon={<HiOutlineCash />}
-                            onClick={onRateEdit}
-                        ></Button> */}
+                            icon={<HiOutlineTrash />}
+                            onClick={onCancellation}
+                        ></Button>
                     </div>
                 </div>
             </>
@@ -116,10 +155,12 @@ const ReservationData = ({ data, loading, tableData }: AllTableProps) => {
             {
                 header: 'Check In',
                 accessorKey: 'checkInDate',
+                cell: (cell) => (cell.getValue() + '').substring(0, 10),
             },
             {
                 header: 'Check Out',
                 accessorKey: 'checkOutDate',
+                cell: (cell) => (cell.getValue() + '').substring(0, 10),
             },
             {
                 header: 'Pax Count',
@@ -192,6 +233,19 @@ const ReservationData = ({ data, loading, tableData }: AllTableProps) => {
     useEffect(() => {
         setFilteredData(data)
     }, [data])
+
+    const openNotification = (
+        type: 'success' | 'warning' | 'danger' | 'info',
+        title: string,
+        message: string
+    ) => {
+        toast.push(
+            <Notification title={title} type={type}>
+                {message}
+            </Notification>
+        )
+    }
+
     return (
         <>
             <div className="lg:flex items-center justify-between mb-4">
@@ -230,6 +284,22 @@ const ReservationData = ({ data, loading, tableData }: AllTableProps) => {
                 <h4>Edit Rates</h4>
                 <div className="mt-4">{/* <EditRates /> */}</div>
             </Dialog>
+
+            <ConfirmDialog
+                isOpen={cancelDialog}
+                type="danger"
+                title="Are you sure you want to cancel the reservation?"
+                confirmButtonColor="red-600"
+                onClose={onCancel}
+                onRequestClose={onCancel}
+                onCancel={onCancel}
+                onConfirm={onCancelReservation}
+            >
+                Please note that if you cancel the booking during the
+                cancellation period, you may be subject to a cancellation
+                charge. Once you proceed with the cancellation, the action
+                cannot be undone..
+            </ConfirmDialog>
         </>
     )
 }

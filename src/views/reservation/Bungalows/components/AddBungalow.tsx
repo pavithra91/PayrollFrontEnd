@@ -10,6 +10,7 @@ import { RichTextEditor } from '@/components/shared'
 import Checkbox from '@/components/ui/Checkbox'
 import { DatePicker } from '@/components/ui/DatePicker'
 import { useNavigate } from 'react-router-dom'
+import * as Yup from 'yup'
 
 type FormModel = {
     bungalowName: string

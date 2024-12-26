@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { TableQueries } from '@/@types/common'
 import {
     apiAddReservation,
+    apiCancelReservation,
     apiEditReservation,
     apiGetReservationData,
     apiGetRestrictedDates,
@@ -20,6 +21,8 @@ export type AllReservationData = {
     totalPax: number
     contactNumber_1: string
     contactNumber_2?: string
+    nicNo?: string
+    comment?:string
     createdBy: string
 }
 
@@ -35,6 +38,8 @@ type AddReservationRequest = {
     totalPax: number
     contactNumber_1: string
     contactNumber_2?: string
+    nicNo?: string
+    comment?:string
     createdBy: string
 }
 
@@ -50,6 +55,13 @@ type EditReservationRequest = {
     totalPax: number
     contactNumber_1: string
     contactNumber_2?: string
+    nicNo?: string
+    comment?:string
+    lastUpdateBy: string
+}
+
+type CancelReservationRequest = {
+    id: number
     lastUpdateBy: string
 }
 
@@ -129,13 +141,30 @@ export const editReservation = createAsyncThunk(
     }
 )
 
+export const cancelReservation = createAsyncThunk(
+    SLICE_NAME + '/cancelReservation',
+    async (data: CancelReservationRequest) => {
+        const response = await apiCancelReservation<
+            EditReservationResponse,
+            CancelReservationRequest
+        >(data)
+
+        const reservationResponse =
+            await apiGetReservationData<GetReservationDataResponse>(
+                data.lastUpdateBy.toString()
+            )
+
+        return response.data
+    }
+)
+
 export type ReservationState = {
     loading: boolean
     reservationData: ReservationData
     tableData: TableQueries
     selectedRow: Partial<Row>
     newReservationDialog: boolean
-    editReservationDialog: boolean
+    cancelReservationDialog: boolean
 }
 
 const initialState: ReservationState = {
@@ -144,7 +173,7 @@ const initialState: ReservationState = {
     tableData: initialTableData,
     selectedRow: {},
     newReservationDialog: false,
-    editReservationDialog: false,
+    cancelReservationDialog: false,
 }
 
 const reservationSlice = createSlice({
@@ -160,8 +189,8 @@ const reservationSlice = createSlice({
         toggleNewReservationDialog: (state, action) => {
             state.newReservationDialog = action.payload
         },
-        toggleEditReservationDialog: (state, action) => {
-            state.editReservationDialog = action.payload
+        toggleCancelReservationDialog: (state, action) => {
+            state.cancelReservationDialog = action.payload
         },
         setSelectedRow: (state, action) => {
             state.selectedRow = action.payload
@@ -183,6 +212,9 @@ const reservationSlice = createSlice({
             .addCase(editReservation.fulfilled, (state, action) => {
                 state.reservationData = action.payload.items
             })
+            .addCase(cancelReservation.fulfilled, (state, action) => {
+                //state.reservationData = action.payload.items
+            })
     },
 })
 
@@ -190,7 +222,7 @@ export const {
     setReservationData,
     setTableData,
     toggleNewReservationDialog,
-    toggleEditReservationDialog,
+    toggleCancelReservationDialog,
     setSelectedRow,
 } = reservationSlice.actions
 

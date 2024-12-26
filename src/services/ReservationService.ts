@@ -27,6 +27,17 @@ export async function apiEditBungalow<T, U extends Record<string, unknown>>(
     })
 }
 
+export async function apiUpdateBungalowRates<T, U extends Record<string, unknown>>(
+    data: U
+) {
+    console.log(data)
+    return ApiService.fetchData<T>({
+        url: '/Reservation/update-bungalow-rates/' + data.bungalowId,
+        method: 'put',
+        data,
+    })
+}
+
 export async function apiGetReservationData<T>(epf: string) {
     return ApiService.fetchData<T>({
         url: '/Reservation/get-my-reservations/' + epf,
@@ -57,6 +68,16 @@ export async function apiEditReservation<T, U extends Record<string, unknown>>(
     return ApiService.fetchData<T>({
         url: '/Reservation/update-reservation/' + data.id,
         method: 'put',
+        data,
+    })
+}
+
+export async function apiCancelReservation<T, U extends Record<string, unknown>>(
+    data: U
+) {
+    return ApiService.fetchData<T>({
+        url: '/Reservation/cancel-reservation',
+        method: 'post',
         data,
     })
 }

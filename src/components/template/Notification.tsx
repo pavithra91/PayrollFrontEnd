@@ -39,6 +39,7 @@ type NotificationList = {
     locationLabel: string
     status: string
     readed: boolean
+    notificationType?: number
 }
 
 type NotificationResponse = {

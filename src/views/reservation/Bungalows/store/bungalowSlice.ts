@@ -4,7 +4,18 @@ import {
     apiAddBungalow,
     apiEditBungalow,
     apiGetBungalowData,
+    apiUpdateBungalowRates,
 } from '@/services/ReservationService'
+type rates = {
+    rateId: number
+    categoryName: string
+    amount: number
+}
+export type bungalowRates = {
+    bungalowId:number
+    rates: rates[]
+    lastupdateBy?: string
+}
 
 export type AllBungalowData = {
     id: number
@@ -21,6 +32,7 @@ export type AllBungalowData = {
     reopenDate?: string | null
     contactNumber: string
     createdBy: string
+    bungalowRates: bungalowRates
 }
 
 type AddBungalowRequest = {
@@ -97,10 +109,10 @@ export const addBungalow = createAsyncThunk(
             AddBungalowRequest
         >(data)
 
-        const supervisorResponse =
+        const bungalowDataResponse =
             await apiGetBungalowData<GetBungalowDataResponse>()
 
-        return supervisorResponse.data
+        return bungalowDataResponse.data
     }
 )
 
@@ -112,10 +124,22 @@ export const editBungalow = createAsyncThunk(
             EditBungalowRequest
         >(data)
 
-        const supervisorResponse =
+        const bungalowDataResponse =
             await apiGetBungalowData<GetBungalowDataResponse>()
 
-        return supervisorResponse.data
+        return bungalowDataResponse.data
+    }
+)
+
+export const updateBungalowRates = createAsyncThunk(
+    SLICE_NAME + '/updateBungalowRates',
+    async (data: bungalowRates) => {
+        const response = await apiUpdateBungalowRates<
+            AddBungalowResponse,
+            bungalowRates
+        >(data)
+
+        return response.data
     }
 )
 

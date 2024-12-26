@@ -9,24 +9,31 @@ import { Input } from '@/components/ui/Input'
 import { DatePicker } from '@/components/ui/DatePicker'
 import { useNavigate } from 'react-router-dom'
 import { Select } from '@/components/ui/Select'
-import { SelectOption } from '@/@types/common'
 import Checkbox from '@/components/ui/Checkbox'
 import { getBungalowData, useAppSelector } from '../../Bungalows/store'
 import { useEffect, useState } from 'react'
 import { DoubleSidedImage } from '@/components/shared'
 import Dialog from '@/components/ui/Dialog'
 import dayjs from 'dayjs'
+import * as Yup from 'yup'
 
 const companyOptions: SelectOption[] = [
     { value: 2000, label: '2000' },
     { value: 3000, label: '3000' },
 ]
 
+interface SelectOption {
+    label: string
+    value: number
+    occupancy?: number
+}
+
 const categoryOptions: SelectOption[] = [
     { value: 1, label: 'CPSTL Employee' },
     { value: 2, label: 'CPC Employee' },
     { value: 3, label: 'Retired Employee' },
     { value: 4, label: 'External Reservation' },
+    { value: 5, label: 'Official Reservation' },
 ]
 
 type FormModel = {
@@ -40,31 +47,55 @@ type FormModel = {
     contactNumber_1: string
     contactNumber_2?: string
     isAgree: boolean
+    totalPax: number
+    maxOccupany: number
+    nicNo?: string
+    comment?: string
 }
 
-// const validationSchema = Yup.object().shape({
-//     bungalowName: Yup.string().required('Bungalow name is required'),
-//     price: Yup.number()
-//         .typeError('Price must be a number')
-//         .required('Price is required'),
-//     rooms: Yup.number()
-//         .typeError('Number of rooms must be a number')
-//         .required('Number of rooms is required'),
-//     maxBookingPeriod: Yup.number()
-//         .typeError('Maximum booking period must be a number')
-//         .required('Maximum booking period is required'),
-//     isCloded: Yup.boolean(),
-//     reopenDate: Yup.date()
-//         .nullable()
-//         .when('isCloded', {
-//             is: true,
-//             then: (schema) =>
-//                 schema.required('Start date for maintenance is required'),
-//         }),
-//     pax: Yup.number()
-//         .typeError('Number of pax must be a number')
-//         .required('Number of pax is required'),
-// })
+const validationSchema = Yup.object().shape({
+    category: Yup.string()
+        .test(
+            'not-zero',
+            'Please select a Reservation Type',
+            (value) => value !== '0'
+        )
+        .required('Please select a Reservation Type'),
+    bungalowid: Yup.string()
+        .test('not-zero', 'Please select a Bungalow', (value) => value !== '0')
+        .required('Please select a Bungalow'),
+    noOfAdults: Yup.number()
+        .min(1, 'Number of pax is required')
+        .typeError('Number of pax must be a number')
+        .required('Number of pax is required'),
+    checkInDate: Yup.date()
+        .required('Check-in date is required')
+        .min(new Date(), 'Check-in date cannot be in the past')
+        .test(
+            'is-valid-check-in',
+            'Invalid check-in date',
+            function (value: any) {
+                return value && !isNaN(Date.parse(value))
+            }
+        ),
+    checkOutDate: Yup.date()
+        .required('Check-out date is required')
+        .min(new Date(), 'Check-out date cannot be in the past')
+        .test(
+            'is-valid-check-out',
+            'Invalid check-out date',
+            function (value: any) {
+                return value && !isNaN(Date.parse(value))
+            }
+        ),
+    contactNumber_1: Yup.string().required('Contact number is required'),
+    nicNo: Yup.string()
+        .when('category', {
+            is: '4',
+            then: (schema) => schema.required('NIC is required'),
+            otherwise: (schema) => schema.notRequired(),
+        }),
+})
 
 const AddReservation = () => {
     const dispatch = useAppDispatch()
@@ -75,7 +106,7 @@ const AddReservation = () => {
     const [restrictedDates, setRestrictedDates] = useState<any>([])
     const [checkInDate, setCheckInDate] = useState<Date | null>(null)
 
-    const [imageSrc, setImageSrc] = useState('') // Default src
+    const [imageSrc, setImageSrc] = useState('')
 
     const handleSelectChange = (value: string) => {
         const newSrc = '/img/bungalow/' + value + '.jpg'
@@ -91,11 +122,13 @@ const AddReservation = () => {
 
     const fetchData = () => {
         var data = dispatch(getBungalowData())
+
         data.then((res) => {
             const listItems = (res?.payload as { items: any[] })?.items ?? []
             const formattedData = listItems.map((item: any) => ({
                 value: item.id,
                 label: item.bungalowName,
+                occupancy: item.maxOccupancy,
             }))
             setBungalowData(formattedData)
         })
@@ -109,7 +142,6 @@ const AddReservation = () => {
 
     const onTermsDialogClose = () => {
         settermsDialog(false)
-        //dispatch(toggleEditBungalowDialog(false))
     }
 
     const onSubmit = (
@@ -128,7 +160,44 @@ const AddReservation = () => {
             noOfChildren,
             contactNumber_1,
             contactNumber_2,
+            totalPax,
+            maxOccupany,
+            isAgree,
+            nicNo,
+            comment,
         } = formValue
+
+        if (totalPax > maxOccupany) {
+            openNotification(
+                'warning',
+                'Total number of people cannot exceed the maximum occupancy limit.'
+            )
+            return
+        }
+
+        if (dayjs(checkInDate) > dayjs(checkOutDate)) {
+            openNotification(
+                'warning',
+                'Check-out date must be after check-in date.'
+            )
+            return
+        }
+
+        const date1 = dayjs(checkOutDate)
+        const date2 = dayjs(checkInDate)
+
+        if (date1.diff(date2, 'days') > 2) {
+            openNotification('danger', 'You can not Select more than 3 days.')
+            return
+        }
+
+        if (!isAgree) {
+            openNotification(
+                'danger',
+                'You must agree to the terms and conditions!'
+            )
+            return
+        }
 
         const values = {
             epf: getUserFromLocalStorage().epf,
@@ -142,6 +211,8 @@ const AddReservation = () => {
             totalPax: noOfAdults + noOfChildren,
             contactNumber_1: contactNumber_1,
             contactNumber_2: contactNumber_2,
+            nicNo: nicNo,
+            comment: comment,
             createdBy: getUserFromLocalStorage().userID,
         }
 
@@ -199,12 +270,15 @@ const AddReservation = () => {
                     contactNumber_1: '',
                     contactNumber_2: '',
                     isAgree: false,
+                    maxOccupany: 0,
+                    nicNo: '',
+                    comment:'',
                 }}
                 enableReinitialize={true}
-                //validationSchema={validationSchema}
+                validationSchema={validationSchema}
                 onSubmit={(values, { setSubmitting }) => {
                     onSubmit(values, setSubmitting)
-                    console.log(values)
+                    //console.log(values)
                     setSubmitting(true)
                 }}
             >
@@ -252,6 +326,24 @@ const AddReservation = () => {
                                                     )}
                                                 </Field>
                                             </FormItem>
+                                        </div>
+                                        <div className="..">
+                                            {values.category == 4 && (
+                                                <FormItem
+                                                    label="NIC Number:"
+                                                    invalid={
+                                                        touched.nicNo &&
+                                                        !!errors.nicNo
+                                                    }
+                                                    errorMessage={errors.nicNo}
+                                                >
+                                                    <Field
+                                                        as={Input}
+                                                        name="nicNo"
+                                                        placeholder="Enter NIC Number"
+                                                    />
+                                                </FormItem>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -328,6 +420,11 @@ const AddReservation = () => {
                                                                 form.setFieldValue(
                                                                     field.name,
                                                                     option?.value
+                                                                )
+                                                                setFieldValue(
+                                                                    'maxOccupany',
+                                                                    option?.occupancy ||
+                                                                        0
                                                                 )
                                                                 handleSelectChange(
                                                                     option?.value.toString() ||
@@ -452,6 +549,25 @@ const AddReservation = () => {
                                                     as={Input}
                                                     name="noOfAdults"
                                                     placeholder="Enter No Of Adults"
+                                                    onChange={(
+                                                        e: React.ChangeEvent<HTMLInputElement>
+                                                    ) => {
+                                                        const value =
+                                                            Number(
+                                                                e.target.value
+                                                            ) || 0
+                                                        setFieldValue(
+                                                            'noOfAdults',
+                                                            value
+                                                        )
+
+                                                        // Update totalNoOfPeople dynamically
+                                                        setFieldValue(
+                                                            'totalPax',
+                                                            value +
+                                                                values.noOfChildren
+                                                        )
+                                                    }}
                                                 />
                                             </FormItem>
                                         </div>
@@ -470,6 +586,25 @@ const AddReservation = () => {
                                                     as={Input}
                                                     name="noOfChildren"
                                                     placeholder="No Of Children"
+                                                    onChange={(
+                                                        e: React.ChangeEvent<HTMLInputElement>
+                                                    ) => {
+                                                        const value =
+                                                            Number(
+                                                                e.target.value
+                                                            ) || 0
+                                                        setFieldValue(
+                                                            'noOfChildren',
+                                                            value
+                                                        )
+
+                                                        // Update totalPax dynamically
+                                                        setFieldValue(
+                                                            'totalPax',
+                                                            value +
+                                                                values.noOfAdults
+                                                        )
+                                                    }}
                                                 />
                                             </FormItem>
                                         </div>
@@ -514,13 +649,30 @@ const AddReservation = () => {
                                             </FormItem>
                                         </div>
                                     </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
+                                    <FormItem
+                                            label="Special Requests"
+                                            invalid={
+                                                errors.comment && touched.comment
+                                            }
+                                            errorMessage={errors.comment}
+                                        >
+                                            <Field
+                                                textArea
+                                                type="text"
+                                                autoComplete="off"
+                                                name="comment"
+                                                placeholder="Special Requests"
+                                                component={Input}
+                                            />
+                                        </FormItem>
+                                        </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="..">
                                             <div className="grid grid-flow-col auto-cols-max gap-4">
                                                 <div className="..">
                                                     <FormItem
-                                                        //label="Agree to Terms & Condition:"
                                                         invalid={
                                                             touched.isAgree &&
                                                             !!errors.isAgree

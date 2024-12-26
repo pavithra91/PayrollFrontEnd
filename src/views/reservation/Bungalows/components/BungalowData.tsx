@@ -20,6 +20,7 @@ import Badge from '@/components/ui/Badge'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useNavigate } from 'react-router-dom'
 import EditBungalow from './EditBungalow'
+import EditRates from './EditRates'
 
 type AllTableProps = {
     data: AllBungalowData[]
@@ -35,6 +36,8 @@ const statusColor: Record<string, string> = {
 const BungalowData = ({ data, loading, tableData }: AllTableProps) => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
+
+    //console.log(data)
 
     const bungalowDialog = useAppSelector(
         (state) => state.BungalowData.data.newBungalowDialog
@@ -77,6 +80,7 @@ const BungalowData = ({ data, loading, tableData }: AllTableProps) => {
         }
 
         const onRateEdit = () => {
+            dispatch(setSelectedRow(row))
             dispatch(toggleEditBungalowDialog(true))
         }
         return (
@@ -122,10 +126,6 @@ const BungalowData = ({ data, loading, tableData }: AllTableProps) => {
             {
                 header: 'Capacity',
                 accessorKey: 'noOfRooms',
-            },
-            {
-                header: 'Cost',
-                accessorKey: 'perDayCost',
             },
             {
                 header: 'Status',
@@ -248,7 +248,7 @@ const BungalowData = ({ data, loading, tableData }: AllTableProps) => {
                 onRequestClose={onEditDialogClose}
             >
                 <h4>Edit Rates</h4>
-                <div className="mt-4">{/* <EditRates /> */}</div>
+                <div className="mt-4"><EditRates /></div>
             </Dialog>
         </>
     )
