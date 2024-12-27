@@ -39,7 +39,7 @@ type NotificationList = {
     locationLabel: string
     status: string
     readed: boolean
-    notificationType?: number
+    notificationType: string
 }
 
 type NotificationResponse = {
@@ -196,7 +196,7 @@ const _Notification = ({ className }: { className?: string }) => {
 
     const onMarkAsRead = useCallback(
         (id: string) => {
-            var selected
+            let selected: NotificationList | undefined
             const list = notificationList.map((item) => {
                 if (item.id === id) {
                     item.readed = true
@@ -210,7 +210,17 @@ const _Notification = ({ className }: { className?: string }) => {
             if (!hasUnread) {
                 setUnreadNotification(false)
             }
-            navigate('/LeaveApprove', { state: { notification: selected } })
+
+            if (selected && selected.notificationType === 'Leave') {
+                navigate('/LeaveApprove', { state: { notification: selected } })
+            } else if (
+                selected &&
+                selected.notificationType === 'Reservation'
+            ) {
+                navigate('/BookingConfirmation', {
+                    state: { notification: selected },
+                })
+            }
         },
         [notificationList]
     )

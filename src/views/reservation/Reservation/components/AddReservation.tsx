@@ -10,31 +10,47 @@ import { DatePicker } from '@/components/ui/DatePicker'
 import { useNavigate } from 'react-router-dom'
 import { Select } from '@/components/ui/Select'
 import Checkbox from '@/components/ui/Checkbox'
-import { getBungalowData, useAppSelector } from '../../Bungalows/store'
+import {
+    getBungalowData,
+    getCategoryData,
+    useAppSelector,
+} from '../../Bungalows/store'
 import { useEffect, useState } from 'react'
 import { DoubleSidedImage } from '@/components/shared'
 import Dialog from '@/components/ui/Dialog'
 import dayjs from 'dayjs'
 import * as Yup from 'yup'
+import { Card } from '@/components/ui/Card'
+import { Table } from '@/components/ui/Table'
+import {
+    useReactTable,
+    getCoreRowModel,
+    flexRender,
+    createColumnHelper,
+} from '@tanstack/react-table'
+
+const { Tr, Td, TBody, THead, Th } = Table
+
+type BungalowRate = {
+    categoryName: string
+    amount: number
+}
 
 const companyOptions: SelectOption[] = [
     { value: 2000, label: '2000' },
     { value: 3000, label: '3000' },
 ]
 
+type Rate = {
+    rates: BungalowRate[]
+}
+
 interface SelectOption {
     label: string
     value: number
     occupancy?: number
+    bungalowRates?: Rate
 }
-
-const categoryOptions: SelectOption[] = [
-    { value: 1, label: 'CPSTL Employee' },
-    { value: 2, label: 'CPC Employee' },
-    { value: 3, label: 'Retired Employee' },
-    { value: 4, label: 'External Reservation' },
-    { value: 5, label: 'Official Reservation' },
-]
 
 type FormModel = {
     companyCode: number
@@ -89,12 +105,11 @@ const validationSchema = Yup.object().shape({
             }
         ),
     contactNumber_1: Yup.string().required('Contact number is required'),
-    nicNo: Yup.string()
-        .when('category', {
-            is: '4',
-            then: (schema) => schema.required('NIC is required'),
-            otherwise: (schema) => schema.notRequired(),
-        }),
+    nicNo: Yup.string().when('category', {
+        is: '4',
+        then: (schema) => schema.required('NIC is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
 })
 
 const AddReservation = () => {
@@ -102,6 +117,8 @@ const AddReservation = () => {
     const navigate = useNavigate()
 
     const [BungalowData, setBungalowData] = useState<SelectOption[]>([])
+    const [categoryData, setCategoryData] = useState<SelectOption[]>([])
+    const [data, setRateData] = useState<BungalowRate[]>([])
     const [termsDialog, settermsDialog] = useState(false)
     const [restrictedDates, setRestrictedDates] = useState<any>([])
     const [checkInDate, setCheckInDate] = useState<Date | null>(null)
@@ -111,6 +128,17 @@ const AddReservation = () => {
     const handleSelectChange = (value: string) => {
         const newSrc = '/img/bungalow/' + value + '.jpg'
         setImageSrc(newSrc)
+
+        const arr: BungalowRate[] = []
+        BungalowData.map((items: any) => {
+            if (items.value == value) {
+                items.bungalowRates.rates.map((items: any) => {
+                    arr.push(items)
+                })
+            }
+        })
+
+        setRateData(arr)
     }
 
     useEffect(() => {
@@ -122,15 +150,39 @@ const AddReservation = () => {
 
     const fetchData = () => {
         var data = dispatch(getBungalowData())
+        var categories = dispatch(getCategoryData())
 
         data.then((res) => {
             const listItems = (res?.payload as { items: any[] })?.items ?? []
+            //console.log(listItems)
             const formattedData = listItems.map((item: any) => ({
                 value: item.id,
                 label: item.bungalowName,
                 occupancy: item.maxOccupancy,
+                bungalowRates: item.bungalowRates,
             }))
+
             setBungalowData(formattedData)
+        })
+
+        categories.then((res) => {
+            const listItems = (res?.payload as { items: any[] })?.items ?? []
+            var formattedData = listItems.map((item: any) => ({
+                value: item.id,
+                label: item.categoryName,
+            }))
+
+            getUserFromLocalStorage().authority.map((items: any) => {
+                if (items === 'User') {
+                    formattedData = formattedData.filter(
+                        (item: any) => item.value !== 5
+                    )
+
+                    console.log(formattedData)
+                }
+            })
+
+            setCategoryData(formattedData)
         })
     }
 
@@ -250,6 +302,35 @@ const AddReservation = () => {
         )
     }
 
+    const BungalowRateColumn = ({ row }: { row: BungalowRate }) => {
+        return (
+            <div className="flex items-center gap-2">
+                <span className="font-semibold">{row.categoryName}</span>
+            </div>
+        )
+    }
+
+    const columnHelper = createColumnHelper<BungalowRate>()
+
+    const columns = [
+        columnHelper.accessor('categoryName', {
+            header: 'Reservation Type',
+            cell: (props) => {
+                const row = props.row.original
+                return <BungalowRateColumn row={row} />
+            },
+        }),
+        columnHelper.accessor('amount', {
+            header: 'Rate',
+        }),
+    ]
+
+    const table = useReactTable({
+        data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+    })
+
     return (
         <>
             <div className="lg:flex items-center justify-between mb-4">
@@ -272,7 +353,7 @@ const AddReservation = () => {
                     isAgree: false,
                     maxOccupany: 0,
                     nicNo: '',
-                    comment:'',
+                    comment: '',
                 }}
                 enableReinitialize={true}
                 validationSchema={validationSchema}
@@ -307,9 +388,9 @@ const AddReservation = () => {
                                                             field={field}
                                                             form={form}
                                                             options={
-                                                                categoryOptions
+                                                                categoryData
                                                             }
-                                                            value={categoryOptions.filter(
+                                                            value={categoryData.filter(
                                                                 (option) =>
                                                                     option.value ===
                                                                     values.category
@@ -650,10 +731,11 @@ const AddReservation = () => {
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
-                                    <FormItem
+                                        <FormItem
                                             label="Special Requests"
                                             invalid={
-                                                errors.comment && touched.comment
+                                                errors.comment &&
+                                                touched.comment
                                             }
                                             errorMessage={errors.comment}
                                         >
@@ -666,7 +748,7 @@ const AddReservation = () => {
                                                 component={Input}
                                             />
                                         </FormItem>
-                                        </div>
+                                    </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="..">
@@ -713,11 +795,101 @@ const AddReservation = () => {
                                 </div>
 
                                 <div className="lg:col-span-1">
-                                    <DoubleSidedImage
-                                        width={350}
-                                        src={imageSrc}
-                                        darkModeSrc="/img/others/leave.png"
-                                    />
+                                    {data && data.length > 0 && (
+                                        <>
+                                            <Card>
+                                                <DoubleSidedImage
+                                                    width={350}
+                                                    src={imageSrc}
+                                                    darkModeSrc="/img/others/leave.png"
+                                                />
+                                            </Card>
+                                            <Card className="mt-4">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <h4>Bungalow Rates</h4>
+                                                </div>
+                                                <Table>
+                                                    <THead>
+                                                        {table
+                                                            .getHeaderGroups()
+                                                            .map(
+                                                                (
+                                                                    headerGroup
+                                                                ) => (
+                                                                    <Tr
+                                                                        key={
+                                                                            headerGroup.id
+                                                                        }
+                                                                    >
+                                                                        {headerGroup.headers.map(
+                                                                            (
+                                                                                header
+                                                                            ) => {
+                                                                                return (
+                                                                                    <Th
+                                                                                        key={
+                                                                                            header.id
+                                                                                        }
+                                                                                        colSpan={
+                                                                                            header.colSpan
+                                                                                        }
+                                                                                    >
+                                                                                        {flexRender(
+                                                                                            header
+                                                                                                .column
+                                                                                                .columnDef
+                                                                                                .header,
+                                                                                            header.getContext()
+                                                                                        )}
+                                                                                    </Th>
+                                                                                )
+                                                                            }
+                                                                        )}
+                                                                    </Tr>
+                                                                )
+                                                            )}
+                                                    </THead>
+                                                    <TBody>
+                                                        {table
+                                                            .getRowModel()
+                                                            .rows.map((row) => {
+                                                                return (
+                                                                    <Tr
+                                                                        key={
+                                                                            row.id
+                                                                        }
+                                                                    >
+                                                                        {row
+                                                                            .getVisibleCells()
+                                                                            .map(
+                                                                                (
+                                                                                    cell
+                                                                                ) => {
+                                                                                    return (
+                                                                                        <Td
+                                                                                            key={
+                                                                                                cell.id
+                                                                                            }
+                                                                                        >
+                                                                                            {flexRender(
+                                                                                                cell
+                                                                                                    .column
+                                                                                                    .columnDef
+                                                                                                    .cell,
+                                                                                                cell.getContext()
+                                                                                            )}
+                                                                                        </Td>
+                                                                                    )
+                                                                                }
+                                                                            )}
+                                                                    </Tr>
+                                                                )
+                                                            })}
+                                                    </TBody>
+                                                </Table>
+                                            </Card>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">

@@ -344,4 +344,15 @@ export const protectedEmployeeRoutes = [
         ),
         authority: [],
     },
+    {
+        key: 'BookingConfirmation',
+        path: '/BookingConfirmation',
+        component: lazy(
+            () =>
+                import(
+                    '@/views/reservation/BookingConfirmation/BookingConfirmation'
+                )
+        ),
+        authority: ['User', 'Supervisor'],
+    },
 ]

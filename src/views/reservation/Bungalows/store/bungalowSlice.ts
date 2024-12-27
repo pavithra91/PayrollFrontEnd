@@ -4,18 +4,9 @@ import {
     apiAddBungalow,
     apiEditBungalow,
     apiGetBungalowData,
+    apiGetCategoryData,
     apiUpdateBungalowRates,
 } from '@/services/ReservationService'
-type rates = {
-    rateId: number
-    categoryName: string
-    amount: number
-}
-export type bungalowRates = {
-    bungalowId:number
-    rates: rates[]
-    lastupdateBy?: string
-}
 
 export type AllBungalowData = {
     id: number
@@ -49,6 +40,17 @@ type AddBungalowRequest = {
     reopenDate?: string | null
     contactNumber: string
     createdBy: string
+}
+
+type rates = {
+    rateId: number
+    categoryName: string
+    amount: number
+}
+export type bungalowRates = {
+    bungalowId: number
+    rates: rates[]
+    lastupdateBy?: string
 }
 
 type EditBungalowRequest = {
@@ -97,6 +99,14 @@ export const getBungalowData = createAsyncThunk(
     SLICE_NAME + '/getBungalowDataList',
     async () => {
         const response = await apiGetBungalowData<GetBungalowDataResponse>()
+        return response.data
+    }
+)
+
+export const getCategoryData = createAsyncThunk(
+    SLICE_NAME + '/getCategoryDataList',
+    async () => {
+        const response = await apiGetCategoryData<GetBungalowDataResponse>()
         return response.data
     }
 )
