@@ -4,9 +4,11 @@ import {
     apiAddBungalow,
     apiEditBungalow,
     apiGetBungalowData,
+    apiGetBungalowDataById,
     apiGetCategoryData,
     apiUpdateBungalowRates,
 } from '@/services/ReservationService'
+import { boolean } from 'yup'
 
 export type AllBungalowData = {
     id: number
@@ -82,6 +84,23 @@ type GetBungalowDataResponse = {
     total: number
 }
 
+type BungalowResponse = {
+    id: number
+    companyCode: number
+    bungalowName: string
+    description: string
+    address: string
+    mainImg: string
+    noOfRooms: number
+    maxBookingPeriod: number
+    maxOccupancy: number
+    isCloded: boolean
+    reopenDate: string | Date
+    contactNumber: string
+    createdBy: string
+    bungalowRates: bungalowRates
+}
+
 export const initialTableData: TableQueries = {
     total: 0,
     pageIndex: 1,
@@ -99,6 +118,14 @@ export const getBungalowData = createAsyncThunk(
     SLICE_NAME + '/getBungalowDataList',
     async () => {
         const response = await apiGetBungalowData<GetBungalowDataResponse>()
+        return response.data
+    }
+)
+
+export const getBungalowDataById = createAsyncThunk(
+    SLICE_NAME + '/getBungalowDataById',
+    async (id: number) => {
+        const response = await apiGetBungalowDataById<BungalowResponse>(id)
         return response.data
     }
 )

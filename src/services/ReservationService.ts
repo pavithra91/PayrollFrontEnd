@@ -7,6 +7,13 @@ export async function apiGetBungalowData<T>() {
     })
 }
 
+export async function apiGetBungalowDataById<T>(id: number) {
+    return ApiService.fetchData<T>({
+        url: '/Reservation/get-bungalow/' + id,
+        method: 'get',
+    })
+}
+
 export async function apiGetCategoryData<T>() {
     return ApiService.fetchData<T>({
         url: '/Reservation/get-all-categories',
