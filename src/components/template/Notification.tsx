@@ -14,6 +14,7 @@ import {
     HiOutlineClipboardCheck,
     HiOutlineBan,
     HiOutlineMailOpen,
+    HiOutlinePhotograph,
 } from 'react-icons/hi'
 import { Link, useNavigate } from 'react-router-dom'
 import isLastChild from '@/utils/isLastChild'
@@ -25,6 +26,7 @@ import acronym from '@/utils/acronym'
 import useCommon from '@/utils/hooks/useCommon'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { FaTrophy } from 'react-icons/fa'
 
 dayjs.extend(relativeTime)
 
@@ -96,6 +98,30 @@ const notificationTypeAvatar = (data: {
                             <HiOutlineBan />
                         )
                     }
+                />
+            )
+        case 3:
+            return (
+                <Avatar
+                    shape="circle"
+                    className="bg-yellow-100 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-100"
+                    icon={<FaTrophy />}
+                />
+            )
+        case 4:
+            return (
+                <Avatar
+                    shape="circle"
+                    className="bg-Purple-100 text-Purple-600 dark:bg-Purple-500/20 dark:text-Purple-100"
+                    icon={<HiOutlinePhotograph />}
+                />
+            )
+        case 5:
+            return (
+                <Avatar
+                    shape="circle"
+                    className="bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-100"
+                    icon={<HiOutlineBan />}
                 />
             )
         default:

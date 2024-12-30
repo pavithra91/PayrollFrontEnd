@@ -1,24 +1,16 @@
-import { useEffect, useState } from 'react'
-import {
-    AdaptableCard,
-    Container,
-    DoubleSidedImage,
-    IconText,
-    Loading,
-} from '@/components/shared'
+import { useEffect, useRef, useState } from 'react'
+import { Container, DoubleSidedImage, IconText } from '@/components/shared'
 import { injectReducer } from '@/store'
-import reducer, {
-    AllReservationData,
-    getReservationData,
-    useAppDispatch,
-    useAppSelector,
-} from './store'
+import reducer, { getReservationData, useAppDispatch } from './store'
 import { useLocation } from 'react-router-dom'
 import useCommon from '@/utils/hooks/useCommon'
 import isEmpty from 'lodash/isEmpty'
 import Tag from '@/components/ui/Tag'
 import classNames from 'classnames'
 import {
+    HiBadgeCheck,
+    HiCheckCircle,
+    HiDownload,
     HiHome,
     HiOutlineCalendar,
     HiOutlineCash,
@@ -32,6 +24,9 @@ import dayjs from 'dayjs'
 import Card from '@/components/ui/Card'
 import { AllBungalowData, getBungalowDataById } from '../Bungalows/store'
 import parse from 'html-react-parser'
+import Button from '@/components/ui/Button'
+import jsPDF from 'jspdf'
+
 injectReducer('ReservationData', reducer)
 
 type ReservationData = {
@@ -61,6 +56,7 @@ const BookingConfirmation = () => {
     const { getUserFromLocalStorage } = useCommon()
 
     const [data, setData] = useState<ReservationData>()
+    const [isPending, setIsPending] = useState(false)
     const [bungalowData, setBungalowData] = useState<AllBungalowData>()
 
     const { notification } = location.state || {}
@@ -69,11 +65,16 @@ const BookingConfirmation = () => {
         if (notification) {
             const result = dispatch(getReservationData(notification.reference))
             result.then((res) => {
-                console.log(res.payload)
                 const reservation: ReservationData =
                     (res?.payload as ReservationData) || []
 
                 setData(reservation)
+
+                if (reservation.bookingStatus != 'Pending') {
+                    setIsPending(true)
+                } else {
+                    setIsPending(false)
+                }
             })
 
             const bungalowResult = dispatch(
@@ -85,7 +86,6 @@ const BookingConfirmation = () => {
 
                 setBungalowData(bungalow)
             })
-            console.log(data)
         }
     }, [dispatch, notification])
 
@@ -117,33 +117,115 @@ const BookingConfirmation = () => {
         },
     }
 
+    const confirmBooking = () => {}
+
+    const generatePDF = () => {
+        if (data != undefined && bungalowData != undefined) {
+            const pdf = new jsPDF()
+
+            // Add Reservation Header
+            pdf.setFontSize(16)
+            pdf.text('Reservation Details', 10, 10)
+            pdf.setFontSize(12)
+            pdf.text(`Reservation Number: #${data.id}`, 10, 20)
+            pdf.text(
+                `Status: ${reservationStatus[data.bookingStatus || ''].label}`,
+                10,
+                30
+            )
+
+            // Add Booking Details
+            pdf.text('Booking Details:', 10, 40)
+            pdf.text(`Check-In Date: ${data.checkInDate}`, 10, 50)
+            pdf.text(`Check-Out Date: ${data.checkOutDate}`, 10, 60)
+            pdf.text(`Booked By: ${data.createdBy}`, 10, 70)
+            pdf.text(`Booking Type: ${data.reservationCategory}`, 10, 80)
+            pdf.text(
+                `No. of Guests: ${data.noOfAdults} Adults, ${data.noOfChildren} Children`,
+                10,
+                90
+            )
+
+            // Add Bungalow Details
+            pdf.text('Bungalow Details:', 10, 110)
+            pdf.text(`Name: ${bungalowData.bungalowName}`, 10, 120)
+            pdf.text(`Contact: ${bungalowData.contactNumber}`, 10, 130)
+            pdf.text(`Address: ${bungalowData.address}`, 10, 140)
+
+            // Add Reservation Cost
+            pdf.text('Cost:', 10, 160)
+            pdf.text(`Amount: ${data.reservationCost}`, 10, 170)
+
+            // Add Additional Information
+            pdf.text('Additional Information:', 10, 190)
+            const additionalInfo = bungalowData.description.replace(
+                /<[^>]+>/g,
+                ''
+            )
+            pdf.text(additionalInfo, 10, 200)
+
+            // Save the PDF
+            pdf.save(`reservation-${data.id}.pdf`)
+        }
+    }
+
+    if (!bungalowData) {
+        return <p>Loading bungalow data...</p>
+    }
+
     return (
         <>
             <Container className="h-full">
                 {!isEmpty(data) && (
                     <>
                         <div className="mb-6">
-                            <div className="flex items-center mb-2">
-                                <h3>
-                                    <span>Reservation Number: </span>
-                                    <span className="ltr:ml-2 rtl:mr-2">
-                                        #{data.id}
-                                    </span>
-                                </h3>
-                                <Tag
-                                    className={classNames(
-                                        'border-0 rounded-md ltr:ml-2 rtl:mr-2',
-                                        reservationStatus[
-                                            data.bookingStatus || ''
-                                        ].class
-                                    )}
-                                >
-                                    {
-                                        reservationStatus[
-                                            data.bookingStatus || ''
-                                        ].label
-                                    }
-                                </Tag>
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                                <div className="lg:col-span-9">
+                                    <div className="flex items-center mb-2">
+                                        <h3>
+                                            <span>Reservation Number: </span>
+                                            <span className="ltr:ml-2 rtl:mr-2">
+                                                #{data.id}
+                                            </span>
+                                        </h3>
+                                        <Tag
+                                            className={classNames(
+                                                'border-0 rounded-md ltr:ml-2 rtl:mr-2',
+                                                reservationStatus[
+                                                    data.bookingStatus || ''
+                                                ].class
+                                            )}
+                                        >
+                                            {
+                                                reservationStatus[
+                                                    data.bookingStatus || ''
+                                                ].label
+                                            }
+                                        </Tag>
+                                    </div>
+                                </div>
+
+                                <div className="lg:col-span-2">
+                                    <Button
+                                        block
+                                        disabled={isPending}
+                                        size="sm"
+                                        icon={<HiCheckCircle />}
+                                        onClick={confirmBooking}
+                                    >
+                                        Confirm Booking
+                                    </Button>
+                                </div>
+                                <div className="lg:col-span-1">
+                                    <Button
+                                        block
+                                        size="sm"
+                                        icon={<HiDownload />}
+                                        onClick={generatePDF}
+                                    >
+                                        Export
+                                    </Button>
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">

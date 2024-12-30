@@ -22,7 +22,7 @@ export type AllReservationData = {
     contactNumber_1: string
     contactNumber_2?: string
     nicNo?: string
-    comment?:string
+    comment?: string
     createdBy: string
 }
 
@@ -39,7 +39,7 @@ type AddReservationRequest = {
     contactNumber_1: string
     contactNumber_2?: string
     nicNo?: string
-    comment?:string
+    comment?: string
     createdBy: string
 }
 
@@ -56,7 +56,7 @@ type EditReservationRequest = {
     contactNumber_1: string
     contactNumber_2?: string
     nicNo?: string
-    comment?:string
+    comment?: string
     lastUpdateBy: string
 }
 
