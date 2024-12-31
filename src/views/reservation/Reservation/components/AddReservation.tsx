@@ -268,14 +268,19 @@ const AddReservation = () => {
             createdBy: getUserFromLocalStorage().userID,
         }
 
-        dispatch(createReservation(values))
+        dispatch(createReservation(values)).then((res) => {
+            console.log(res)
+            if (res.payload.items.length != 0) {
+                openNotification('success', 'Your Reservation has been added')
 
-        openNotification('success', 'Your Reservation has been added')
-
-        setTimeout(() => {
-            setSubmitting(false)
-            navigate('/Reservation')
-        }, 500)
+                // setTimeout(() => {
+                //     setSubmitting(false)
+                //     navigate('/Reservation')
+                // }, 500)
+            } else {
+                openNotification('danger', 'The dates are already booked.')
+            }
+        })
     }
 
     const disableCertainDate = (date: Date) => {
