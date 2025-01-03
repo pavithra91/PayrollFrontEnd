@@ -1,5 +1,5 @@
 import { Field, Form, Formik, FieldProps } from 'formik'
-import { createReservation, getRestrictedDate, useAppDispatch } from '../store'
+import { createReservation, getRestrictedDate, getRestrictedDatesById, useAppDispatch } from '../store'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Button from '@/components/ui/Button'
 import useCommon from '@/utils/hooks/useCommon'
@@ -136,6 +136,11 @@ const AddReservation = () => {
                     arr.push(items)
                 })
             }
+        })
+
+        dispatch(getRestrictedDatesById(parseInt(value, 10))).then((res) => {
+            console.log(res.payload)
+            setRestrictedDates(res.payload)
         })
 
         setRateData(arr)

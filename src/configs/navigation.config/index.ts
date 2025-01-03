@@ -107,6 +107,16 @@ const navigationConfig: NavigationTree[] = [
                 authority: [],
                 subMenu: [],
             },
+            {
+                key: 'collapseMenu.ReservationPayments',
+                path: '/ReservationPayments',
+                title: 'Reservation Payments',
+                translateKey: 'nav.collapseMenu.ReservationPayments',
+                icon: '',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: ['Admin'],
+                subMenu: [],
+            },
         ],
     },
     // {

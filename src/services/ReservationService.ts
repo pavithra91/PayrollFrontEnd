@@ -74,6 +74,13 @@ export async function apiGetRestrictedDates<T>() {
     })
 }
 
+export async function apiGetRestrictedDatesById<T>(id: number) {
+    return ApiService.fetchData<T>({
+        url: '/Reservation/get-disabledatesbyId/' + id,
+        method: 'get',
+    })
+}
+
 export async function apiAddReservation<T, U extends Record<string, unknown>>(
     data: U
 ) {
@@ -104,3 +111,15 @@ export async function apiCancelReservation<
         data,
     })
 }
+
+export async function apiGetPaymentData<T, U extends Record<string, unknown>>(
+    data: U
+) {
+    return ApiService.fetchData<T>({
+        url: '/Reservation/get-all-payments',
+        method: 'post',
+        data,
+    })
+}
+
+

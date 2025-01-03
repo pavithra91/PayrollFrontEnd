@@ -8,7 +8,6 @@ import {
     apiGetCategoryData,
     apiUpdateBungalowRates,
 } from '@/services/ReservationService'
-import { boolean } from 'yup'
 
 export type AllBungalowData = {
     id: number

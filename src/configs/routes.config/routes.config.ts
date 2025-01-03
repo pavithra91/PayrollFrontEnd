@@ -227,6 +227,17 @@ export const protectedRoutes = [
         authority: [],
     },
     {
+        key: 'ReservationPayments',
+        path: '/ReservationPayments',
+        component: lazy(
+            () =>
+                import(
+                    '@/views/reservation/ReservationPayments/ReservationPayments'
+                )
+        ),
+        authority: [],
+    },    
+    {
         key: 'knowledgebase',
         path: '/knowledgebase',
         component: lazy(

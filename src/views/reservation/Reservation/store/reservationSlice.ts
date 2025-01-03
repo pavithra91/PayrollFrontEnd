@@ -6,6 +6,7 @@ import {
     apiEditReservation,
     apiGetReservationData,
     apiGetRestrictedDates,
+    apiGetRestrictedDatesById,
 } from '@/services/ReservationService'
 
 export type AllReservationData = {
@@ -103,6 +104,14 @@ export const getRestrictedDate = createAsyncThunk(
     SLICE_NAME + '/getRestrictedDateList',
     async () => {
         const response = await apiGetRestrictedDates()
+        return response.data
+    }
+)
+
+export const getRestrictedDatesById = createAsyncThunk(
+    SLICE_NAME + '/getRestrictedDatesById',
+    async (id: number) => {
+        const response = await apiGetRestrictedDatesById(id)
         return response.data
     }
 )

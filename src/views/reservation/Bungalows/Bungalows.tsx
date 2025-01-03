@@ -24,8 +24,6 @@ const Bungalows = () => {
         (state) => state.BungalowData.data.tableData
     )
 
-    // console.log(data)
-
     useEffect(() => {
         fetchData()
     }, [dispatch, tableData])
