@@ -1,8 +1,9 @@
 import ApiService from './ApiService'
 
 export async function apiGetVoucherData<T>(data: string) {
+    const encodedId = encodeURIComponent(data)
     return ApiService.fetchData<T>({
-        url: '/Payment/get-voucher/' + data,
+        url: '/Payment/get-voucher/' + encodedId,
         method: 'get',
     })
 }

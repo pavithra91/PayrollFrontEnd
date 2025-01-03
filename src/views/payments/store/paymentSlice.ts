@@ -57,6 +57,7 @@ export const getPaymentData = createAsyncThunk(
     SLICE_NAME + '/getPaymentDataList',
     async (data: string) => {
         const response = await apiGetVoucherData<GetPaymentDataResponse>(data)
+        console.log(response.data)
         return response.data
     }
 )
