@@ -5,13 +5,12 @@ import { apiGetPaymentData } from '@/services/ReservationService'
 export type AllPaymentData = {
     reservationId: number
     epf?: string
-    checkInDate: Date | string
-    checkOutDate: Date | string
+    checkInDate: string
+    checkOutDate: string
     categoryName: string
     status: string
     amount: number
     chargeType: string
-
 }
 
 type GetPaymentRequest = {
@@ -46,7 +45,7 @@ export const getPaymentData = createAsyncThunk(
     SLICE_NAME + '/getPaymentData',
     async (data: GetPaymentRequest) => {
         const response = await apiGetPaymentData<
-        GetPaymentDataResponse,
+            GetPaymentDataResponse,
             GetPaymentRequest
         >(data)
 
@@ -101,12 +100,12 @@ const reservationPaymentSlice = createSlice({
             .addCase(getPaymentData.pending, (state) => {
                 state.loading = true
             })
-            // .addCase(addBungalow.fulfilled, (state, action) => {
-            //     state.bungalowData = action.payload.items
-            // })
-            // .addCase(editBungalow.fulfilled, (state, action) => {
-            //     state.bungalowData = action.payload.items
-            // })
+        // .addCase(addBungalow.fulfilled, (state, action) => {
+        //     state.bungalowData = action.payload.items
+        // })
+        // .addCase(editBungalow.fulfilled, (state, action) => {
+        //     state.bungalowData = action.payload.items
+        // })
     },
 })
 

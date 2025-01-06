@@ -119,7 +119,7 @@ const LumpsumTaxView = () => {
             return
         }
         downloadExcel({
-            fileName: 'LuumpSumTax_report - ' + dataFromChild?.period,
+            fileName: 'LumpSumTax_report - ' + dataFromChild?.period,
             sheet: dataFromChild?.period + '',
             tablePayload: {
                 header,

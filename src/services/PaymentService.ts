@@ -18,3 +18,13 @@ export async function apiProcessVoucherData<
         data,
     })
 }
+
+export async function apiResetVoucherData<T, U extends Record<string, unknown>>(
+    data: U
+) {
+    return ApiService.fetchData<T>({
+        url: '/Payment/reset-voucher',
+        method: 'post',
+        data,
+    })
+}

@@ -3,6 +3,7 @@ import type { TableQueries } from '@/@types/common'
 import {
     apiGetVoucherData,
     apiProcessVoucherData,
+    apiResetVoucherData,
 } from '@/services/PaymentService'
 
 export type AllPaymentData = {
@@ -34,6 +35,11 @@ type PaymentRequest = {
     voucherNo: string
     bankDate: Date | string
     processBy: string
+}
+
+type ResetPaymentRequest = {
+    voucherNo: string
+    lastUpdateBy: string
 }
 
 type PaymentResponse = {
@@ -72,6 +78,21 @@ export const processPaymentData = createAsyncThunk(
 
         const ReservatiorResponse =
             await apiGetVoucherData<GetPaymentDataResponse>(data.voucherNo)
+
+        return response.data
+    }
+)
+
+export const resetPaymentData = createAsyncThunk(
+    SLICE_NAME + '/resetPaymentData',
+    async (data: ResetPaymentRequest) => {
+        const response = await apiResetVoucherData<
+            PaymentResponse,
+            ResetPaymentRequest
+        >(data)
+
+        // const ReservatiorResponse =
+        //     await apiGetVoucherData<GetPaymentDataResponse>(data.voucherNo)
 
         return response.data
     }

@@ -1,22 +1,18 @@
-import { AllPaymentData, useAppDispatch, useAppSelector } from "../store"
+import { AllPaymentData, useAppDispatch, useAppSelector } from '../store'
 import DataTable, {
     ColumnDef,
     OnSortParam,
 } from '@/components/shared/DataTable'
-import useThemeClass from "@/utils/hooks/useThemeClass"
 import { useEffect, useMemo, useState } from 'react'
 
 type AllTableProps = {
     data: AllPaymentData[]
 }
 
-
 const PaymentData = ({ data }: AllTableProps) => {
     const dispatch = useAppDispatch()
-    
-    const loading = useAppSelector(
-        (state) => state.PaymentData.data.loading
-    )
+
+    const loading = useAppSelector((state) => state.PaymentData.data.loading)
 
     const tableData = useAppSelector(
         (state) => state.PaymentData.data.tableData
@@ -131,7 +127,8 @@ const PaymentData = ({ data }: AllTableProps) => {
     useEffect(() => {
         setFilteredData(data)
     }, [data])
-return(<>
+    return (
+        <>
             <DataTable
                 columns={columns}
                 data={paginatedData}
@@ -144,7 +141,8 @@ return(<>
                 onPaginationChange={onPaginationChange}
                 onSort={onSort}
             />
-</>)
+        </>
+    )
 }
 
 export default PaymentData

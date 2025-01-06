@@ -8,6 +8,7 @@ import { injectReducer } from '@/store'
 import reducer, {
     AllPaymentData,
     getPaymentData,
+    resetPaymentData,
     useAppDispatch,
     useAppSelector,
 } from './store'
@@ -109,6 +110,25 @@ const Payments = () => {
         setConfirmDialog(false)
     }
 
+    const resetVoucher = () => {
+        const values = {
+            voucherNo: voucherNo,
+            lastUpdateBy: getUserFromLocalStorage().epf,
+        }
+
+        dispatch(resetPaymentData(values)).then((res: any) => {
+            console.log(res.payload)
+
+            if (res.payload == true) {
+                setState((prevState) => ({
+                    ...prevState,
+                    isReset: false,
+                }))
+            } else {
+            }
+        })
+    }
+
     return (
         <>
             <AdaptableCard>
@@ -195,7 +215,9 @@ const Payments = () => {
                                                             color="red-600"
                                                             variant="solid"
                                                             // icon={<HiOutlinePlusCircle />}
-                                                            // onClick={() => navigate('/AddReservation')}
+                                                            onClick={
+                                                                resetVoucher
+                                                            }
                                                         >
                                                             Reset
                                                         </Button>

@@ -15,6 +15,12 @@ import DatePickerRange from '@/components/ui/DatePicker/DatePickerRange'
 import { getCategoryData } from '../Bungalows/store'
 import { SelectOption } from '@/@types/common'
 import { Select } from '@/components/ui/Select'
+import PaymentData from './components/PaymentData'
+import { HiDownload } from 'react-icons/hi'
+import { Link } from 'react-router-dom'
+import { downloadExcel } from 'react-export-table-to-excel'
+import toast from '@/components/ui/toast'
+import Notification from '@/components/ui/Notification'
 
 injectReducer('PaymentData', reducer)
 
@@ -30,7 +36,7 @@ const ReservationPayments = () => {
 
     const [categoryData, setCategoryData] = useState<SelectOption[]>([])
     const [dateRange, setDateRange] = useState<[Date | null, Date | null]>()
-    const [paymentData, setPaymentData] = useState<AllPaymentData>()
+    const [paymentData, setPaymentData] = useState<AllPaymentData[]>([])
 
     const data = useAppSelector((state) => state.PaymentData.data.paymentData)
 
@@ -83,6 +89,49 @@ const ReservationPayments = () => {
         })
     }
 
+    const header = [
+        'Reservation Id',
+        'EPF',
+        'Check In Date',
+        'Check Out Date',
+        '',
+        'Category',
+        'Status',
+        'Amount',
+        'Payment Type',
+    ]
+
+    function handleDownloadExcel() {
+        if (paymentData?.length == 0) {
+            openNotification(
+                'danger',
+                'No Data Found',
+                'Please load data to download'
+            )
+            return
+        }
+        downloadExcel({
+            fileName: 'Payment_report - ',
+            sheet: 'Test',
+            tablePayload: {
+                header,
+                body: paymentData,
+            },
+        })
+    }
+
+    const openNotification = (
+        type: 'success' | 'warning' | 'danger' | 'info',
+        title: string,
+        message: string
+    ) => {
+        toast.push(
+            <Notification title={title} type={type}>
+                {message}
+            </Notification>
+        )
+    }
+
     return (
         <>
             <AdaptableCard>
@@ -119,99 +168,130 @@ const ReservationPayments = () => {
                                     <FormContainer>
                                         <div className="grid grid-cols-1 gap-4">
                                             <div className="flex justify-end gap-4">
-                                                <FormItem
-                                                    invalid={
-                                                        errors.category &&
-                                                        touched.category
-                                                    }
-                                                    errorMessage={
-                                                        errors.category
-                                                    }
-                                                >
-                                                    <Field name="category">
-                                                        {({
-                                                            field,
-                                                            form,
-                                                        }: FieldProps) => (
-                                                            <Select<SelectOption>
-                                                                size="sm"
-                                                                field={field}
-                                                                form={form}
-                                                                options={
-                                                                    categoryData
-                                                                }
-                                                                value={categoryData.filter(
-                                                                    (option) =>
-                                                                        option.value ===
-                                                                        values.category
+                                                <div className="flex flex-wrap gap-4 justify-end">
+                                                    <div className="...">
+                                                        <FormItem
+                                                            invalid={
+                                                                errors.category &&
+                                                                touched.category
+                                                            }
+                                                            errorMessage={
+                                                                errors.category
+                                                            }
+                                                        >
+                                                            <Field name="category">
+                                                                {({
+                                                                    field,
+                                                                    form,
+                                                                }: FieldProps) => (
+                                                                    <Select<SelectOption>
+                                                                        size="sm"
+                                                                        field={
+                                                                            field
+                                                                        }
+                                                                        form={
+                                                                            form
+                                                                        }
+                                                                        options={
+                                                                            categoryData
+                                                                        }
+                                                                        value={categoryData.filter(
+                                                                            (
+                                                                                option
+                                                                            ) =>
+                                                                                option.value ===
+                                                                                values.category
+                                                                        )}
+                                                                        onChange={(
+                                                                            option
+                                                                        ) => {
+                                                                            form.setFieldValue(
+                                                                                field.name,
+                                                                                option?.value
+                                                                            )
+                                                                        }}
+                                                                    />
                                                                 )}
-                                                                onChange={(
-                                                                    option
-                                                                ) => {
-                                                                    form.setFieldValue(
-                                                                        field.name,
-                                                                        option?.value
-                                                                    )
-                                                                }}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                </FormItem>
-
-                                                <FormItem
-                                                    invalid={
-                                                        touched.fromDate &&
-                                                        !!errors.fromDate
-                                                    }
-                                                    errorMessage={
-                                                        errors.fromDate
-                                                    }
-                                                >
-                                                    <Field name="fromDate">
-                                                    {({ field }: { field: any }) => (
-                                                            <DatePickerRange
-                                                                {...field} 
-                                                                size="sm"
-                                                                startDate={
-                                                                    values.fromDate
-                                                                }
-                                                                endDate={
-                                                                    values.toDate
-                                                                }
-                                                                value={
-                                                                    dateRange
-                                                                }
-                                                                onChange={(
-                                                                    dates
-                                                                ) => {
-                                                                    
-                                                                    const [
-                                                                        start,
-                                                                        end,
-                                                                    ] = dates
-                                                                    setFieldValue(
-                                                                        'fromDate',
-                                                                        start
-                                                                    )
-                                                                    setFieldValue(
-                                                                        'toDate',
-                                                                        end
-                                                                    )
-                                                                }}
-                                                                placeholder="Select date range"
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                </FormItem>
-                                                <Button
-                                                    size="sm"
-                                                    variant="twoTone"
-                                                    type="submit"
-                                                    // icon={<HiOutlinePlusCircle />}
-                                                    // onClick={() => navigate('/AddReservation')}
-                                                >
-                                                    Load Data
-                                                </Button>
+                                                            </Field>
+                                                        </FormItem>
+                                                    </div>
+                                                    <div className="flex justify-end">
+                                                        <FormItem
+                                                            invalid={
+                                                                touched.fromDate &&
+                                                                !!errors.fromDate
+                                                            }
+                                                            errorMessage={
+                                                                errors.fromDate
+                                                            }
+                                                        >
+                                                            <Field name="fromDate">
+                                                                {({
+                                                                    field,
+                                                                }: {
+                                                                    field: any
+                                                                }) => (
+                                                                    <DatePickerRange
+                                                                        {...field}
+                                                                        size="sm"
+                                                                        startDate={
+                                                                            values.fromDate
+                                                                        }
+                                                                        endDate={
+                                                                            values.toDate
+                                                                        }
+                                                                        value={
+                                                                            dateRange
+                                                                        }
+                                                                        onChange={(
+                                                                            dates
+                                                                        ) => {
+                                                                            const [
+                                                                                start,
+                                                                                end,
+                                                                            ] =
+                                                                                dates
+                                                                            setFieldValue(
+                                                                                'fromDate',
+                                                                                start
+                                                                            )
+                                                                            setFieldValue(
+                                                                                'toDate',
+                                                                                end
+                                                                            )
+                                                                        }}
+                                                                        placeholder="Select date range"
+                                                                    />
+                                                                )}
+                                                            </Field>
+                                                        </FormItem>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <Button
+                                                            size="sm"
+                                                            variant="twoTone"
+                                                            type="submit"
+                                                            // icon={<HiOutlinePlusCircle />}
+                                                            // onClick={() => navigate('/AddReservation')}
+                                                        >
+                                                            Load Data
+                                                        </Button>
+                                                    </div>
+                                                    <div className="...">
+                                                        <Button
+                                                            block
+                                                            size="sm"
+                                                            onClick={
+                                                                handleDownloadExcel
+                                                            }
+                                                            icon={
+                                                                <HiDownload />
+                                                            }
+                                                        >
+                                                            Export
+                                                        </Button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </FormContainer>
@@ -220,6 +300,12 @@ const ReservationPayments = () => {
                         </Formik>
                     </div>
                 </div>
+
+                {paymentData.length != 0 && (
+                    <>
+                        <PaymentData data={paymentData} />
+                    </>
+                )}
             </AdaptableCard>
         </>
     )

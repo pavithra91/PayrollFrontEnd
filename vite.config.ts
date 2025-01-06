@@ -16,6 +16,7 @@ export default defineConfig({
                 target: 'https://localhost:44360/',
                 //target: 'http://13.234.120.62/',
                 //target: 'http://internal-cpstl-poc-internal-alb-1716520389.ap-southeast-1.elb.amazonaws.com/',
+                //target: 'http://cpstl-poc-ebankng-alb-664275385.ap-southeast-1.elb.amazonaws.com/',
                 changeOrigin: true,
                 secure: false,
             },
