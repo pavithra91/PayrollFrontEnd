@@ -75,10 +75,7 @@ export const processPaymentData = createAsyncThunk(
             PaymentResponse,
             PaymentRequest
         >(data)
-
-        const ReservatiorResponse =
-            await apiGetVoucherData<GetPaymentDataResponse>(data.voucherNo)
-
+        
         return response.data
     }
 )

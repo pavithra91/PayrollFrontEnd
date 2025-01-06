@@ -7,6 +7,8 @@ import DatePicker from '@/components/ui/DatePicker'
 import { useState } from 'react'
 import { processPaymentData, useAppDispatch } from '../store'
 import useCommon from '@/utils/hooks/useCommon'
+import toast from '@/components/ui/toast'
+import Notification from '@/components/ui/Notification'
 
 type ProcessConfirmationDialogProps = {
     isOpen: boolean
@@ -38,9 +40,36 @@ const ProcessConfirmationDialog: React.FC<ProcessConfirmationDialogProps> = ({
         } as PaymentRequest
 
         dispatch(processPaymentData(values)).then((res: any) => {
-            console.log(res)
+            if(res.payload == true)
+            {
+                openNotification(
+                    'success',
+                    'Success',
+                    'Payment Process Successfully'
+                )
+            }
+            else
+            {
+                openNotification(
+                    'danger',
+                    'Error Occurred',
+                    'Failed to Process Data'
+                )
+            }
             onCancel()
         })
+    }
+
+    const openNotification = (
+        type: 'success' | 'warning' | 'danger' | 'info',
+        title: string,
+        message: string
+    ) => {
+        toast.push(
+            <Notification title={title} type={type}>
+                {message}
+            </Notification>
+        )
     }
 
     return (

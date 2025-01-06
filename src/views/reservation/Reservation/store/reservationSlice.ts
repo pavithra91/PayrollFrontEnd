@@ -129,7 +129,7 @@ export const createReservation = createAsyncThunk(
                 data.epf.toString()
             )
 
-        return ReservatiorResponse.data
+        return response.data
     }
 )
 
@@ -216,7 +216,7 @@ const reservationSlice = createSlice({
                 state.loading = true
             })
             .addCase(createReservation.fulfilled, (state, action) => {
-                state.reservationData = action.payload.items
+                state.reservationData = action.payload
             })
             .addCase(editReservation.fulfilled, (state, action) => {
                 state.reservationData = action.payload.items

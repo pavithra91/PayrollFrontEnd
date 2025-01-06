@@ -67,7 +67,7 @@ const Payments = () => {
                 data: fetchedData,
                 isProcess:
                     fetchedData.length > 0 &&
-                    fetchedData[0].status === 'Transferred',
+                    fetchedData[0].status === 'Transferred' || fetchedData[0].status === 'ReOpened',
                 isReset:
                     fetchedData.length > 0 &&
                     fetchedData[0].status === 'Processed',
@@ -77,34 +77,33 @@ const Payments = () => {
             setSubmitting(false)
 
             if (fetchedData.length === 0) {
-                openNotification('warning', 'No Voucher data available')
+                openNotification('warning', 'warning', 'No Voucher data available')
             }
         })
     }
 
     const openNotification = (
         type: 'success' | 'warning' | 'danger' | 'info',
+        title: string,
         message: string
     ) => {
         toast.push(
-            <Notification
-                title={type.charAt(0).toUpperCase() + type.slice(1)}
-                type={type}
-            >
+            <Notification title={title} type={type}>
                 {message}
             </Notification>
         )
     }
     const [confirmDialog, setConfirmDialog] = useState(false)
+
     const handleProcess = () => {
         setConfirmDialog(true)
     }
 
-    const handleConfirm = (values: { bankTransferDate: string }) => {
-        setConfirmDialog(false)
-        console.log('Processing voucher:', values.bankTransferDate)
-        // Add processing logic here
-    }
+    // const handleConfirm = (values: { bankTransferDate: string }) => {
+    //     setConfirmDialog(false)
+    //     console.log('Processing voucher:', values.bankTransferDate)
+    //     // Add processing logic here
+    // }
 
     const handleCancel = () => {
         setConfirmDialog(false)
@@ -120,11 +119,27 @@ const Payments = () => {
             console.log(res.payload)
 
             if (res.payload == true) {
-                setState((prevState) => ({
-                    ...prevState,
-                    isReset: false,
-                }))
+                dispatch(getPaymentData(values.voucherNo)).then((res: any) => {
+                    const fetchedData = res.payload.items
+        
+                    setState((prevState) => ({
+                        ...prevState,
+                        data: fetchedData,
+                        isProcess:
+                            fetchedData.length > 0 &&
+                            fetchedData[0].status === 'Transferred' || fetchedData[0].status === 'ReOpened',
+                        isReset:
+                            fetchedData.length > 0 &&
+                            fetchedData[0].status === 'Processed',
+                        isShowData: fetchedData.length > 0,
+                    }))
+                })
             } else {
+                openNotification(
+                    'danger',
+                    'Error Occurred',
+                    'Failed to Reset Data'
+                )
             }
         })
     }

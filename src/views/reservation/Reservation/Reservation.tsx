@@ -28,8 +28,6 @@ const Reservation = () => {
         (state) => state.ReservationData.data.tableData
     )
 
-    // console.log(data)
-
     useEffect(() => {
         fetchData()
     }, [dispatch, tableData])

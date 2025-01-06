@@ -71,6 +71,7 @@ const PaymentData = ({ data }: AllTableProps) => {
             {
                 header: 'Bank Transfer Date',
                 accessorKey: 'bankTransferDate',
+                cell: (cell) => (cell.getValue() + '').substring(0, 10),
             },
             {
                 header: 'Status',
