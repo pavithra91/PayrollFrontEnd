@@ -10,7 +10,7 @@ const appsNavigationConfig: NavigationTree[] = [
         translateKey: 'nav.collapseMenu.PayrollActivities',
         icon: '',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: ['Admin'],
+        authority: [ADMIN],
         subMenu: [],
     },
 ]

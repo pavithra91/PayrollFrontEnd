@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { TableQueries } from '@/@types/common'
-import { apiGetScheduleJobsData } from '@/services/SettingsService'
+import { apiGetScheduleJobsData, apiPauseScheduleJobData, apiRunScheduleJobData } from '@/services/SettingsService'
 
 export type AllScheduleJobsData = {
     id: number
@@ -18,6 +18,11 @@ type ScheduleJobsData = AllScheduleJobsData[]
 type GetScheduleJobsDataResponse = {
     items: ScheduleJobsData
     total: number
+}
+
+type ScheduleJobRequest = {
+    jobName: string
+    lastUpdateBy?:string
 }
 
 export const initialTableData: TableQueries = {
@@ -39,6 +44,26 @@ export const getScheduleJobsData = createAsyncThunk(
         const response =
             await apiGetScheduleJobsData<GetScheduleJobsDataResponse>()
         //console.log(response.data)
+        return response.data
+    }
+)
+
+export const pauseScheduleJob = createAsyncThunk(
+    SLICE_NAME + '/pauseScheduleJob',
+    async (jobName: ScheduleJobRequest) => {
+        const response =
+            await apiPauseScheduleJobData(jobName)
+        console.log(response.data)
+        return response.data
+    }
+)
+
+export const runScheduleJob = createAsyncThunk(
+    SLICE_NAME + '/runScheduleJob',
+    async (jobName: ScheduleJobRequest) => {
+        const response =
+            await apiRunScheduleJobData(jobName)
+        console.log(response.data)
         return response.data
     }
 )

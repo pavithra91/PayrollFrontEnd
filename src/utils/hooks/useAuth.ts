@@ -64,7 +64,7 @@ function useAuth() {
                 //    }
                 const redirectUrl = query.get(REDIRECT_URL_KEY)
 
-                if (resp.data._userDetails.role == 'Admin') {
+                if (resp.data._userDetails.role == 'Admin' || resp.data._userDetails.role == 'FIAdmin') {
                     navigate(
                         redirectUrl
                             ? redirectUrl

@@ -34,6 +34,7 @@ const _UserDropdown = ({ className }: CommonProps) => {
             await new Promise((resolve) => setTimeout(resolve, 100))
 
             const user = JSON.parse(localStorage.getItem('admin') ?? '')
+
             const userID = JSON.parse(user.auth).user.userID
             const userRole = JSON.parse(user.auth).user.authority[0]
             const userName = JSON.parse(user.auth).user.userName

@@ -7,6 +7,7 @@ import {
 import { Field, Form, Formik, FieldProps } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const JobContent = () => {
     const dispatch = useAppDispatch()
@@ -43,6 +44,7 @@ const JobContent = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <FormItem label="Job Name">
                                     <Field
+                                        disabled
                                         type="text"
                                         autoComplete="jobName"
                                         name="jobName"
@@ -52,6 +54,7 @@ const JobContent = () => {
                                 </FormItem>
                                 <FormItem label="Job Group">
                                     <Field
+                                        disabled
                                         type="text"
                                         autoComplete="jobGroup"
                                         name="jobGroup"
@@ -70,6 +73,17 @@ const JobContent = () => {
                                     component={Input}
                                 />
                             </FormItem>
+                            <div className="text-right mt-2">
+                                <Button
+                                    size="sm"
+                                    variant="twoTone"
+                                    type="submit"
+                                    // icon={<HiOutlinePlusCircle />}
+                                    // onClick={onDialogOpen}
+                                >
+                                    Save
+                                </Button>
+                            </div>
                         </FormContainer>
                     </Form>
                 )}

@@ -35,3 +35,31 @@ export async function apiGetScheduleJobsData<T>() {
         method: 'get',
     })
 }
+
+export async function apiPauseScheduleJobData<T, U extends Record<string, unknown>>(
+    data: U
+) {
+    return ApiService.fetchData<T>({
+        url: '/JobSchedule/pause-job',
+        method: 'post',
+        data,
+    })
+}
+
+export async function apiRunScheduleJobData<T, U extends Record<string, unknown>>(
+    data: U
+) {
+    return ApiService.fetchData<T>({
+        url: '/JobSchedule/run-job',
+        method: 'post',
+        data,
+    })
+}
+
+export async function apiUpdateScheduleJobData(data: SystemVariableData) {
+    return ApiService.fetchData<Response>({
+        url: '/JobSchedule/update-scheduledJob',
+        method: 'put',
+        data,
+    })
+}

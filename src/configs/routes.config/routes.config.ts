@@ -2,11 +2,18 @@ import { lazy } from 'react'
 import authRoute from './authRoute'
 import type { Routes } from '@/@types/routes'
 import appsRoute from './appsRoute'
+import { ADMIN, USER, FIADMIN, FIEX1, FIEX2, SECADMIN, SECUSER, SUPERVISOR } from '@/constants/roles.constant'
+import reservationRoute from './reservationRoute'
+import leaveRoute from './leaveRoute'
+import payrollRoute from './payrollRoute'
 
 export const publicRoutes: Routes = [...authRoute]
 
 export const protectedRoutes = [
     ...appsRoute,
+    ...reservationRoute,
+    ...leaveRoute,
+    ...payrollRoute,
     {
         key: 'home',
         path: '/home',
@@ -16,8 +23,8 @@ export const protectedRoutes = [
     {
         key: 'UserDashboard',
         path: '/UserDashboard',
-        component: lazy(() => import('@/views/dashboard/User/UserDashboard')),
-        authority: ['User', 'Supervisor'],
+        component: lazy(() => import('@/views/hr/Dashboard/Dashboard')),
+        authority: [ADMIN, FIADMIN],
     },
     // {
     //     key: 'dashboard',
@@ -31,24 +38,18 @@ export const protectedRoutes = [
     //     component: lazy(() => import('@/views/empSplTax/EmpSplTax')),
     //     authority: [],
     // },
-    {
-        key: 'calculations',
-        path: '/calculations',
-        component: lazy(() => import('@/views/calculations/Calculations')),
-        authority: ['Admin'],
-    },
     /** Example purpose only, please remove */
     {
         key: 'ViewSettings',
         path: '/ViewSettings',
         component: lazy(() => import('@/views/settings/Settings/ViewSettings')),
-        authority: [],
+        authority: [ADMIN],
     },
     {
         key: 'Development',
         path: '/settings/ResetData/Development',
         component: lazy(() => import('@/views/settings/ResetData/Development')),
-        authority: [],
+        authority: [ADMIN],
     },
     {
         key: 'ScheduleJobs',
@@ -56,175 +57,46 @@ export const protectedRoutes = [
         component: lazy(
             () => import('@/views/configurations/ScheduleJobs/ScheduleJobs')
         ),
-        authority: [],
+        authority: [ADMIN],
     },
     {
         key: 'Paycodes',
         path: '/Paycodes',
         component: lazy(() => import('@/views/paycodes/PayCodes/PayCodes')),
-        authority: ['Admin'],
+        authority: [ADMIN, FIADMIN],
     },
     {
         key: 'Payments',
         path: '/Payments',
         component: lazy(() => import('@/views/payments/Payments')),
-        authority: ['Admin'],
+        authority: [ADMIN, FIADMIN],
     },
     {
-        key: 'calculations',
+        key: 'appsPayroll.calculations',
         path: '/calculations',
         component: lazy(() => import('@/views/calculations/Calculations')),
-        authority: ['Admin'],
+        authority: [ADMIN, FIADMIN],
     },
     {
-        key: 'taxcalculations',
+        key: 'appsPayroll.taxcalculations',
         path: '/tax/Calculations/calculations',
         component: lazy(() => import('@/views/tax/Calculations/Calculations')),
-        authority: ['Admin'],
+        authority: [ADMIN, FIADMIN],
     },
-    {
-        key: 'DataVerification',
-        path: '/DataVerification',
-        component: lazy(
-            () => import('@/views/payroll/Control/DataVerification')
-        ),
-        authority: ['Admin'],
-    },
-    {
-        key: 'ProcessPayroll',
-        path: '/ProcessPayroll',
-        component: lazy(() => import('@/views/payroll/Process/ProcessPayroll')),
-        authority: ['Admin'],
-    },
-    {
-        key: 'BankTransfer',
-        path: '/BankTransfer',
-        component: lazy(
-            () => import('@/views/payroll/BankTransfer/BankTransfer')
-        ),
-        authority: ['Admin'],
-    },
-    {
-        key: 'PayrollSummary',
-        path: '/PayrollSummary',
-        component: lazy(() => import('@/views/reports/Summary/PayrollSummary')),
-        authority: ['Admin'],
-    },
-    {
-        key: 'PayrunSummary',
-        path: '/PayrunSummary',
-        component: lazy(
-            () => import('@/views/payroll/PayrunSummary/PayrunSummary')
-        ),
-        authority: ['Admin'],
-    },
-    {
-        key: 'Paysheet',
-        path: '/Paysheet',
-        component: lazy(
-            () => import('@/views/paysheet/PaysheetPrint/Paysheet')
-        ),
-        authority: ['Admin'],
-    },
-    {
-        key: 'PaysheetPrint',
-        path: '/PaysheetPrint',
-        component: lazy(
-            () => import('@/views/paysheet/IndividualPrint/PaysheetPrint')
-        ),
-        authority: ['Admin'],
-    },
-    {
-        key: 'paysheet',
-        path: '/paysheet',
-        component: lazy(
-            () => import('@/views/paysheet/IndividualPrint/PaysheetPrint')
-        ),
-        authority: [],
-    },
-
     {
         key: 'ViewUsers',
         path: '/ViewUsers',
         component: lazy(() => import('@/views/users/Users/ViewUsers')),
-        authority: [],
+        authority: [ADMIN],
     },
-
+    
     {
-        key: 'UnrecoveredList',
-        path: '/UnrecoveredList',
-        component: lazy(
-            () => import('@/views/reports/UnRecoveredReport/Unrecovered')
-        ),
-        authority: ['Admin'],
-    },
-    {
-        key: 'LumpSumTaxReport',
-        path: '/LumpSumTaxReport',
-        component: lazy(
-            () => import('@/views/reports/LumpSumTaxReport/LumpSumTaxReport')
-        ),
-        authority: ['Admin'],
-    },
-    {
-        key: 'PayCodeWiseReport',
-        path: '/PayCodeWiseReport',
-        component: lazy(
-            () => import('@/views/reports/PayCodeWiseReport/PayCodeWiseReport')
-        ),
-        authority: ['Admin'],
-    },
-    {
-        key: 'AdvancePayment',
+        key: 'AdvancePaymentReport',
         path: '/AdvancePayment',
         component: lazy(
             () => import('@/views/hr/reports/AdvancePayment/AdvancePayment')
         ),
-        authority: ['Admin'],
-    },
-    {
-        key: 'CircuitBungalow',
-        path: '/CircuitBungalow',
-        component: lazy(
-            () => import('@/views/reservation/Bungalows/Bungalows')
-        ),
-        authority: ['Admin'],
-    },
-    {
-        key: 'AddBungalow',
-        path: '/AddBungalow',
-        component: lazy(
-            () => import('@/views/reservation/Bungalows/components/AddBungalow')
-        ),
-        authority: ['Admin'],
-    },
-    {
-        key: 'EditBungalow',
-        path: '/EditBungalow',
-        component: lazy(
-            () =>
-                import('@/views/reservation/Bungalows/components/EditBungalow')
-        ),
-        authority: ['Admin'],
-    },
-    {
-        key: 'Reservation',
-        path: '/Reservation',
-        component: lazy(
-            () => import('@/views/reservation/Reservation/Reservation')
-        ),
-        authority: [],
-    },
-    {
-        key: 'AddReservation',
-        path: '/AddReservation',
-        component: lazy(
-            () =>
-                import(
-                    '@/views/reservation/Reservation/components/AddReservation'
-                )
-        ),
-        authority: [],
+        authority: [ADMIN, FIADMIN],
     },
     {
         key: 'ReservationPayments',
@@ -245,19 +117,12 @@ export const protectedRoutes = [
         ),
         authority: [],
     },
-    // {
-    //     key: 'articleadd',
-    //     path: '/knowledgebase/Article/articleadd',
-    //     component: lazy(
-    //         () => import('@/views/knowledgebase/Article/ArticleAdd')
-    //     ),
-    //     authority: [],
-    // },
+
     {
-        key: 'Profile',
-        path: '/users/Account/Profile',
-        component: lazy(() => import('@/views/users/Account/Profile')),
-        authority: [],
+        key: 'appsLeave.LeaveTypes',
+        path: '/LeaveTypes',
+        component: lazy(() => import('@/views/hr/LeaveTypes/LeaveTypes')),
+        authority: [ADMIN],
     },
     // {
     //     key: 'groupMenu.single',
@@ -281,89 +146,25 @@ export const protectedRoutes = [
     //     ),
     //     authority: [],
     // },
+        // {
+    //     key: 'articleadd',
+    //     path: '/knowledgebase/Article/articleadd',
+    //     component: lazy(
+    //         () => import('@/views/knowledgebase/Article/ArticleAdd')
+    //     ),
+    //     authority: [],
+    // },
 ]
 
 export const protectedEmployeeRoutes = [
+    ...appsRoute,
+    ...reservationRoute,
+    ...leaveRoute,
+    ...payrollRoute,
     {
         key: 'UserDashboard',
         path: '/UserDashboard',
         component: lazy(() => import('@/views/hr/Dashboard/Dashboard')),
-        authority: ['User', 'Supervisor'],
-    },
-    {
-        key: 'LeaveTypes',
-        path: '/LeaveTypes',
-        component: lazy(() => import('@/views/hr/LeaveTypes/LeaveTypes')),
-        authority: ['Supervisor'],
-    },
-    {
-        key: 'Supervisor',
-        path: '/Supervisor',
-        component: lazy(() => import('@/views/hr/Supervisor/Supervisor')),
-        authority: ['Supervisor'],
-    },
-    {
-        key: 'AssignApprovalLevels',
-        path: '/AssignApprovalLevels',
-        component: lazy(
-            () => import('@/views/hr/AssignApprovalLevels/AssignApprovalLevels')
-        ),
-        authority: ['Supervisor'],
-    },
-    {
-        key: 'RequestLeave',
-        path: '/RequestLeave',
-        component: lazy(() => import('@/views/hr/RequestLeave/RequestLeave')),
-        authority: ['User', 'Supervisor'],
-    },
-    {
-        key: 'LeaveHistory',
-        path: '/LeaveHistory',
-        component: lazy(() => import('@/views/hr/LeaveHistory/LeaveHistory')),
-        authority: ['User', 'Supervisor'],
-    },
-    {
-        key: 'AdvanceRequest',
-        path: '/AdvanceRequest',
-        component: lazy(
-            () => import('@/views/hr/AdvancePayment/AdvancePayment')
-        ),
-        authority: ['User', 'Supervisor'],
-    },
-    {
-        key: 'LeaveApprove',
-        path: '/LeaveApprove',
-        component: lazy(() => import('@/views/hr/LeaveApprove/LeaveApprove')),
-        authority: ['User', 'Supervisor'],
-    },
-    {
-        key: 'Reservation',
-        path: '/Reservation',
-        component: lazy(
-            () => import('@/views/reservation/Reservation/Reservation')
-        ),
-        authority: [],
-    },
-    {
-        key: 'AddReservation',
-        path: '/AddReservation',
-        component: lazy(
-            () =>
-                import(
-                    '@/views/reservation/Reservation/components/AddReservation'
-                )
-        ),
-        authority: [],
-    },
-    {
-        key: 'BookingConfirmation',
-        path: '/BookingConfirmation',
-        component: lazy(
-            () =>
-                import(
-                    '@/views/reservation/BookingConfirmation/BookingConfirmation'
-                )
-        ),
-        authority: ['User', 'Supervisor'],
+        authority: [USER, SUPERVISOR, FIEX1, FIEX2, SECADMIN, SECUSER],
     },
 ]

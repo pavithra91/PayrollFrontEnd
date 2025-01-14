@@ -48,7 +48,7 @@ type payData = {
 
 const PaysheetView = (props: FormProps) => {
     const { getPaysheetByEPF } = usePayrun()
-    const { formatDate } = useCommon()
+    const { formatDate, getUserFromLocalStorage } = useCommon()
 
     const [payrollData, setPayrollData] = useState<payData | null>(null)
     const [isDataAvailable, setIsDataAvailable] = useState(false)
@@ -60,6 +60,7 @@ const PaysheetView = (props: FormProps) => {
 
     const onSubmit = async (values: PaysheetDataSchema) => {
         const { epf, period } = values
+        values.epf = getUserFromLocalStorage().epf
 
         if (values != null) {
             setDataFromChild(values)
@@ -482,64 +483,39 @@ const PaysheetView = (props: FormProps) => {
 
     return (
         <>
-            <Card header="Paysheet Print By EPF">
-                <div className="grid grid-cols-6 gap-4">
-                    <div className="col-span-4 ...">
-                        <Formik
-                            initialValues={{
-                                epf: 17532,
-                                period: 202409,
-                            }}
-                            onSubmit={(values) => {
-                                //    if (!disableSubmit) {
+            <Card header="Paysheet View">
+                <Formik
+                    initialValues={{
+                        epf: 0,
+                        period: 202409,
+                    }}
+                    onSubmit={(values) => {
+                        //    if (!disableSubmit) {
 
-                                onSubmit(values)
-                                //  }
-                            }}
-                        >
-                            <Form>
-                                <FormContainer layout={layout}>
-                                    <div className="grid grid-cols-1 gap-4">
-                                        <FormItem label="EPF">
-                                            <Field
-                                                type="text"
-                                                name="epf"
-                                                placeholder="Please enter Period"
-                                                component={Input}
-                                            />
-                                        </FormItem>
-                                    </div>
+                        onSubmit(values)
+                        //  }
+                    }}
+                >
+                    <Form>
+                        <FormContainer layout={layout}>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="..">
                                     <FormItem label="Period">
                                         <Field
+                                            size='sm'
                                             type="text"
                                             name="period"
                                             placeholder="Please enter Period"
                                             component={Input}
                                         />
                                     </FormItem>
-                                    <FormItem>
-                                        <Button type="submit">Load</Button>
-                                    </FormItem>
-                                </FormContainer>
-                            </Form>
-                        </Formik>
-                    </div>
 
-                    <div className="col-span-1..."></div>
-
-                    <div className="col-span-1...">
-                        <span className="mr-1 font-semibold">
-                            <Button
-                                variant="solid"
-                                color="blue-600"
-                                onClick={printReportA4}
-                                loading={isSubmitting}
-                            >
-                                {isSubmitting ? 'Processing...' : 'Print'}
-                            </Button>
-                        </span>
-                    </div>
-                </div>
+                                    <Button size='sm' type="submit">Load</Button>
+                                </div>
+                            </div>
+                        </FormContainer>
+                    </Form>
+                </Formik>
             </Card>
             <br />
             {isDataAvailable && (

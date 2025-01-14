@@ -154,13 +154,13 @@ const AddReservation = () => {
     }, [dispatch])
 
     const fetchData = () => {
-        var data = dispatch(getBungalowData())
+        var bungalowData = dispatch(getBungalowData())
         var categories = dispatch(getCategoryData())
 
-        data.then((res) => {
+        bungalowData.then((res) => {
             const listItems = (res?.payload as { items: any[] })?.items ?? []
-            //console.log(listItems)
-            const formattedData = listItems.map((item: any) => ({
+            
+            const formattedData = listItems.filter(x=>x.isCloded == false).map((item: any) => ({
                 value: item.id,
                 label: item.bungalowName,
                 occupancy: item.maxOccupancy,
