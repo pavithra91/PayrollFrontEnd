@@ -32,7 +32,7 @@ const navigationConfig: NavigationTree[] = [
     {
         key: 'UserDashboard',
         path: '/UserDashboard',
-        title: 'Leave Dashboard',
+        title: 'MyLeave',
         translateKey: 'nav.UserDashboard',
         icon: 'calendar',
         type: NAV_ITEM_TYPE_ITEM,
@@ -46,7 +46,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.LeaveTypes',
         icon: 'calendar',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: ['Supervisor'],
+        authority: [ADMIN],
         subMenu: [],
     },
     {

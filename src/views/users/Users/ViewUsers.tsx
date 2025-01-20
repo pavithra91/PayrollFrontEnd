@@ -19,6 +19,8 @@ import {
 import useAccount from '@/utils/hooks/useAccount'
 import { AccountData } from '@/@types/Account'
 import Badge from '@/components/ui/Badge'
+import { HiOutlineKey, HiPencil } from 'react-icons/hi'
+import PasswordReset from './PasswordReset'
 
 type Option = {
     value: number
@@ -64,12 +66,17 @@ const ViewUsers = (props: FormProps) => {
     }
     const openEditDialog = (id: any) => {
         setSelectedUserID(id)
-        console.log(id)
         setEditIsOpen(true)
+    }
+
+    const openPasswordResetDialog = (id: any) => {
+        setSelectedUserID(id)
+        setIsPasswordResetOpen(true)
     }
 
     const [isOpen, setIsOpen] = useState(false)
     const [isEditOpen, setEditIsOpen] = useState(false)
+    const [isPasswordResetOpen, setIsPasswordResetOpen] = useState(false)
 
     const closeDialog = () => {
         setIsOpen(false)
@@ -77,6 +84,10 @@ const ViewUsers = (props: FormProps) => {
     }
     const closeEditDialog = () => {
         setEditIsOpen(false)
+        handleRefresh()
+    }
+    const closePasswordResetDialog =() => {
+        setIsPasswordResetOpen(false)
         handleRefresh()
     }
 
@@ -99,8 +110,11 @@ const ViewUsers = (props: FormProps) => {
     )
 
     const handleShowEditModal = (id: any) => {
-        console.log(id)
         openEditDialog(id)
+    }
+
+    const handleShowPasswordResetModal = (id: any) => {
+        openPasswordResetDialog(id)
     }
 
     const pageSizeOption = [
@@ -117,10 +131,6 @@ const ViewUsers = (props: FormProps) => {
                 header: 'Id',
                 accessorKey: 'id',
                 show: false,
-            },
-            {
-                header: 'Company Code',
-                accessorKey: 'companyCode',
             },
             {
                 header: 'Cost Center',
@@ -190,12 +200,21 @@ const ViewUsers = (props: FormProps) => {
                 header: 'Action',
                 accessorKey: 'action',
                 cell: (cell) => (
-                    <Button
-                        variant="solid"
-                        onClick={() => handleShowEditModal(cell.row)}
-                    >
-                        Edit
-                    </Button>
+                    <>
+                        <div className="ltr:text-right rtl:text-left">
+                            <Button
+                                size="sm"
+                                icon={<HiPencil />}
+                                onClick={() => handleShowEditModal(cell.row)}
+                            ></Button>
+                            <span className="ml-1"></span>
+                            <Button
+                                size="sm"
+                                icon={<HiOutlineKey />}
+                                onClick={() => handleShowPasswordResetModal(cell.row)}
+                            ></Button>
+                        </div>
+                    </>
                 ),
             },
         ],
@@ -236,6 +255,15 @@ const ViewUsers = (props: FormProps) => {
                         isEditOpen={isEditOpen}
                         props={props}
                         item={selectedUserID}
+                    />
+                )}
+
+{isPasswordResetOpen && (
+                    <PasswordReset
+                        onClose={closePasswordResetDialog}
+                        isOpen={isPasswordResetOpen}
+                        props={props}
+                        //item={selectedUserID}
                     />
                 )}
                 <Table>

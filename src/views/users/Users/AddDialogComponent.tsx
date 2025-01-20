@@ -24,6 +24,7 @@ import Checkbox from '@/components/ui/Checkbox'
 import { AccountSchema } from '@/@types/Account'
 import useAccount from '@/utils/hooks/useAccount'
 import useCommon from '@/utils/hooks/useCommon'
+import { roleSelectionOptions } from '@/constants/roles.constant'
 
 interface DialogProps {
     isOpen: boolean // Type for the 'isOpen' prop
@@ -51,11 +52,7 @@ const companyOptions: SelectOption[] = [
     { value: 3000, label: '3000' },
 ]
 
-const roleOptions: RoleSelectOption[] = [
-    { value: 'Admin', label: 'Admin' },
-    { value: 'User', label: 'User' },
-    { value: 'Supervisor', label: 'Supervisor' },
-]
+const roleOptions: RoleSelectOption[] = roleSelectionOptions
 
 const FieldWrapper: FC<FieldWrapperProps> = ({ name, render }) => {
     const [field, meta, helpers] = useField(name)

@@ -23,6 +23,7 @@ import Notification from '@/components/ui/Notification'
 import Checkbox from '@/components/ui/Checkbox'
 import { AccountSchema } from '@/@types/Account'
 import useAccount from '@/utils/hooks/useAccount'
+import { roleSelectionOptions } from '@/constants/roles.constant'
 
 interface DialogProps {
     isEditOpen: boolean
@@ -58,11 +59,7 @@ const getUserIDFromLocalStorage = () => {
     return userID
 }
 
-const roleOptions: RoleSelectOption[] = [
-    { value: 'Admin', label: 'Admin' },
-    { value: 'User', label: 'User' },
-    { value: 'Supervisor', label: 'Supervisor' },
-]
+const roleOptions: RoleSelectOption[] = roleSelectionOptions
 
 const EditDialog: React.FC<DialogProps> = ({
     onClose,
