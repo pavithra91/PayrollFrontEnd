@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { Container, DoubleSidedImage, IconText } from '@/components/shared'
 import { injectReducer } from '@/store'
-import reducer, { getReservationData, useAppDispatch } from './store'
+import reducer, {
+    confirmReservation,
+    getReservationData,
+    useAppDispatch,
+} from './store'
 import { useLocation } from 'react-router-dom'
 import useCommon from '@/utils/hooks/useCommon'
 import isEmpty from 'lodash/isEmpty'
@@ -26,6 +30,8 @@ import { AllBungalowData, getBungalowDataById } from '../Bungalows/store'
 import parse from 'html-react-parser'
 import Button from '@/components/ui/Button'
 import jsPDF from 'jspdf'
+import toast from '@/components/ui/toast'
+import Notification from '@/components/ui/Notification'
 
 injectReducer('ReservationData', reducer)
 
@@ -70,7 +76,10 @@ const BookingConfirmation = () => {
 
                 setData(reservation)
 
-                if (reservation.bookingStatus != 'Pending') {
+                if (
+                    reservation.bookingStatus !== 'Pending' &&
+                    reservation.bookingStatus !== 'Raffle_Winner'
+                ) {
                     setIsPending(true)
                 } else {
                     setIsPending(false)
@@ -101,7 +110,7 @@ const BookingConfirmation = () => {
         },
         Confirmed: {
             label: 'Confirmed',
-            class: 'text-Emerald-600 bg-Emerald-100 dark:Emerald-amber-100 dark:bg-Emerald-500/20',
+            class: 'text-emerald-600 bg-emerald-100 dark:emerald-amber-100 dark:bg-emerald-500/20',
         },
         Rejected: {
             label: 'Rejected',
@@ -112,12 +121,45 @@ const BookingConfirmation = () => {
             class: 'text-red-600 bg-red-100 dark:text-red-100 dark:bg-red-500/20',
         },
         Raffle_Winner: {
-            label: 'Confirmed',
+            label: 'Raffle_Winner',
             class: 'text-amber-600 bg-amber-100 dark:text-amber-100 dark:bg-amber-500/20',
         },
     }
 
-    const confirmBooking = () => {}
+    const openNotification = (
+        type: 'success' | 'warning' | 'danger' | 'info',
+        title: string,
+        message: string
+    ) => {
+        toast.push(
+            <Notification title={title} type={type}>
+                {message}
+            </Notification>
+        )
+    }
+
+    const confirmBooking = () => {
+        const request = {
+            id: data?.id || 0,
+            lastUpdateBy: getUserFromLocalStorage().epf,
+        }
+
+        dispatch(confirmReservation(request)).then((res) => {
+            if (res.payload == 'success') {
+                openNotification(
+                    'success',
+                    'Reservation Confirmed Successfully',
+                    'Your reservation has been Confirmed. Thank you for your cooperation.'
+                )
+            } else {
+                openNotification(
+                    'danger',
+                    'Reservation Confirmation Failed',
+                    'We encountered an issue while processing your Confirmation. Please try again later or contact Secretariat function.'
+                )
+            }
+        })
+    }
 
     const generatePDF = () => {
         if (data != undefined && bungalowData != undefined) {

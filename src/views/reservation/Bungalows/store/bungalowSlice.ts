@@ -25,6 +25,7 @@ export type AllBungalowData = {
     contactNumber: string
     createdBy: string
     bungalowRates: bungalowRates
+    nextRaffelDrawdate?: string | Date
 }
 
 type AddBungalowRequest = {
@@ -69,6 +70,7 @@ type EditBungalowRequest = {
     reopenDate?: string | null
     contactNumber: string
     lastUpdateBy: string
+    nextRaffelDrawdate?: string | Date
 }
 
 export type Row = AllBungalowData
@@ -98,6 +100,7 @@ type BungalowResponse = {
     contactNumber: string
     createdBy: string
     bungalowRates: bungalowRates
+    nextRaffelDrawdate?: string | Date
 }
 
 export const initialTableData: TableQueries = {
