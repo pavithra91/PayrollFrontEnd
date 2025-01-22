@@ -2,7 +2,7 @@ export type AccountData = {
     id?: number
     companyCode: number
     costCenter: string
-    epf: number
+    epf: number | string
     empName: string
     role: string
     userID: string

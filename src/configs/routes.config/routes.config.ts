@@ -89,6 +89,17 @@ export const protectedRoutes = [
         component: lazy(() => import('@/views/users/Users/ViewUsers')),
         authority: [ADMIN],
     },
+    {
+        key: 'appsUserAccounts.AddNewUser',
+        path: '/AddNewUser',
+        component: lazy(
+            () =>
+                import(
+                    '@/views/users/Users/components/AddNewUser'
+                )
+        ),
+        authority: [ADMIN],
+    },
     
     {
         key: 'AdvancePaymentReport',

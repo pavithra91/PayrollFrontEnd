@@ -106,12 +106,16 @@ function useCommon() {
 
     const getPreviousMonthAndYear = () => {
         const now = new Date()
-
         now.setDate(1)
-        const prevMonth = now.getMonth() - 1
+        var prevMonth = now.getMonth() - 1
 
         const prevYear =
             prevMonth < 0 ? now.getFullYear() - 1 : now.getFullYear()
+
+        if(prevMonth < 0)
+        {
+            prevMonth = 11
+        }
 
         // Optional: Format the month and year
         const formattedMonth = (prevMonth + 1).toString().padStart(2, '0')

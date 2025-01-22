@@ -12,6 +12,13 @@ export async function apiGetUsers() {
     })
 }
 
+export async function apiGetUserList<T>() {
+    return ApiService.fetchData<T>({
+        url: '/User/get-users',
+        method: 'get',
+    })
+}
+
 export async function apiAddUser(data: AccountData) {
     console.log(data)
     return ApiService.fetchData<Response>({

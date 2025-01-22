@@ -20,12 +20,14 @@ const PayrunStatus: React.FC<DialogProps> = ({ companyCode, period }) => {
     const curmonth = today.toLocaleDateString('en-US', { month: '2-digit' })
     const month = today.toLocaleDateString('en-US', { month: 'long' })
     const year = today.getFullYear()
-
+    console.log(period)
     useEffect(() => {
         const result = getPayrunByPeriod({
             companyCode,
             period,
         })
+
+
         result.then((res) => {
             const listItems = JSON.parse(res?.data?.data ?? '')
             if (listItems.length > 0) {
