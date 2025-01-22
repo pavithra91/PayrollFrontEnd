@@ -15,6 +15,7 @@ import DatePicker from '@/components/ui/DatePicker/DatePicker'
 import { Checkbox } from '@/components/ui/Checkbox'
 import RichTextEditor from '@/components/shared/RichTextEditor'
 import { useNavigate } from 'react-router-dom'
+import dayjs from 'dayjs'
 
 type FormModel = {
     id: number
@@ -115,6 +116,9 @@ const EditBungalow = () => {
                     isCloded: selectedRow.isCloded || false,
                     reopenDate: selectedRow.reopenDate || null,
                     maxOccupancy: selectedRow.maxOccupancy || 0,
+                    nextRaffelDrawdate: dayjs(
+                        selectedRow.nextRaffelDrawdate
+                    ).format('YYYY-MM-dd'),
                 }}
                 enableReinitialize={true}
                 //validationSchema={validationSchema}
@@ -233,6 +237,42 @@ const EditBungalow = () => {
                                                     name="maxBookingPeriod"
                                                     placeholder="Enter max Booking Period"
                                                 />
+                                            </FormItem>
+                                        </div>
+                                        <div className="..">
+                                            <FormItem
+                                                label="Next Raffel Draw Date"
+                                                invalid={
+                                                    errors.nextRaffelDrawdate &&
+                                                    touched.nextRaffelDrawdate
+                                                }
+                                                errorMessage={
+                                                    errors.nextRaffelDrawdate
+                                                }
+                                            >
+                                                <Field
+                                                    name="nextRaffelDrawdate"
+                                                    placeholder="Next Raffel Draw Date"
+                                                >
+                                                    {({
+                                                        field,
+                                                        form,
+                                                    }: FieldProps) => (
+                                                        <DatePicker
+                                                            field={field}
+                                                            form={form}
+                                                            value={field.value}
+                                                            onChange={(
+                                                                date
+                                                            ) => {
+                                                                form.setFieldValue(
+                                                                    field.name,
+                                                                    date
+                                                                )
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Field>
                                             </FormItem>
                                         </div>
                                     </div>
@@ -356,8 +396,8 @@ const EditBungalow = () => {
                                     >
                                         Cancel
                                     </Button>
-                                    </div>
-                                    <div className="..">
+                                </div>
+                                <div className="..">
                                     <Button
                                         size="sm"
                                         variant="twoTone"
@@ -367,9 +407,7 @@ const EditBungalow = () => {
                                     >
                                         Edit Bungalow
                                     </Button>
-                                    </div>
-
-
+                                </div>
                             </div>
                         </FormContainer>
                     </Form>

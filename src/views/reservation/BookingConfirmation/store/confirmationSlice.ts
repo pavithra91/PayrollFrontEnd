@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { TableQueries } from '@/@types/common'
-import { apiGetReservationById } from '@/services/ReservationService'
+import {
+    apiConfirmReservation,
+    apiGetReservationById,
+} from '@/services/ReservationService'
 import { number } from 'yup'
 
 export type AllReservationData = {
@@ -29,6 +32,11 @@ type GetReservationDataResponse = {
     total: number
 }
 
+type ConfirmReservationRequest = {
+    id: number
+    lastUpdateBy: string
+}
+
 export const initialTableData: TableQueries = {
     total: 0,
     pageIndex: 1,
@@ -47,6 +55,25 @@ export const getReservationData = createAsyncThunk(
     async (id: number) => {
         const response =
             await apiGetReservationById<GetReservationDataResponse>(id)
+        return response.data
+    }
+)
+
+export const confirmReservation = createAsyncThunk(
+    SLICE_NAME + '/confirmReservation',
+    async (data: ConfirmReservationRequest) => {
+        const response = await apiConfirmReservation<
+            GetReservationDataResponse,
+            ConfirmReservationRequest
+        >(data)
+
+        console.log(response.data)
+
+        // const reservationResponse =
+        //     await apiGetReservationData<GetReservationDataResponse>(
+        //         data.lastUpdateBy.toString()
+        //     )
+
         return response.data
     }
 )

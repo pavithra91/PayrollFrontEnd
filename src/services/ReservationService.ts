@@ -101,6 +101,17 @@ export async function apiEditReservation<T, U extends Record<string, unknown>>(
     })
 }
 
+export async function apiConfirmReservation<
+    T,
+    U extends Record<string, unknown>
+>(data: U) {
+    return ApiService.fetchData<T>({
+        url: '/Reservation/confirm-reservation',
+        method: 'post',
+        data,
+    })
+}
+
 export async function apiCancelReservation<
     T,
     U extends Record<string, unknown>
@@ -121,5 +132,3 @@ export async function apiGetPaymentData<T, U extends Record<string, unknown>>(
         data,
     })
 }
-
-
