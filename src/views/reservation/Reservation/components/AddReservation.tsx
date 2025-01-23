@@ -34,6 +34,7 @@ import {
     flexRender,
     createColumnHelper,
 } from '@tanstack/react-table'
+import { HiOutlineCalendar } from 'react-icons/hi'
 
 const { Tr, Td, TBody, THead, Th } = Table
 
@@ -608,6 +609,12 @@ const AddReservation = () => {
                                                             form,
                                                         }: FieldProps) => (
                                                             <DatePicker
+                                                                inputPrefix={
+                                                                    <HiOutlineCalendar className="text-lg" />
+                                                                }
+                                                                inputSuffix={
+                                                                    null
+                                                                }
                                                                 field={field}
                                                                 minDate={
                                                                     new Date()
@@ -656,6 +663,12 @@ const AddReservation = () => {
                                                             form,
                                                         }: FieldProps) => (
                                                             <DatePicker
+                                                                inputPrefix={
+                                                                    <HiOutlineCalendar className="text-lg" />
+                                                                }
+                                                                inputSuffix={
+                                                                    null
+                                                                }
                                                                 field={field}
                                                                 form={form}
                                                                 minDate={

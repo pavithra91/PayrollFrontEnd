@@ -1,11 +1,18 @@
 import { AccountData } from '@/@types/Account'
-import { apiAddUser, apiGetUserList, apiGetUsers } from '@/services/AccountService'
+import {
+    apiAddUser,
+    apiGetUserList,
+    apiGetUsers,
+    apiUpdateUser,
+} from '@/services/AccountService'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 export type Users = {
     id: number
+    companyCode: number
     costCenter: string
     userID: string
+    password?: string
     epf: number
     empName: string
     role: string
@@ -45,14 +52,13 @@ export const getUserList = createAsyncThunk(
     async () => {
         const response = await apiGetUserList<GetUserListResponse>()
         try {
-        const jsonString: any = response.data
+            const jsonString: any = response.data
 
-        let parsedArray: Users[] = [];
-        parsedArray = JSON.parse(jsonString.data) as Users[]
-        console.log(parsedArray)
-        return parsedArray
-        }
-        catch (error) {
+            let parsedArray: Users[] = []
+            parsedArray = JSON.parse(jsonString.data) as Users[]
+            console.log(parsedArray)
+            return parsedArray
+        } catch (error) {
             alert(error)
             return []
         }
@@ -64,8 +70,18 @@ export const addNewUser = createAsyncThunk(
     async (data: AccountData) => {
         const response = await apiAddUser(data)
 
-        const ReservatiorResponse =
-            await apiGetUserList<GetUserListResponse>()
+        const userResponse = await apiGetUserList<GetUserListResponse>()
+
+        return response.data
+    }
+)
+
+export const editUser = createAsyncThunk(
+    SLICE_NAME + '/editUser',
+    async (data: AccountData) => {
+        const response = await apiUpdateUser(data)
+
+        const userResponse = await apiGetUserList<GetUserListResponse>()
 
         return response.data
     }
