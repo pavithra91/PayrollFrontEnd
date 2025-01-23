@@ -17,6 +17,7 @@ export default defineConfig({
                 //target: 'http://13.234.120.62/',
                 //target: 'http://internal-cpstl-poc-internal-alb-1716520389.ap-southeast-1.elb.amazonaws.com/',
                 //target: 'https://cpstl-poc-ebankng-alb-664275385.ap-southeast-1.elb.amazonaws.com/',
+                //target: 'https://ess.cpstl.lk/',
                 changeOrigin: true,
                 secure: true,
             },

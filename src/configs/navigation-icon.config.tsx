@@ -26,6 +26,8 @@ import {
     FcAlarmClock,
     FcBusinessman,
     FcLandscape,
+    FcNightPortrait,
+    FcInspection,
 } from 'react-icons/fc'
 
 import { FaRegFilePdf, FaFileCsv, FaRegFileExcel } from 'react-icons/fa'
@@ -42,6 +44,8 @@ const navigationIcon: NavigationIcons = {
     process: <FcWorkflow />,
     money: <FcMoneyTransfer />,
     calendar: <FcCalendar />,
+    myLeave: <FcNightPortrait />,
+    finePrint: <FcInspection />,
     approval: <FcApproval />,
     treeStructure: <FcTreeStructure />,
     cash: <HiOutlineCash />,

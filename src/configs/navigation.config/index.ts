@@ -5,7 +5,16 @@ import {
 } from '@/constants/navigation.constant'
 import type { NavigationTree } from '@/@types/navigation'
 import appsNavigationConfig from './apps.navigation.config'
-import { ADMIN, FIADMIN, FIEX1, FIEX2, SECADMIN, SECUSER, SUPERVISOR, USER } from '@/constants/roles.constant'
+import {
+    ADMIN,
+    FIADMIN,
+    FIEX1,
+    FIEX2,
+    SECADMIN,
+    SECUSER,
+    SUPERVISOR,
+    USER,
+} from '@/constants/roles.constant'
 
 const navigationConfig: NavigationTree[] = [
     // ...appsNavigationConfig,
@@ -36,7 +45,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.UserDashboard',
         icon: 'calendar',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: [ADMIN, FIADMIN, USER, SUPERVISOR],
+        authority: [],
         subMenu: [],
     },
     {
@@ -44,7 +53,7 @@ const navigationConfig: NavigationTree[] = [
         path: '/LeaveTypes',
         title: 'Leave Types',
         translateKey: 'nav.LeaveTypes',
-        icon: 'calendar',
+        icon: 'finePrint',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [ADMIN],
         subMenu: [],
@@ -96,7 +105,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.collapseMenu.CircuitBungalow',
         icon: 'bungalow',
         type: NAV_ITEM_TYPE_COLLAPSE,
-        authority: ['Admin', 'User', 'Supervisor'],
+        authority: [],
         subMenu: [
             {
                 key: 'collapseMenu.CircuitBungalow',
@@ -105,7 +114,7 @@ const navigationConfig: NavigationTree[] = [
                 translateKey: 'nav.collapseMenu.CircuitBungalow',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
-                authority: ['Admin'],
+                authority: ['Admin', SECADMIN],
                 subMenu: [],
             },
             {
@@ -125,7 +134,7 @@ const navigationConfig: NavigationTree[] = [
                 translateKey: 'nav.collapseMenu.ReservationPayments',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
-                authority: ['Admin'],
+                authority: ['Admin', SECADMIN, SECUSER],
                 subMenu: [],
             },
         ],
@@ -189,7 +198,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.Payments',
         icon: 'manager',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: ['Admin'],
+        authority: ['Admin', FIADMIN, FIEX1],
         subMenu: [],
     },
     // {
@@ -281,7 +290,7 @@ const navigationConfig: NavigationTree[] = [
                 translateKey: 'nav.collapseMenu.DataVerification',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
-                authority: [ADMIN, FIADMIN],
+                authority: [ADMIN, FIADMIN, FIEX1],
                 subMenu: [],
             },
             {
@@ -291,7 +300,7 @@ const navigationConfig: NavigationTree[] = [
                 translateKey: 'nav.collapseMenu.ProcessPayroll',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
-                authority: [ADMIN, FIADMIN],
+                authority: [ADMIN, FIADMIN, FIEX1],
                 subMenu: [],
             },
             {
@@ -301,7 +310,7 @@ const navigationConfig: NavigationTree[] = [
                 translateKey: 'nav.collapseMenu.BankTransfer',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
-                authority: [ADMIN, FIADMIN],
+                authority: [ADMIN, FIADMIN, FIEX1],
                 subMenu: [],
             },
             {
@@ -311,7 +320,7 @@ const navigationConfig: NavigationTree[] = [
                 translateKey: 'nav.collapseMenu.payrunSummary',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
-                authority: [ADMIN, FIADMIN],
+                authority: [ADMIN, FIADMIN, FIEX1],
                 subMenu: [],
             },
         ],
@@ -323,8 +332,17 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.PaysheetView',
         icon: 'print',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: [ADMIN, FIADMIN, FIEX1, FIEX2, SECADMIN, SECUSER, SUPERVISOR, USER],
-        subMenu: []
+        authority: [
+            ADMIN,
+            FIADMIN,
+            FIEX1,
+            FIEX2,
+            SECADMIN,
+            SECUSER,
+            SUPERVISOR,
+            USER,
+        ],
+        subMenu: [],
     },
     {
         key: 'Users',
@@ -354,7 +372,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.collapseMenu.reposts',
         icon: 'reports',
         type: NAV_ITEM_TYPE_COLLAPSE,
-        authority: [ADMIN, FIADMIN],
+        authority: [ADMIN, FIADMIN, FIEX1],
         subMenu: [
             {
                 key: 'collapseMenu.payrollSummary',
@@ -363,7 +381,7 @@ const navigationConfig: NavigationTree[] = [
                 translateKey: 'nav.collapseMenu.payrollSummary',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
-                authority: [ADMIN, FIADMIN],
+                authority: [ADMIN, FIADMIN, FIEX1],
                 subMenu: [],
             },
             {
@@ -373,7 +391,7 @@ const navigationConfig: NavigationTree[] = [
                 translateKey: 'nav.collapseMenu.UnrecoveredList',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
-                authority: [ADMIN, FIADMIN],
+                authority: [ADMIN, FIADMIN, FIEX1],
                 subMenu: [],
             },
             {
@@ -383,7 +401,7 @@ const navigationConfig: NavigationTree[] = [
                 translateKey: 'nav.collapseMenu.LumpSumTaxReport',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
-                authority: [ADMIN, FIADMIN],
+                authority: [ADMIN, FIADMIN, FIEX1],
                 subMenu: [],
             },
             {
@@ -393,7 +411,7 @@ const navigationConfig: NavigationTree[] = [
                 translateKey: 'nav.collapseMenu.PayCodeWiseReport',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
-                authority: [ADMIN, FIADMIN],
+                authority: [ADMIN, FIADMIN, FIEX1],
                 subMenu: [],
             },
             {
@@ -403,7 +421,7 @@ const navigationConfig: NavigationTree[] = [
                 translateKey: 'nav.collapseMenu.AdvancePayment',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
-                authority: [ADMIN, FIADMIN],
+                authority: [ADMIN, FIADMIN, FIEX1],
                 subMenu: [],
             },
         ],
