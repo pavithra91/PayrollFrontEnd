@@ -27,3 +27,8 @@ export interface AccountSchema {
     lastUpdateBy?: string
     isAccountLocked?: boolean
 }
+
+export type PasswordReset = {
+    password: string
+    lastUpdateBy?: string
+}

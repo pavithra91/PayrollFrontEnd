@@ -2,7 +2,16 @@ import { lazy } from 'react'
 import authRoute from './authRoute'
 import type { Routes } from '@/@types/routes'
 import appsRoute from './appsRoute'
-import { ADMIN, USER, FIADMIN, FIEX1, FIEX2, SECADMIN, SECUSER, SUPERVISOR } from '@/constants/roles.constant'
+import {
+    ADMIN,
+    USER,
+    FIADMIN,
+    FIEX1,
+    FIEX2,
+    SECADMIN,
+    SECUSER,
+    SUPERVISOR,
+} from '@/constants/roles.constant'
 import reservationRoute from './reservationRoute'
 import leaveRoute from './leaveRoute'
 import payrollRoute from './payrollRoute'
@@ -93,14 +102,18 @@ export const protectedRoutes = [
         key: 'appsUserAccounts.AddNewUser',
         path: '/AddNewUser',
         component: lazy(
-            () =>
-                import(
-                    '@/views/users/Users/components/AddNewUser'
-                )
+            () => import('@/views/users/Users/components/AddNewUser')
         ),
         authority: [ADMIN],
     },
-    
+    {
+        key: 'appsUserAccounts.EditUser',
+        path: '/EditUser',
+        component: lazy(
+            () => import('@/views/users/Users/components/EditUser')
+        ),
+        authority: [ADMIN],
+    },
     {
         key: 'AdvancePaymentReport',
         path: '/AdvancePayment',
@@ -119,7 +132,7 @@ export const protectedRoutes = [
                 )
         ),
         authority: [],
-    },    
+    },
     {
         key: 'knowledgebase',
         path: '/knowledgebase',
@@ -157,7 +170,7 @@ export const protectedRoutes = [
     //     ),
     //     authority: [],
     // },
-        // {
+    // {
     //     key: 'articleadd',
     //     path: '/knowledgebase/Article/articleadd',
     //     component: lazy(

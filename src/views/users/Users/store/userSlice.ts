@@ -1,8 +1,9 @@
-import { AccountData } from '@/@types/Account'
+import { AccountData, PasswordReset } from '@/@types/Account'
 import {
     apiAddUser,
     apiGetUserList,
     apiGetUsers,
+    apiResetUserPassword,
     apiUpdateUser,
 } from '@/services/AccountService'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
@@ -29,7 +30,6 @@ export type UserState = {
     newUserDialog: boolean
     editUserDialog: boolean
     view: 'grid' | 'list'
-    drawerOpen: boolean
     selectedUser: Partial<Users>
 }
 
@@ -43,7 +43,6 @@ const initialState: UserState = {
     newUserDialog: false,
     editUserDialog: false,
     view: 'grid',
-    drawerOpen: false,
     selectedUser: {},
 }
 
@@ -87,6 +86,15 @@ export const editUser = createAsyncThunk(
     }
 )
 
+export const resetUserPassword = createAsyncThunk(
+    SLICE_NAME + '/resetUserPassword',
+    async (data: PasswordReset) => {
+        const response = await apiResetUserPassword(data)
+
+        return response.data
+    }
+)
+
 const userSlice = createSlice({
     name: `${SLICE_NAME}/state`,
     initialState,
@@ -102,12 +110,6 @@ const userSlice = createSlice({
         },
         setSelectedUser: (state, action) => {
             state.selectedUser = action.payload
-        },
-        setDrawerOpen: (state) => {
-            state.drawerOpen = true
-        },
-        setDrawerClose: (state) => {
-            state.drawerOpen = false
         },
     },
     extraReducers: (builder) => {
@@ -129,8 +131,6 @@ export const {
     toggleView,
     toggleNewUserDialog,
     toggleEditUserDialog,
-    setDrawerOpen,
-    setDrawerClose,
     setSelectedUser,
 } = userSlice.actions
 

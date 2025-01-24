@@ -1,8 +1,7 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
     getUserList,
     Users,
-    setDrawerOpen,
     setSelectedUser,
     useAppDispatch,
     useAppSelector,
@@ -13,6 +12,9 @@ import Badge from '@/components/ui/Badge'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { Button } from '@/components/ui/Button'
 import { HiOutlineKey, HiPencil } from 'react-icons/hi'
+import { useNavigate } from 'react-router-dom'
+import PasswordReset from './PasswordReset'
+import { Dialog } from '@/components/ui/Dialog'
 
 const statusColor: Record<string, string> = {
     active: 'bg-emerald-500',
@@ -21,12 +23,17 @@ const statusColor: Record<string, string> = {
 
 const UserData = () => {
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
 
-     const loading = useAppSelector((state) => state.userList.data.loading)
+    const loading = useAppSelector((state) => state.userList.data.loading)
 
-    const userList = useAppSelector(
-        (state) => state.userList.data.userList
-    )
+    const userList = useAppSelector((state) => state.userList.data.userList)
+
+    const [isOpen, setIsOpen] = useState(false)
+
+    const onClose = () => {
+        setIsOpen(false)
+    }
 
     useEffect(() => {
         dispatch(getUserList())
@@ -36,15 +43,28 @@ const UserData = () => {
         const { textTheme } = useThemeClass()
 
         const onEdit = () => {
-            dispatch(setDrawerOpen())
             dispatch(setSelectedUser(row))
+            navigate('/EditUser', { state: { row } })
         }
 
-        return <>
-        <Button size="sm" icon={<HiPencil />} onClick={onEdit}></Button>
-        <Button size="sm" icon={<HiOutlineKey />} onClick={onEdit}></Button>
-        </>
-        
+        const onPasswordEdit = () => {
+            setIsOpen(true)
+        }
+
+        return (
+            <>
+                <Button
+                    size="sm"
+                    icon={<HiPencil />}
+                    onClick={() => onEdit()}
+                ></Button>
+                <Button
+                    size="sm"
+                    icon={<HiOutlineKey />}
+                    onClick={onPasswordEdit}
+                ></Button>
+            </>
+        )
     }
 
     const columns: ColumnDef<Users>[] = useMemo(
@@ -81,19 +101,21 @@ const UserData = () => {
                     const row = props.row.original
                     return (
                         <div className="flex items-center">
-                        <Badge
-                            className={
-                                statusColor[
-                                    props.getValue() == true
-                                        ? 'active'
-                                        : 'blocked'
-                                ]
-                            }
-                        />
-                        <span className="ml-2 rtl:mr-2 capitalize">
-                            {props.getValue() == true ? 'Active' : 'Inactive'}
-                        </span>
-                    </div>
+                            <Badge
+                                className={
+                                    statusColor[
+                                        props.getValue() == true
+                                            ? 'active'
+                                            : 'blocked'
+                                    ]
+                                }
+                            />
+                            <span className="ml-2 rtl:mr-2 capitalize">
+                                {props.getValue() == true
+                                    ? 'Active'
+                                    : 'Inactive'}
+                            </span>
+                        </div>
                     )
                 },
             },
@@ -104,19 +126,19 @@ const UserData = () => {
                     const row = props.row.original
                     return (
                         <div className="flex items-center">
-                        <Badge
-                            className={
-                                statusColor[
-                                    props.getValue() == true
-                                        ? 'blocked'
-                                        : 'active'
-                                ]
-                            }
-                        />
-                        <span className="ml-2 rtl:mr-2 capitalize">
-                            {props.getValue() == true ? 'Locked' : 'Active'}
-                        </span>
-                    </div>
+                            <Badge
+                                className={
+                                    statusColor[
+                                        props.getValue() == true
+                                            ? 'blocked'
+                                            : 'active'
+                                    ]
+                                }
+                            />
+                            <span className="ml-2 rtl:mr-2 capitalize">
+                                {props.getValue() == true ? 'Locked' : 'Active'}
+                            </span>
+                        </div>
                     )
                 },
             },
@@ -148,7 +170,10 @@ const UserData = () => {
                 //onSelectChange={onSelectChange}
                 //onSort={onSort}
             />
-            {/* <LeaveTypeEditDialog /> */}
+
+            <Dialog isOpen={isOpen} onClose={onClose} onRequestClose={onClose}>
+                <PasswordReset onClose={onClose} />
+            </Dialog>
         </>
     )
 }

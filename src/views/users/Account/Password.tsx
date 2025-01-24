@@ -13,6 +13,8 @@ import {
 } from 'react-icons/hi'
 import * as Yup from 'yup'
 import PasswordInput from '@/components/shared/PasswordInput'
+import { resetUserPassword, useAppDispatch } from '../Users/store'
+import useCommon from '@/utils/hooks/useCommon'
 
 type LoginHistory = {
     type: string
@@ -53,6 +55,9 @@ const validationSchema = Yup.object().shape({
 })
 
 const Password = ({ data }: { data?: LoginHistory[] }) => {
+    const dispatch = useAppDispatch()
+    const { getUserFromLocalStorage } = useCommon()
+
     const onFormSubmit = (
         values: PasswordFormModel,
         setSubmitting: (isSubmitting: boolean) => void
@@ -60,8 +65,31 @@ const Password = ({ data }: { data?: LoginHistory[] }) => {
         toast.push(<Notification title={'Password updated'} type="success" />, {
             placement: 'top-center',
         })
+
+        const value = {
+            password: values.newPassword,
+            lastUpdateBy: getUserFromLocalStorage().userID,
+        }
+
+        dispatch(resetUserPassword(value))
+
+        openNotification('success', 'Your Password has been reset')
+
         setSubmitting(false)
-        console.log('values', values)
+    }
+
+    const openNotification = (
+        type: 'success' | 'warning' | 'danger' | 'info',
+        message: string
+    ) => {
+        toast.push(
+            <Notification
+                title={type.charAt(0).toUpperCase() + type.slice(1)}
+                type={type}
+            >
+                {message}
+            </Notification>
+        )
     }
 
     return (

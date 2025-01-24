@@ -86,7 +86,10 @@ const EditUser = () => {
 
         openNotification('success', epf + ' has updated')
 
-        // dispatch(toggleEditBungalowDialog(false))
+        setTimeout(() => {
+            setSubmitting(false)
+            navigate('/ViewUsers')
+        }, 500)
     }
 
     const openNotification = (
@@ -106,7 +109,7 @@ const EditUser = () => {
     return (
         <>
             <div className="lg:flex items-center justify-between mb-4">
-                <h2>Edit Bungalow</h2>
+                <h2>Edit User</h2>
             </div>
             <Formik
                 initialValues={{
@@ -323,7 +326,7 @@ const EditUser = () => {
                                         variant="twoTone"
                                         // icon={<HiOutlinePlusCircle />}
                                         onClick={() => {
-                                            navigate('/CircuitBungalow')
+                                            navigate('/ViewUsers')
                                         }}
                                     >
                                         Cancel
@@ -337,7 +340,7 @@ const EditUser = () => {
                                         // icon={<HiOutlinePlusCircle />}
                                         // onClick={onDialogOpen}
                                     >
-                                        Edit Bungalow
+                                        Save Changes
                                     </Button>
                                 </div>
                             </div>

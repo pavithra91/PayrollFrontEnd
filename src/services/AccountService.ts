@@ -1,4 +1,4 @@
-import { AccountData } from '@/@types/Account'
+import { AccountData, PasswordReset } from '@/@types/Account'
 import ApiService from './ApiService'
 
 type Response = {
@@ -33,6 +33,15 @@ export async function apiUpdateUser(data: AccountData) {
     return ApiService.fetchData<Response>({
         url: '/User/update-user',
         method: 'put',
+        data,
+    })
+}
+
+export async function apiResetUserPassword(data: PasswordReset) {
+    console.log(data)
+    return ApiService.fetchData<Response>({
+        url: '/User/reset-password',
+        method: 'post',
         data,
     })
 }
