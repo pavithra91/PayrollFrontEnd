@@ -19,4 +19,8 @@ export const useAppSelector: TypedUseSelectorHook<
 
 export * from './raffleDrawSlice'
 export { useAppDispatch } from '@/store'
+<<<<<<< HEAD
 export default reducer
+=======
+export default reducer
+>>>>>>> d21e87d85ae7fbc314f13be33c52be86d9cdae88

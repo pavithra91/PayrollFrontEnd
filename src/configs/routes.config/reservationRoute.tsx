@@ -58,6 +58,17 @@ const reservationRoute: Routes = [
         ),
         authority: [ADMIN, FIADMIN, FIEX1, FIEX2, SECADMIN, SECUSER, SUPERVISOR, USER],
     },
+    {
+        key: 'appsReservation.RaffleDraw',
+        path: '/RaffleDraw',
+        component: lazy(
+            () =>
+                import(
+                    '@/views/reservation/RaffleDraw/RaffleDraw'
+                )
+        ),
+        authority: [ADMIN, FIADMIN, SECADMIN],
+    },
 ]
 
 export default reservationRoute
