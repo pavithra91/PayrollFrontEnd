@@ -147,16 +147,6 @@ const navigationConfig: NavigationTree[] = [
                 authority: ['Admin', SECADMIN, SECUSER],
                 subMenu: [],
             },
-            {
-                key: 'collapseMenu.RaffleDraw',
-                path: '/RaffleDraw',
-                title: 'Raffle Draw Results',
-                translateKey: 'nav.collapseMenu.RaffleDraw',
-                icon: '',
-                type: NAV_ITEM_TYPE_ITEM,
-                authority: ['Admin', SECADMIN, SECUSER],
-                subMenu: [],
-            },
         ],
     },
     // {

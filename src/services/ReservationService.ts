@@ -144,16 +144,15 @@ export async function apiGetPaymentData<T, U extends Record<string, unknown>>(
     })
 }
 
-
-export async function apiGetRaffleDrawData<T, U extends Record<string, unknown>>(
-    data: U
-) {
-    return ApiService.fetchData<T>({
-        url: '/Reservation/get-raffle-draw-details',
-        method: 'post',
-        data,
-    })
-}
+// export async function apiGetRaffleDrawData<T, U extends Record<string, unknown>>(
+//     data: U
+// ) {
+//     return ApiService.fetchData<T>({
+//         url: '/Reservation/get-raffle-draw-details',
+//         method: 'post',
+//         data,
+//     })
+// }
 
 // export async function apiGetRaffleDrawData<T>(raffleDate: string) {
 //     return ApiService.fetchData<T>({
