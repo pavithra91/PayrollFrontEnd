@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { useEffect, useState } from 'react'
-=======
-import { useState } from 'react'
->>>>>>> d21e87d85ae7fbc314f13be33c52be86d9cdae88
 import { AdaptableCard } from '@/components/shared'
 import { injectReducer } from '@/store'
 import reducer, {
@@ -12,7 +8,6 @@ import reducer, {
     useAppSelector,
 } from './store'
 import useCommon from '@/utils/hooks/useCommon'
-<<<<<<< HEAD
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import Button from '@/components/ui/Button'
@@ -20,40 +15,21 @@ import { Field, Form, Formik, FieldProps } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import DatePicker from '@/components/ui/DatePicker'
 import RaffleDrawData from './components/RaffleDrawData'
-=======
-import Button from '@/components/ui/Button'
-import { Field, Form, Formik, FieldProps } from 'formik'
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import toast from '@/components/ui/toast'
-import Notification from '@/components/ui/Notification'
-import { DatePicker } from '@/components/ui/DatePicker'
->>>>>>> d21e87d85ae7fbc314f13be33c52be86d9cdae88
 
 injectReducer('RaffleDrawData', reducer)
 
 type FormModel = {
-<<<<<<< HEAD
     raffleDrawDate: Date | string
-=======
-    raffleDrawDate: string
->>>>>>> d21e87d85ae7fbc314f13be33c52be86d9cdae88
 }
 
 const RaffleDraw = () => {
     const dispatch = useAppDispatch()
     const { getUserFromLocalStorage } = useCommon()
-<<<<<<< HEAD
     const [raffleDraData, setRaffleDraData] = useState<AllRaffleDrawData[]>([])
 
     const data = useAppSelector(
         (state) => state.RaffleDrawData.data.raffleDrawData
     )
-=======
-
-    const [raffleDrawData, setRaffleDrawData] = useState<AllRaffleDrawData[]>([])
-
-    const data = useAppSelector((state) => state.RaffleDrawData.data.raffleDrawData)
->>>>>>> d21e87d85ae7fbc314f13be33c52be86d9cdae88
 
     const loading = useAppSelector((state) => state.RaffleDrawData.data.loading)
 
@@ -78,11 +54,7 @@ const RaffleDraw = () => {
 
             console.log(fetchedData)
 
-<<<<<<< HEAD
             setRaffleDraData(fetchedData)
-=======
-            setRaffleDrawData(fetchedData)
->>>>>>> d21e87d85ae7fbc314f13be33c52be86d9cdae88
 
             setSubmitting(false)
 
@@ -91,22 +63,6 @@ const RaffleDraw = () => {
             }
         })
     }
-<<<<<<< HEAD
-=======
-
-    const openNotification = (
-        type: 'success' | 'warning' | 'danger' | 'info',
-        title: string,
-        message: string
-    ) => {
-        toast.push(
-            <Notification title={title} type={type}>
-                {message}
-            </Notification>
-        )
-    }
-
->>>>>>> d21e87d85ae7fbc314f13be33c52be86d9cdae88
     return (
         <>
             <AdaptableCard>
@@ -142,7 +98,6 @@ const RaffleDraw = () => {
                                         <div className="grid grid-cols-1 gap-4">
                                             <div className="flex justify-end gap-4">
                                                 <div className="flex flex-wrap gap-4 justify-end">
-<<<<<<< HEAD
                                                     <div className="flex justify-end">
                                                         <FormItem
                                                             // label="Raffle Draw Date"
@@ -184,49 +139,6 @@ const RaffleDraw = () => {
                                                                 )}
                                                             </Field>
                                                         </FormItem>
-=======
-                                                    <div className="...">
-                                                        
-                                                    </div>
-                                                    <div className="flex justify-end">
-                                                    <FormItem
-                                                        invalid={
-                                                            errors.raffleDrawDate &&
-                                                            touched.raffleDrawDate
-                                                        }
-                                                        errorMessage={
-                                                            errors.raffleDrawDate
-                                                        }
-                                                    >
-                                                        <Field
-                                                            name="raffleDrawDate"
-                                                            placeholder="Raffle Draw Date"
-                                                        >
-                                                            {({
-                                                                field,
-                                                                form,
-                                                            }: FieldProps) => (
-                                                                <DatePicker
-                                                                    field={
-                                                                        field
-                                                                    }
-                                                                    form={form}
-                                                                    value={
-                                                                        field.value
-                                                                    }
-                                                                    onChange={(
-                                                                        date
-                                                                    ) => {
-                                                                        form.setFieldValue(
-                                                                            field.name,
-                                                                            date
-                                                                        )
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </Field>
-                                                    </FormItem>
->>>>>>> d21e87d85ae7fbc314f13be33c52be86d9cdae88
                                                     </div>
                                                     <div className="text-right">
                                                         <Button
@@ -239,12 +151,6 @@ const RaffleDraw = () => {
                                                             Load Data
                                                         </Button>
                                                     </div>
-<<<<<<< HEAD
-=======
-                                                    <div className="...">
-
-                                                    </div>
->>>>>>> d21e87d85ae7fbc314f13be33c52be86d9cdae88
                                                 </div>
                                             </div>
                                         </div>
@@ -255,15 +161,9 @@ const RaffleDraw = () => {
                     </div>
                 </div>
 
-<<<<<<< HEAD
                 {raffleDraData.length != 0 && (
                     <>
                         <RaffleDrawData data={raffleDraData} />
-=======
-                {raffleDrawData.length != 0 && (
-                    <>
-                        {/* <PaymentData data={paymentData} /> */}
->>>>>>> d21e87d85ae7fbc314f13be33c52be86d9cdae88
                     </>
                 )}
             </AdaptableCard>

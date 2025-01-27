@@ -4,7 +4,6 @@ import { apiGetRaffleDrawData } from '@/services/ReservationService'
 
 export type AllRaffleDrawData = {
     id: number
-<<<<<<< HEAD
     epf: string
     companyCode?: number
     empName: string
@@ -19,33 +18,13 @@ export type AllRaffleDrawData = {
 
 type GetRaffleDrawDataRequest = {
     raffleDrawDate?: string | Date
-=======
-    companyCode?: number
-    bungalowName?: string
-    rank: number
-    epf: string
-    empName: string
-    contactNumber: string
-    noOfPax: number
-    checkInDate: string | Date
-    checkOutDate: string | Date
-    cost: number
-}
-
-type RaffleDrawRequest = {
-    raffleDrawDate: string
->>>>>>> d21e87d85ae7fbc314f13be33c52be86d9cdae88
 }
 
 export type Row = AllRaffleDrawData
 
 type RaffleDrawData = AllRaffleDrawData[]
 
-<<<<<<< HEAD
 type GetRaffleDrawDataResponse = {
-=======
-type GetRaffleDrawResponse = {
->>>>>>> d21e87d85ae7fbc314f13be33c52be86d9cdae88
     items: RaffleDrawData
     total: number
 }
@@ -64,19 +43,11 @@ export const initialTableData: TableQueries = {
 export const SLICE_NAME = 'RaffleDrawData'
 
 export const getRaffleDrawData = createAsyncThunk(
-<<<<<<< HEAD
     SLICE_NAME + '/getRaffleDrawDataList',
     async (data: GetRaffleDrawDataRequest) => {
         const response = await apiGetRaffleDrawData<
             GetRaffleDrawDataResponse,
             GetRaffleDrawDataRequest
-=======
-    SLICE_NAME + '/getRaffleDrawData',
-    async (data: any) => {
-        const response = await apiGetRaffleDrawData<
-            GetRaffleDrawResponse,
-            RaffleDrawRequest
->>>>>>> d21e87d85ae7fbc314f13be33c52be86d9cdae88
         >(data)
 
         return response.data
