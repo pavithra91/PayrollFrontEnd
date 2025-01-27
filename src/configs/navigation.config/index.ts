@@ -128,6 +128,16 @@ const navigationConfig: NavigationTree[] = [
                 subMenu: [],
             },
             {
+                key: 'collapseMenu.RaffleDraw',
+                path: '/RaffleDraw',
+                title: 'Raffle Draw Rsults',
+                translateKey: 'nav.collapseMenu.RaffleDraw',
+                icon: '',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: ['Admin', SECADMIN, SECUSER],
+                subMenu: [],
+            },
+            {
                 key: 'collapseMenu.ReservationPayments',
                 path: '/ReservationPayments',
                 title: 'Reservation Payments',

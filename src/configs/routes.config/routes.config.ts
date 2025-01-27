@@ -123,6 +123,14 @@ export const protectedRoutes = [
         authority: [ADMIN, FIADMIN],
     },
     {
+        key: 'RaffleDraw',
+        path: '/RaffleDraw',
+        component: lazy(
+            () => import('@/views/reservation/RaffleDraw/RaffleDraw')
+        ),
+        authority: [ADMIN, SECADMIN, SECUSER],
+    },
+    {
         key: 'ReservationPayments',
         path: '/ReservationPayments',
         component: lazy(
@@ -131,7 +139,7 @@ export const protectedRoutes = [
                     '@/views/reservation/ReservationPayments/ReservationPayments'
                 )
         ),
-        authority: [],
+        authority: [ADMIN, SECADMIN],
     },
     {
         key: 'knowledgebase',

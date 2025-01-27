@@ -13,11 +13,11 @@ export default defineConfig({
         proxy: {
             '/api': {
                 // config the target url based on your backend server
-                target: 'https://localhost:44360/',
+                //target: 'https://localhost:44360/',
                 //target: 'http://13.234.120.62/',
                 //target: 'http://internal-cpstl-poc-internal-alb-1716520389.ap-southeast-1.elb.amazonaws.com/',
                 //target: 'https://cpstl-poc-ebankng-alb-664275385.ap-southeast-1.elb.amazonaws.com/',
-                //target: 'https://ess.cpstl.lk/',
+                target: 'https://ess.cpstl.lk/',
                 changeOrigin: true,
                 secure: true,
             },
