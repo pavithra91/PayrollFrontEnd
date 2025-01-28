@@ -22,7 +22,7 @@ import {
     useAppSelector,
 } from '../../Bungalows/store'
 import { useEffect, useState } from 'react'
-import { DoubleSidedImage } from '@/components/shared'
+import { AuthorityCheck, DoubleSidedImage } from '@/components/shared'
 import Dialog from '@/components/ui/Dialog'
 import dayjs from 'dayjs'
 import * as Yup from 'yup'
@@ -383,8 +383,8 @@ const AddReservation = () => {
                 enableReinitialize={true}
                 validationSchema={validationSchema}
                 onSubmit={(values, { setSubmitting }) => {
-                    onSubmit(values, setSubmitting)
-                    //console.log(values)
+                    //onSubmit(values, setSubmitting)
+                    console.log(values)
                     setSubmitting(true)
                 }}
             >
@@ -470,6 +470,35 @@ const AddReservation = () => {
                                                 </FormItem>
                                             </div>
                                             <div className="..">
+
+                                            <AuthorityCheck
+                                                    userAuthority={
+                                                        getUserFromLocalStorage()
+                                                            .authority
+                                                    }
+                                                    authority={['Admin']}
+                                                >
+                                                    {values.category != 4 && (
+                                                    <FormItem
+                                                        label="EPF:"
+                                                        invalid={
+                                                            touched.epf &&
+                                                            !!errors.epf
+                                                        }
+                                                        errorMessage={
+                                                            errors.epf
+                                                        }
+                                                    >
+                                                        <Field
+                                                            as={Input}
+                                                            name="epf"
+                                                            placeholder="Enter EPF Number"
+                                                        />
+                                                    </FormItem>
+                                                )}
+
+                                                    </AuthorityCheck>
+
                                                 {values.category == 4 && (
                                                     <FormItem
                                                         label="NIC Number:"
