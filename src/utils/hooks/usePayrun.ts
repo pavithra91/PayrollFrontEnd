@@ -12,6 +12,7 @@ import {
     apiGetPayrunDetails,
     apiPayCodeCheck,
     apiCreateBankTransferFile,
+    apiGetPaysheetPDF,
 } from '@/services/PayrunService'
 import type {
     PayrollDataSchema,
@@ -202,6 +203,25 @@ function usePayrun() {
         }
     }
 
+    const getPaysheetPDF = async (values: ConfirmDataTransfer) => {
+        try {
+            const resp = await apiGetPaysheetPDF(values)
+            if (resp.data) {
+                return {
+                    status: 'success',
+                    message: '',
+                    data: resp.data,
+                }
+            }
+        } catch (errors: any) {
+            return {
+                status: 'failed',
+                message: errors?.response?.data?.message || errors.toString(),
+            }
+        }
+    }
+
+    // Not Used
     const printPaysheets = async (values: PayrollDataSchema) => {
         try {
             const resp = await apiPrintPaysheets(values)
@@ -266,6 +286,7 @@ function usePayrun() {
         createUnRecovered,
         getPayrollSummary,
         getPaysheetByEPF,
+        getPaysheetPDF,
         printPaysheets,
         getPayrunDetails,
         payCodeCheck,

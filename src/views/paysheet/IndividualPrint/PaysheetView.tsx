@@ -20,6 +20,7 @@ import jsPDF, { GState } from 'jspdf'
 import EmpData from './EmpData'
 import useCommon from '@/utils/hooks/useCommon'
 import { getSinhalaFont } from '@/assets/fonts'
+import AuthorityCheck from '@/components/shared/AuthorityCheck'
 
 type FormLayout = 'inline'
 
@@ -47,7 +48,7 @@ type payData = {
 }
 
 const PaysheetView = (props: FormProps) => {
-    const { getPaysheetByEPF } = usePayrun()
+    const { getPaysheetByEPF, getPaysheetPDF } = usePayrun()
     const { formatDate, getUserFromLocalStorage } = useCommon()
 
     const [payrollData, setPayrollData] = useState<payData | null>(null)
@@ -60,7 +61,10 @@ const PaysheetView = (props: FormProps) => {
 
     const onSubmit = async (values: PaysheetDataSchema) => {
         const { epf, period } = values
-        values.epf = getUserFromLocalStorage().epf
+        console.log(values)
+        if (epf == 0) {
+            values.epf = getUserFromLocalStorage().epf
+        }
 
         if (values != null) {
             setDataFromChild(values)
@@ -106,6 +110,24 @@ const PaysheetView = (props: FormProps) => {
                 {message}
             </Notification>
         )
+    }
+
+    const viewPDF = () => {
+        console.log(dataFromChild)
+        if (dataFromChild != null) {
+            const values = {
+                companyCode: 3000,
+                period: dataFromChild.period,
+                approvedBy: dataFromChild.epf.toString(),
+            }
+
+            const paysheetURL = getPaysheetPDF(values)
+
+            paysheetURL.then((res) => {
+                console.log(res)
+                window.open(res?.data?.data, '_blank')
+            })
+        }
     }
 
     const printReport = () => {
@@ -492,6 +514,7 @@ const PaysheetView = (props: FormProps) => {
                     onSubmit={(values) => {
                         //    if (!disableSubmit) {
 
+                        console.log(values)
                         onSubmit(values)
                         //  }
                     }}
@@ -499,10 +522,29 @@ const PaysheetView = (props: FormProps) => {
                     <Form>
                         <FormContainer layout={layout}>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <AuthorityCheck
+                                    userAuthority={
+                                        getUserFromLocalStorage().authority
+                                    }
+                                    authority={['Admin', 'FIAdmin', 'FIEX1']}
+                                >
+                                    <FormItem label="EPF">
+                                        <Field
+                                            className="mt-1"
+                                            size="sm"
+                                            type="text"
+                                            name="epf"
+                                            placeholder="Please enter EPF"
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                </AuthorityCheck>
+
                                 <div className="..">
                                     <FormItem label="Period">
                                         <Field
-                                            size='sm'
+                                            className="mt-1"
+                                            size="sm"
                                             type="text"
                                             name="period"
                                             placeholder="Please enter Period"
@@ -510,7 +552,17 @@ const PaysheetView = (props: FormProps) => {
                                         />
                                     </FormItem>
 
-                                    <Button size='sm' type="submit">Load</Button>
+                                    <Button size="sm" type="submit">
+                                        Load
+                                    </Button>
+                                    <Button
+                                        className="ml-1"
+                                        size="sm"
+                                        onClick={viewPDF}
+                                        type="submit"
+                                    >
+                                        Print
+                                    </Button>
                                 </div>
                             </div>
                         </FormContainer>

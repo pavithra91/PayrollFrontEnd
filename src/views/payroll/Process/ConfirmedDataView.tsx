@@ -363,32 +363,32 @@ const ConfirmedDataView = (props: FormProps) => {
 
                     {!fetchedContent && <div className="col-span-1..."></div>}
 
-                    {isDataLoad && (
-                        <div className="col-span-1...">
-                            <span className="mr-1 font-semibold">
-                                {!isProcessPayrollBloacked && (
-                                    <Button
-                                        disabled={fetchedContent}
-                                        variant="solid"
-                                        color="blue-600"
-                                        onClick={openConfirmDialog}
-                                    >
-                                        Process Payroll
-                                    </Button>
-                                )}
+                    {/* {isDataLoad && ( */}
+                    <div className="col-span-1...">
+                        <span className="mr-1 font-semibold">
+                            {!isProcessPayrollBloacked && (
+                                <Button
+                                    disabled={fetchedContent}
+                                    variant="solid"
+                                    color="blue-600"
+                                    onClick={openConfirmDialog}
+                                >
+                                    Process Payroll
+                                </Button>
+                            )}
 
-                                {isConfirmOpen && (
-                                    <ConfirmDiaglog
-                                        onClose={closeConfirmDialog}
-                                        isConfirmOpen={isConfirmOpen}
-                                        props={props}
-                                        data={dataFromChild}
-                                        onSendData={handleChildData}
-                                    />
-                                )}
-                            </span>
-                        </div>
-                    )}
+                            {isConfirmOpen && (
+                                <ConfirmDiaglog
+                                    onClose={closeConfirmDialog}
+                                    isConfirmOpen={isConfirmOpen}
+                                    props={props}
+                                    data={dataFromChild}
+                                    onSendData={handleChildData}
+                                />
+                            )}
+                        </span>
+                    </div>
+                    {/* )} */}
 
                     {fetchedContent && (
                         <div className="col-span-1...">

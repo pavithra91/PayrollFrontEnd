@@ -104,6 +104,15 @@ export async function apiGetPaysheetByEPF(values: PaysheetDataSchema) {
     })
 }
 
+export async function apiGetPaysheetPDF(data: ConfirmDataTransfer) {
+    return ApiService.fetchData<Response>({
+        url: '/Payroll/get-emp-paysheet',
+        method: 'post',
+        timeout: 240000,
+        data,
+    })
+}
+
 export async function apiPrintPaysheets(values: PayrollDataSchema) {
     return ApiService.fetchData<Response>({
         url:
