@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { TableQueries } from '@/@types/common'
-import { apiGetPayrunByPeriod, apiProcessPayroll, apiSimulatePayroll } from '@/services/PayrunService'
+import { apiCreateUnRecovered, apiGetPayrollSummary, apiGetPayrunByPeriod, apiProcessPayroll, apiSimulatePayroll } from '@/services/PayrunService'
 import { ConfirmDataTransfer, PayrollDataSchema } from '@/@types/payroll'
 
 export type AllPayrollData = {
@@ -16,6 +16,13 @@ type ProcessPayrollRequest = {
 export type Row = AllPayrollData
 
 type PayrollData = AllPayrollData[]
+
+type ApprovalData = 
+{
+    companyCode : number,
+    period: number,
+    approvedBy?: string
+}
 
 type ProcessPayrollResponse = PayrollData
 
@@ -58,22 +65,50 @@ export const processPayroll = createAsyncThunk(
     }
 )
 
-export type BungalowState = {
+export const createUnRecFile = createAsyncThunk(
+    SLICE_NAME + '/createUnRecFile',
+    async (data: ConfirmDataTransfer) => {
+        const response = await apiCreateUnRecovered(data)
+
+        return response.data
+    }
+)
+
+export const getPayrollSummary = createAsyncThunk(
+    SLICE_NAME + '/getPayrollSummary',
+    async (data: PayrollDataSchema) => {
+        const response = await apiGetPayrollSummary(data)
+
+        return response.data
+    }
+)
+
+export type PayrollState = {
     loading: boolean
     payrollData: PayrollData
     tableData: TableQueries
     selectedRow: Partial<Row>
+    simulationLoading: boolean
+    showSimulation: boolean
     processPayrollDialog: boolean
     unrecoveredDialog: boolean
+    comData: ApprovalData
 }
 
-const initialState: BungalowState = {
+const initialState: PayrollState = {
     loading: true,
     payrollData: [],
     tableData: initialTableData,
     selectedRow: {},
+    simulationLoading: false,
+    showSimulation: false,
     processPayrollDialog: false,
     unrecoveredDialog: false,
+    comData:{
+        companyCode: 0,
+        period: 0,
+        approvedBy: ''
+    },
 }
 
 const payrollSlice = createSlice({
@@ -85,6 +120,15 @@ const payrollSlice = createSlice({
         },
         setPayrollData: (state, action) => {
             state.payrollData = action.payload
+        },
+        setComData: (state, action) => {
+            state.comData = action.payload
+        },
+        toggleSimulationLoading: (state, action) => {
+            state.simulationLoading = action.payload
+        },
+        toggleShowSimulation: (state, action) => {
+            state.showSimulation = action.payload
         },
         toggleProcessPayrollDialog: (state, action) => {
             state.processPayrollDialog = action.payload
@@ -110,6 +154,9 @@ const payrollSlice = createSlice({
 export const {
     setPayrollData,
     setTableData,
+    setComData,
+    toggleSimulationLoading,
+    toggleShowSimulation,
     toggleProcessPayrollDialog,
     toggleUnrecoveredDialog,
     setSelectedRow,

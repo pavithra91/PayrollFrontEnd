@@ -222,7 +222,7 @@ const Payments = () => {
                                                         getUserFromLocalStorage()
                                                             .authority
                                                     }
-                                                    authority={['Admin']}
+                                                    authority={['Admin', 'FIAdmin']}
                                                 >
                                                     {state.isReset && (
                                                         <Button

@@ -92,6 +92,30 @@ export async function apiGetPayrollSummary(values: PayrollDataSchema) {
     })
 }
 
+export async function apiGetBankTransferSummary<T, U extends Record<string, unknown>>(
+    params: U
+) {
+    return ApiService.fetchData<T>({
+        url: '/Payroll/get-payroll-summary?companyCode=' +
+        params.companyCode +
+            '&period=' +
+            params.period,
+        method: 'get',
+        // params,
+    })
+}
+
+export async function apiStopEmpSalary<
+    T,
+    U extends Record<string, unknown>
+>(data: U) {
+    return ApiService.fetchData<T>({
+        url: '/Payroll/stop-salary',
+        method: 'post',
+        data,
+    })
+}
+
 export async function apiGetPaysheetByEPF(values: PaysheetDataSchema) {
     return ApiService.fetchData<Response>({
         url:

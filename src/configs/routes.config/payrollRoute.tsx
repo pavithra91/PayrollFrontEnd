@@ -23,14 +23,14 @@ const payrollRoute: Routes = [
     {
         key: 'appsPayroll.ProcessPayroll',
         path: '/ProcessPayroll',
-        component: lazy(() => import('@/views/payroll/Process/ProcessPayroll')),
+        component: lazy(() => import('@/views/payroll/Process/PayrollProcess')),
         authority: [ADMIN, FIADMIN, FIEX1],
     },
     {
         key: 'appsPayroll.BankTransfer',
         path: '/BankTransfer',
         component: lazy(
-            () => import('@/views/payroll/BankTransfer/BankTransfer')
+            () => import('@/views/payroll/BankTransfer/BankTransfer1')
         ),
         authority: [ADMIN, FIADMIN, FIEX1],
     },

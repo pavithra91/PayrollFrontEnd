@@ -15,6 +15,8 @@ export type TableQueries = {
         order: 'asc' | 'desc' | ''
         key: string | number
     }
+    companyCode?:number
+    period?:number
 }
 
 export interface SelectOption {
