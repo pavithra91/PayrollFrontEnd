@@ -5,6 +5,9 @@ import { apiGetBankTransferSummary, apiGetPayrollSummary, apiStopEmpSalary } fro
 
 export type AllPayrollData = {
     id: number
+    empName: string
+    grade: string
+    epf: string
     total: number
 }
 

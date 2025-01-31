@@ -37,6 +37,7 @@ const BankTableSearch = () => {
     }
 
     const fetchData = (data: TableQueries) => {
+        console.log(data)
         dispatch(setTableData(data))
         dispatch(getBankTransferData(data))
     }

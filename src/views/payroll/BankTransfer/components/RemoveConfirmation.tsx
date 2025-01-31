@@ -67,13 +67,13 @@ const RemoveConfirmation = () => {
             dispatch(getBankTransferData(newTableData))
             toast.push(
                 <Notification
-                    title={'Successfuly Deleted'}
+                    title={'Successfuly Stoped Salary'}
                     type="success"
                     duration={2500}
                 >
                     {deleteMode === 'single' && 'Order '}
-                    {deleteMode === 'batch' && `${orders} orders `}
-                    successfuly deleted
+                    {deleteMode === 'batch' && `${orders} employee record `}
+                    excluded
                 </Notification>,
                 {
                     placement: 'top-center',
@@ -86,7 +86,7 @@ const RemoveConfirmation = () => {
         <ConfirmDialog
             isOpen={deleteMode === 'single' || deleteMode === 'batch'}
             type="danger"
-            title="Delete product"
+            title="Stop Salary Payment"
             confirmButtonColor="red-600"
             onClose={onDialogClose}
             onRequestClose={onDialogClose}
@@ -94,8 +94,7 @@ const RemoveConfirmation = () => {
             onConfirm={onDelete}
         >
             <p>
-                Are you sure you want to delete this order? All record related
-                to this order will be deleted as well. This action cannot be
+                Are you sure you want to Stop bank transfer for this Employees? This action cannot be
                 undone.
             </p>
         </ConfirmDialog>

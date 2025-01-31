@@ -2,7 +2,7 @@ import Button from '@/components/ui/Button'
 import { Formik, Field, Form, FieldProps } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
-import { SelectOption } from '@/@types/common'
+import { SelectOption, TableQueries } from '@/@types/common'
 import Select from '@/components/ui/Select'
 import reducer, {
     addRowItem,
@@ -10,6 +10,7 @@ import reducer, {
     getBankTransferData,
     removeRowItem,
     setComData,
+    setSelectedRows,
     setTableData,
     useAppDispatch,
     useAppSelector,
@@ -18,15 +19,26 @@ import { injectReducer } from '@/store'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import { Card } from '@/components/ui/Card'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+    ChangeEvent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import cloneDeep from 'lodash/cloneDeep'
 import DataTable, {
     DataTableResetHandle,
     OnSortParam,
+    Row,
 } from '@/components/shared/DataTable'
 import BankTransferTableTools from './components/BankTransferTableTools'
 import RemoveConfirmation from './components/RemoveConfirmation'
+import paginate from '@/utils/paginate'
+import { HiOutlineSearch } from 'react-icons/hi'
+import debounce from 'lodash/debounce'
 
 injectReducer('BankTransferData', reducer)
 
@@ -43,6 +55,8 @@ const companyOptions: SelectOption[] = [
 const BankTransfer = () => {
     const dispatch = useAppDispatch()
 
+    const searchInput = useRef<HTMLInputElement>(null)
+
     const tableRef = useRef<DataTableResetHandle>(null)
 
     const loading = useAppSelector(
@@ -57,13 +71,13 @@ const BankTransfer = () => {
         (state) => state.BankTransferData.data.comData
     )
 
-    const [payrollData, setPayrollData] = useState<[]>([])
+    const [payrollData, setPayrollData] = useState<AllPayrollData[]>([])
+    const [pagingData, setPaggingData] = useState<AllPayrollData[]>([])
+    const [filteredData, setFilteredData] = useState<AllPayrollData[]>([])
 
-    const { pageIndex, pageSize, sort, query, total, companyCode, period } = useAppSelector(
-        (state) => state.BankTransferData.data.tableData
-    )
+    const { pageIndex, pageSize, sort, query, total, companyCode, period } =
+        useAppSelector((state) => state.BankTransferData.data.tableData)
 
-    
     const onSubmit = (
         formValue: FormModel,
         setSubmitting: (isSubmitting: boolean) => void
@@ -85,9 +99,16 @@ const BankTransfer = () => {
             sort,
             query,
         })
-        
+
         dispatch(
-            getBankTransferData({ pageIndex, pageSize, sort, query, companyCode, period })
+            getBankTransferData({
+                pageIndex,
+                pageSize,
+                sort,
+                query,
+                companyCode,
+                period,
+            })
         ).then((res: any) => {
             const listItems = JSON.parse(res.payload.data)
 
@@ -95,7 +116,8 @@ const BankTransfer = () => {
             const endIndex = startIndex + (pageSize || 1)
             const paginatedData = listItems?.slice(startIndex, endIndex) || []
 
-            setPayrollData(paginatedData)
+            setPayrollData(listItems)
+            setPaggingData(paginatedData)
         })
     }
 
@@ -112,11 +134,12 @@ const BankTransfer = () => {
     //         const listItems = JSON.parse(res.payload.data)
 
     //         setPayrollData(listItems)
+    //         setFilteredData(listItems)
     //     })
     // }, [dispatch, pageIndex, pageSize, sort, query])
 
     // useEffect(() => {
-    //     // dispatch(setSelectedRows([]))
+    //      dispatch(setSelectedRows([]))
     //     fetchData()
     // }, [dispatch, fetchData, pageIndex, pageSize, sort])
 
@@ -127,7 +150,15 @@ const BankTransfer = () => {
     }, [data])
 
     const tableData = useMemo(
-        () => ({ pageIndex, pageSize, sort, query, total, companyCode, period }),
+        () => ({
+            pageIndex,
+            pageSize,
+            sort,
+            query,
+            total,
+            companyCode,
+            period,
+        }),
         [pageIndex, pageSize, sort, query, total, companyCode, period]
     )
 
@@ -178,21 +209,17 @@ const BankTransfer = () => {
         newTableData.period = approvalData.period
         dispatch(setTableData(newTableData))
 
-        dispatch(
-            getBankTransferData(newTableData)
-        ).then((res: any) => {
-            const listItems = JSON.parse(res.payload.data)
+        const pagedData = paginate(
+            payrollData,
+            newTableData.pageSize || 10,
+            page
+        )
 
-            const currentPageSize = newTableData.pageSize || 10  // Default page size if undefined
-            const startIndex = (page - 1) * currentPageSize
-            const endIndex = startIndex + currentPageSize
-            const paginatedData = listItems?.slice(startIndex, endIndex) || []
-
-            setPayrollData(paginatedData)
-        })
+        setPaggingData(pagedData)
     }
 
     const onSelectChange = (value: number) => {
+        alert('onSelectChange')
         const newTableData = cloneDeep(tableData)
         newTableData.pageSize = Number(value)
         newTableData.pageIndex = 1
@@ -213,26 +240,59 @@ const BankTransfer = () => {
         }
     }
 
-    const openNotification = (
-        type: 'success' | 'warning' | 'danger' | 'info',
-        message: string
-    ) => {
-        toast.push(
-            <Notification
-                title={type.charAt(0).toUpperCase() + type.slice(1)}
-                type={type}
-            >
-                {message}
-            </Notification>
+    // const onRowSelect = useCallback(
+    //     (checked: boolean, row: AllPayrollData) => {
+    //         if (checked) {
+    //             dispatch(addRowItem([row.id]))
+
+    //         } else {
+    //             dispatch(removeRowItem(row.id.toString()))
+    //         }
+    //     },
+    //     [dispatch]
+    // )
+
+    const onAllRowSelect = useCallback(
+        (checked: boolean, rows: Row<AllPayrollData>[]) => {
+            if (checked) {
+                const originalRows = rows.map((row) => row.original)
+                const selectedIds: string[] = []
+                originalRows.forEach((row) => {
+                    selectedIds.push(row.id.toString())
+                })
+                dispatch(setSelectedRows(selectedIds))
+            } else {
+                dispatch(setSelectedRows([]))
+            }
+        },
+        [dispatch]
+    )
+
+    const handleInputChange = (val: string) => {
+        const query = val.toLowerCase()
+        const filtered = (payrollData || []).filter(
+            (item) =>
+                item.empName.toString().includes(query) ||
+                item.grade.toLowerCase().includes(query) ||
+                item.epf.includes(query)
         )
+
+        setPaggingData(filtered)
+
+        const filteredData = paginate(filtered, 10, 1)
+        setPaggingData(filteredData)
+    }
+
+    const onEdit = (e: ChangeEvent<HTMLInputElement>) => {
+        handleInputChange(e.target.value)
     }
 
     return (
         <>
             <div className="col-span-4 ...">
                 <Card header="Bank Transfer" className="mb-3">
-                    <div className="grid grid-cols-1 lg:grid-cols-6 gap-4">
-                        <div className="lg:col-span-5">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        <div className="lg:col-span-2">
                             <Formik
                                 initialValues={{
                                     companyCode: 0,
@@ -329,29 +389,39 @@ const BankTransfer = () => {
                                 )}
                             </Formik>
                         </div>
-                        <div className="lg:col-span-1"></div>
+                        <div className="lg:col-span-1 flex justify-end">
+                            <BankTransferTableTools />
+                        </div>
                     </div>
-                    <BankTransferTableTools />
-                    <RemoveConfirmation />
 
-                    <DataTable
-                        ref={tableRef}
-                        selectable
-                        columns={columns}
-                        data={payrollData}
-                        loading={loading}
-                        pagingData={{
-                            total: tableData.total as number,
-                            pageIndex: tableData.pageIndex as number,
-                            pageSize: tableData.pageSize as number,
-                        }}
-                        onPaginationChange={onPaginationChange}
-                        onSelectChange={onSelectChange}
-                        onSort={onSort}
-                        onCheckBoxChange={onRowSelect}
-                        //onIndeterminateCheckBoxChange={onAllRowSelect}
+                    <Input
+                        ref={searchInput}
+                        className="lg:w-52 mb-2"
+                        size="sm"
+                        placeholder="Search"
+                        prefix={<HiOutlineSearch className="text-lg" />}
+                        onChange={onEdit}
                     />
+                    <RemoveConfirmation />
                 </Card>
+
+                <DataTable
+                    ref={tableRef}
+                    selectable
+                    columns={columns}
+                    data={pagingData}
+                    loading={loading}
+                    pagingData={{
+                        total: tableData.total as number,
+                        pageIndex: tableData.pageIndex as number,
+                        pageSize: tableData.pageSize as number,
+                    }}
+                    onPaginationChange={onPaginationChange}
+                    onSelectChange={onSelectChange}
+                    // onSort={onSort}
+                    onCheckBoxChange={onRowSelect}
+                    onIndeterminateCheckBoxChange={onAllRowSelect}
+                />
             </div>
         </>
     )

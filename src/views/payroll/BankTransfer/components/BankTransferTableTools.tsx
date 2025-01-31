@@ -38,7 +38,7 @@ const BankTransferTableTools = () => {
                     Export
                 </Button>
             </Link> */}
-            <BankTableSearch />
+            {/* <BankTableSearch /> */}
         </div>
     )
 }
