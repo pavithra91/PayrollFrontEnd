@@ -3,8 +3,6 @@ import reducer, { toggleNewUserDialog } from './store'
 import { injectReducer, useAppDispatch } from '@/store'
 import { HiOutlinePlusCircle } from 'react-icons/hi'
 import UserData from './components/UserData'
-import { Card } from '@/components/ui/Card'
-import AddNewUser from './components/AddNewUser'
 import { useNavigate } from 'react-router-dom'
 
 injectReducer('userList', reducer)
@@ -12,16 +10,14 @@ injectReducer('userList', reducer)
 const ViewUsers = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
-    
+
     const onAddNewUser = () => {
         dispatch(toggleNewUserDialog(true))
     }
 
     return (
-        <>         
-               
+        <>
             <div className="lg:flex items-center justify-between mb-4">
-
                 <span className="mb-4 lg:mb-0">
                     <h4>User Accounts</h4>
                 </span>
@@ -35,12 +31,9 @@ const ViewUsers = () => {
                         Add User
                     </Button>
                 </div>
-               
-
             </div>
-            
-            <UserData />
 
+            <UserData />
         </>
     )
 }

@@ -166,9 +166,9 @@ const UserData = () => {
                 //     pageIndex: tableData.pageIndex as number,
                 //     pageSize: tableData.pageSize as number,
                 // }}
-                //onPaginationChange={onPaginationChange}
-                //onSelectChange={onSelectChange}
-                //onSort={onSort}
+                // onPaginationChange={onPaginationChange}
+                // onSelectChange={onSelectChange}
+                // onSort={onSort}
             />
 
             <Dialog isOpen={isOpen} onClose={onClose} onRequestClose={onClose}>

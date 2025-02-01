@@ -1,4 +1,5 @@
 import { AccountData, PasswordReset } from '@/@types/Account'
+import { TableQueries } from '@/@types/common'
 import {
     apiAddUser,
     apiGetUserList,
@@ -24,9 +25,23 @@ export type Users = {
 
 type UserList = Users[]
 
+export const initialTableData: TableQueries = {
+    total: 0,
+    pageIndex: 1,
+    pageSize: 10,
+    query: '',
+    sort: {
+        order: '',
+        key: '',
+    },
+    companyCode: 3000,
+    period: 0,
+}
+
 export type UserState = {
     loading: boolean
     userList: UserList
+    tableData: TableQueries
     newUserDialog: boolean
     editUserDialog: boolean
     view: 'grid' | 'list'
@@ -40,6 +55,7 @@ export const SLICE_NAME = 'userList'
 const initialState: UserState = {
     loading: false,
     userList: [],
+    tableData: initialTableData,
     newUserDialog: false,
     editUserDialog: false,
     view: 'grid',
@@ -102,6 +118,9 @@ const userSlice = createSlice({
         toggleView: (state, action) => {
             state.view = action.payload
         },
+        setTableData: (state, action) => {
+            state.tableData = action.payload
+        },
         toggleNewUserDialog: (state, action) => {
             state.newUserDialog = action.payload
         },
@@ -129,6 +148,7 @@ const userSlice = createSlice({
 
 export const {
     toggleView,
+    setTableData,
     toggleNewUserDialog,
     toggleEditUserDialog,
     setSelectedUser,
